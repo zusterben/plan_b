@@ -1,18 +1,11 @@
 #!/bin/sh
 
-MODULE=helloword
+MODULE=helloworld
 VERSION=0.0.1
-TITLE=helloword
-DESCRIPTION=helloword
-HOME_URL=Module_helloword.asp
+TITLE=helloworld
+DESCRIPTION=helloworld
+HOME_URL=Module_helloworld.asp
 arch_list="mips mipsle arm armng arm64"
-
-cp_rules(){
-	cp -rf ./rules/gfwlist.conf helloword/ss/rules/
-	cp -rf ./rules/chnroute.txt helloword/ss/rules/
-	cp -rf ./rules/cdn.txt helloword/ss/rules/
-	cp -rf ./rules/version1 helloword/ss/rules/version
-}
 
 sync_v2ray_binary(){
 	v2ray_version=`cat ./v2ray_binary/latest.txt`
@@ -35,11 +28,11 @@ do_build() {
 	rm -f $MODULE/.DS_Store
 	rm -f $MODULE/*/.DS_Store
 	rm -rf $MODULE/bin/*
-	cp -rf ./bin_arch/$1/* $MODULE/bin/
-	tar -zcvf ${MODULE}.tar.gz $MODULE
 	cat > $MODULE/version <<-EOF
 	$VERSION
 	EOF
+	cp -rf ./bin_arch/$1/* $MODULE/bin/
+	tar -zcvf ${MODULE}.tar.gz $MODULE
 	md5value=`md5sum ${MODULE}.tar.gz|tr " " "\n"|sed -n 1p`
 	cat > ./version <<-EOF
 	$VERSION
@@ -55,14 +48,14 @@ do_build() {
 	"home_url":"$HOME_URL",
 	"md5":"$md5value",
 	"name":"$MODULE",
-	"tar_url": "https://raw.githubusercontent.com/zusterben/plan_b/master/bin/$1/helloword.tar.gz", 
+	"tar_url": "https://raw.githubusercontent.com/zusterben/plan_b/master/bin/$1/helloworld.tar.gz", 
 	"title":"$TITLE",
 	"version":"$VERSION"
 	}
 	EOF
 	cp -rf version ./bin/$1/version
 	cp -rf config.json.js ./bin/$1/config.json.js
-	cp -rf helloword.tar.gz ./bin/$1/helloword.tar.gz
+	cp -rf helloworld.tar.gz ./bin/$1/helloworld.tar.gz
 }
 
 do_backup(){
@@ -76,12 +69,11 @@ do_backup(){
 	echo $backup_tar_md5 ${MODULE}_$backup_version.tar.gz >> "$HISTORY_DIR"/md5sum.txt
 }
 
-cp_rules
 for arch in $arch_list
 do
 sync_v2ray_binary $arch
 do_build $arch
 do_backup $arch
 done
-rm version config.json.js helloword.tar.gz
+rm version config.json.js helloworld.tar.gz
 
