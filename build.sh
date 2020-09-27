@@ -1,11 +1,18 @@
 #!/bin/sh
 
-MODULE=helloworld
+MODULE=shadowsocks
 VERSION=0.0.1
-TITLE=helloworld
-DESCRIPTION=helloworld
-HOME_URL=Module_helloworld.asp
-arch_list="mips mipsle arm armng arm64"
+TITLE=科学上网
+DESCRIPTION=科学上网
+HOME_URL=Module_shadowsocks.asp
+arch_list="mips arm armng arm64 mipsle"
+
+cp_rules(){
+	cp -rf ./rules/gfwlist.conf shadowsocks/ss/rules/
+	cp -rf ./rules/chnroute.txt shadowsocks/ss/rules/
+	cp -rf ./rules/cdn.txt shadowsocks/ss/rules/
+	cp -rf ./rules/version1 shadowsocks/ss/rules/version
+}
 
 sync_v2ray_binary(){
 	v2ray_version=`cat ./v2ray_binary/latest.txt`
@@ -28,11 +35,12 @@ do_build() {
 	rm -f $MODULE/.DS_Store
 	rm -f $MODULE/*/.DS_Store
 	rm -rf $MODULE/bin/*
+	cp -rf ./bin_arch/$1/* $MODULE/bin/
+	echo $VERSION > shadowsocks/ss/version
+	tar -zcvf ${MODULE}.tar.gz $MODULE
 	cat > $MODULE/version <<-EOF
 	$VERSION
 	EOF
-	cp -rf ./bin_arch/$1/* $MODULE/bin/
-	tar -zcvf ${MODULE}.tar.gz $MODULE
 	md5value=`md5sum ${MODULE}.tar.gz|tr " " "\n"|sed -n 1p`
 	cat > ./version <<-EOF
 	$VERSION
@@ -48,14 +56,14 @@ do_build() {
 	"home_url":"$HOME_URL",
 	"md5":"$md5value",
 	"name":"$MODULE",
-	"tar_url": "https://raw.githubusercontent.com/zusterben/plan_b/master/bin/$1/helloworld.tar.gz", 
+	"tar_url": "https://raw.githubusercontent.com/zusterben/plan_b/master/bin/$1/shadowsocks.tar.gz", 
 	"title":"$TITLE",
 	"version":"$VERSION"
 	}
 	EOF
 	cp -rf version ./bin/$1/version
 	cp -rf config.json.js ./bin/$1/config.json.js
-	cp -rf helloworld.tar.gz ./bin/$1/helloworld.tar.gz
+	cp -rf shadowsocks.tar.gz ./bin/$1/shadowsocks.tar.gz
 }
 
 do_backup(){
@@ -69,11 +77,12 @@ do_backup(){
 	echo $backup_tar_md5 ${MODULE}_$backup_version.tar.gz >> "$HISTORY_DIR"/md5sum.txt
 }
 
+cp_rules
 for arch in $arch_list
 do
 sync_v2ray_binary $arch
 do_build $arch
 do_backup $arch
 done
-rm version config.json.js helloworld.tar.gz
+rm version config.json.js shadowsocks.tar.gz
 
