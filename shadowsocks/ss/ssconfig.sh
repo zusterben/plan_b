@@ -448,6 +448,38 @@ start_dns() {
 	if [ "$ss_foreign_dns" == "1" ]; then
 		[ "$DNS_PLAN" == "1" ] && echo_date "开启pdnsd，用于【国外gfwlist站点】的DNS解析..."
 		[ "$DNS_PLAN" == "2" ] && echo_date "开启pdnsd，用于【国外所有网站】的DNS解析..."
+		if [ ! -f "/var/pdnsd/pdnsd.cache" ]; then
+			mkdir -p /var/pdnsd
+			touch /var/pdnsd/pdnsd.cache
+		fi
+		cat <<-EOF >/etc/pdnsd.conf
+			global{
+			perm_cache=1024;
+			cache_dir="/var/pdnsd";
+			pid_file="/var/run/pdnsd.pid";
+			run_as="nobody";
+			server_ip=127.0.0.1;
+			server_port=$DNSF_PORT;
+			status_ctl=on;
+			query_method=tcp_only;
+			min_ttl=1h;
+			max_ttl=1w;
+			timeout=10;
+			neg_domain_pol=on;
+			proc_limit=2;
+			procq_limit=8;
+			par_queries=1;
+			}
+			server{
+			label="ssr-usrdns";
+			ip=8.8.8.8;
+			port=53;
+			timeout=6;
+			uptest=none;
+			interval=10m;
+			purge_cache=off;
+			}
+		EOF
 		/jffs/softcenter/bin/pdnsd -c /etc/pdnsd.conf >/dev/null 2>&1 &
 	fi
 
