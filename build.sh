@@ -1,17 +1,17 @@
 #!/bin/sh
 
-MODULE=shadowsocks
+MODULE=helloworld
 VERSION=0.0.1
 TITLE=科学上网
 DESCRIPTION=科学上网
-HOME_URL=Module_shadowsocks.asp
+HOME_URL=Module_helloworld.asp
 arch_list="mips arm armng arm64 mipsle"
 
 cp_rules(){
-	cp -rf ./rules/gfwlist.conf shadowsocks/ss/rules/
-	cp -rf ./rules/chnroute.txt shadowsocks/ss/rules/
-	cp -rf ./rules/cdn.txt shadowsocks/ss/rules/
-	cp -rf ./rules/version1 shadowsocks/ss/rules/version
+	cp -rf ./rules/gfwlist.conf helloworld/ss/rules/
+	cp -rf ./rules/chnroute.txt helloworld/ss/rules/
+	cp -rf ./rules/cdn.txt helloworld/ss/rules/
+	cp -rf ./rules/version1 helloworld/ss/rules/version
 }
 
 sync_v2ray_binary(){
@@ -36,7 +36,7 @@ do_build() {
 	rm -f $MODULE/*/.DS_Store
 	rm -rf $MODULE/bin/*
 	cp -rf ./bin_arch/$1/* $MODULE/bin/
-	echo $VERSION > shadowsocks/ss/version
+	echo $VERSION > helloworld/ss/version
 	tar -zcvf ${MODULE}.tar.gz $MODULE
 	cat > $MODULE/version <<-EOF
 	$VERSION
@@ -56,14 +56,14 @@ do_build() {
 	"home_url":"$HOME_URL",
 	"md5":"$md5value",
 	"name":"$MODULE",
-	"tar_url": "https://raw.githubusercontent.com/zusterben/plan_b/master/bin/$1/shadowsocks.tar.gz", 
+	"tar_url": "https://raw.githubusercontent.com/zusterben/plan_b/master/bin/$1/helloworld.tar.gz", 
 	"title":"$TITLE",
 	"version":"$VERSION"
 	}
 	EOF
 	cp -rf version ./bin/$1/version
 	cp -rf config.json.js ./bin/$1/config.json.js
-	cp -rf shadowsocks.tar.gz ./bin/$1/shadowsocks.tar.gz
+	cp -rf helloworld.tar.gz ./bin/$1/helloworld.tar.gz
 }
 
 do_backup(){
@@ -84,5 +84,6 @@ sync_v2ray_binary $arch
 do_build $arch
 do_backup $arch
 done
-rm version config.json.js shadowsocks.tar.gz
+rm version config.json.js helloworld.tar.gz
+rm -rf $MODULE/bin/*
 

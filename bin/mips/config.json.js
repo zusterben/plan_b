@@ -1,10 +1,10 @@
 {
-"build_date":"2020-09-27_19:20:38",
+"build_date":"2020-09-27_20:44:11",
 "description":"科学上网",
-"home_url":"Module_shadowsocks.asp",
-"md5":"24f7e0d1d1e2bb6aa90230ceb1e72cbb",
-"name":"shadowsocks",
-"tar_url": "https://raw.githubusercontent.com/zusterben/plan_b/master/bin/mips/shadowsocks.tar.gz", 
+"home_url":"Module_helloworld.asp",
+"md5":"c6ae35dd44709a559ea9d9447e47dda1",
+"name":"helloworld",
+"tar_url": "https://raw.githubusercontent.com/zusterben/plan_b/master/bin/mips/helloworld.tar.gz", 
 "title":"科学上网",
 "version":"0.0.1"
 }
