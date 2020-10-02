@@ -882,6 +882,8 @@ create_v2ray_json(){
 		local ws="null"
 		local h2="null"
 		local tls="null"
+		local xtls="null"
+		local vless_flow=""
 
 		# tcp和kcp下tlsSettings为null，ws和h2下tlsSettings
 		[ -z "$ss_basic_v2ray_mux_concurrency" ] && local ss_basic_v2ray_mux_concurrency=8
@@ -891,11 +893,18 @@ create_v2ray_json(){
 		tls)
 			local tls="{
 					\"allowInsecure\": true,
-					\"serverName\": null
+					\"serverName\": \"$ss_basic_v2ray_network_tlshost\"
 					}"
+			;;
+		xtls)
+			local xtls="{
+					\"serverName\": \"$ss_basic_v2ray_network_tlshost\"
+					}"
+			local vless_flow="\"flow\": \"xtls-rprx-origin\","
 			;;
 		*)
 			local tls="null"
+			local xtls="null"
 			;;
 		esac
 		#fi
@@ -1008,6 +1017,7 @@ create_v2ray_json(){
 		EOF
 
 		# outbounds area
+		if [ "$ss_basic_v2ray_vmessvless" == "vmess" ]; then
 		cat >>"$V2RAY_CONFIG_FILE_TMP" <<-EOF
 			"outbounds": [
 				{
@@ -1046,6 +1056,49 @@ create_v2ray_json(){
 			]
 			}
 		EOF
+		else
+		  #vless
+		  cat >>"$V2RAY_CONFIG_FILE_TMP" <<-EOF
+				"outbounds": [
+				  {
+					"tag": "agentout",
+					"protocol": "vless",
+					"settings": {
+					  "vnext": [
+						{
+						  "address": "$ss_basic_server_orig",
+						  "port": $ss_basic_port,
+						  "users": [
+							{
+							  "id": "$ss_basic_v2ray_uuid",
+							  "level": 1,
+							  $vless_flow
+							  "encryption": "none"
+							}
+						  ]
+						}
+					  ],
+					  "servers": null
+					},
+					"streamSettings": {
+					  "network": "$ss_basic_v2ray_network",
+					  "security": "$ss_basic_v2ray_network_security",
+					  "tlsSettings": $tls,
+					  "xtlsSettings": $xtls,
+					  "tcpSettings": $tcp,
+					  "kcpSettings": $kcp,
+					  "wsSettings": $ws,
+					  "httpSettings": $h2
+					},
+					"mux": {
+					  "enabled": $(get_function_switch $ss_basic_v2ray_mux_enable),
+					  "concurrency": $ss_basic_v2ray_mux_concurrency
+					}
+				  }
+				]
+				}
+			EOF
+		fi
 		echo_date 解析V2Ray配置文件...
 		cat "$V2RAY_CONFIG_FILE_TMP" | jq --tab . >"$V2RAY_CONFIG_FILE"
 		echo_date V2Ray配置文件写入成功到"$V2RAY_CONFIG_FILE"
