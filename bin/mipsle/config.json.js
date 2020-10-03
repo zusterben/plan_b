@@ -1,8 +1,8 @@
 {
-"build_date":"2020-10-02_22:37:22",
+"build_date":"2020-10-03_11:10:24",
 "description":"科学上网",
 "home_url":"Module_helloworld.asp",
-"md5":"9dd96f0d6ba09ebed155441a8c1ae8c6",
+"md5":"968642aba8bcf752a39a1facf41a9bf5",
 "name":"helloworld",
 "tar_url": "https://raw.githubusercontent.com/zusterben/plan_b/master/bin/mipsle/helloworld.tar.gz", 
 "title":"科学上网",
