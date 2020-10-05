@@ -20,8 +20,6 @@ IFIP_DNS1=$(echo $ISP_DNS1 | grep -E "([0-9]{1,3}[\.]){3}[0-9]{1,3}|:")
 IFIP_DNS2=$(echo $ISP_DNS2 | grep -E "([0-9]{1,3}[\.]){3}[0-9]{1,3}|:")
 lan_ipaddr=$(nvram get lan_ipaddr)
 ip_prefix_hex=$(nvram get lan_ipaddr | awk -F "." '{printf ("0x%02x", $1)} {printf ("%02x", $2)} {printf ("%02x", $3)} {printf ("00/0xffffff00\n")}')
-WAN_ACTION=$(ps | grep /jffs/scripts/wan-start | grep -v grep)
-NAT_ACTION=$(ps | grep /jffs/scripts/nat-start | grep -v grep)
 ARG_OBFS=""
 OUTBOUNDS="[]"
 KVER=$(uname -r)
@@ -638,6 +636,7 @@ create_dnsmasq_conf() {
 	rm -rf /etc/dnsmasq.user/wblist.conf
 	rm -rf /etc/dnsmasq.user/cdn.conf
 	rm -rf /etc/dnsmasq.user/gfwlist.conf
+	rm -rf /etc/dnsmasq.user/netflix_forward.conf
 	rm -rf /jffs/scripts/dnsmasq.postconf
 	rm -rf /tmp/smartdns.conf
 
@@ -758,7 +757,14 @@ create_dnsmasq_conf() {
 		cat /jffs/softcenter/ss/rules/gfwlist.conf|sed "s/127.0.0.1#$DNSF_PORT/$ss_direct_user/g" > /tmp/gfwlist.conf
 		ln -sf /tmp/gfwlist.conf /etc/dnsmasq.user/gfwlist.conf
 	fi
-
+	if [ "$ss_basic_netflix_enable" == "1" ];then
+		if [ -f "/etc/dnsmasq.user/gfwlist.conf" ]; then
+			for line in $(cat /jffs/softcenter/ss/rules/netflix.list); do sed -i "/$line/d" /etc/dnsmasq.user/gfwlist.conf; done
+			for line in $(cat /jffs/softcenter/ss/rules/netflix.list); do sed -i "/$line/d" /etc/dnsmasq.user/gfwlist.conf; done
+		fi
+		awk '!/^$/&&!/^#/{printf("ipset=/%s/'"netflix"'\n",$0)}' /jffs/softcenter/ss/rules/netflix.list >/etc/dnsmasq.user/netflix_forward.conf
+		awk '!/^$/&&!/^#/{printf("server=/%s/'"127.0.0.1#5555"'\n",$0)}' /jffs/softcenter/ss/rules/netflix.list >>/etc/dnsmasq.user/netflix_forward.conf
+	fi
 	#echo_date 创建dnsmasq.postconf软连接到/jffs/scripts/文件夹.
 	[ ! -L "/jffs/scripts/dnsmasq.postconf" ] && ln -sf /jffs/softcenter/ss/rules/dnsmasq.postconf /jffs/scripts/dnsmasq.postconf
 }
@@ -1731,6 +1737,7 @@ flush_nat() {
 	iptables -t nat -F SHADOWSOCKS_GAM >/dev/null 2>&1 && iptables -t nat -X SHADOWSOCKS_GAM >/dev/null 2>&1
 	iptables -t nat -F SHADOWSOCKS_GLO >/dev/null 2>&1 && iptables -t nat -X SHADOWSOCKS_GLO >/dev/null 2>&1
 	iptables -t nat -F SHADOWSOCKS_HOM >/dev/null 2>&1 && iptables -t nat -X SHADOWSOCKS_HOM >/dev/null 2>&1
+	iptables -t nat -F SHADOWSOCKS_NETFLIX >/dev/null 2>&1 && iptables -t nat -X SHADOWSOCKS_NETFLIX >/dev/null 2>&1
 
 	mangle_indexs=$(iptables -nvL PREROUTING -t mangle | sed 1,2d | sed -n '/SHADOWSOCKS/=' | sort -r)
 	for mangle_index in $mangle_indexs; do
@@ -1752,6 +1759,7 @@ flush_nat() {
 	ipset -F white_list >/dev/null 2>&1 && ipset -X white_list >/dev/null 2>&1
 	ipset -F black_list >/dev/null 2>&1 && ipset -X black_list >/dev/null 2>&1
 	ipset -F gfwlist >/dev/null 2>&1 && ipset -X gfwlist >/dev/null 2>&1
+	ipset -F netflix >/dev/null 2>&1 && ipset -X netflix >/dev/null 2>&1
 	ipset -F router >/dev/null 2>&1 && ipset -X router >/dev/null 2>&1
 	#remove_redundant_rule
 	ip_rule_exist=$(ip rule show | grep "lookup 310" | grep -c 310)
@@ -1776,7 +1784,11 @@ create_ipset(){
 	ipset -! create gfwlist nethash && ipset flush gfwlist
 	ipset -! create router nethash && ipset flush router
 	ipset -! create chnroute nethash && ipset flush chnroute
+	ipset -! create netflix nethash && ipset flush netflix
 	sed -e "s/^/add chnroute &/g" /jffs/softcenter/ss/rules/chnroute.txt | awk '{print $0} END{print "COMMIT"}' | ipset -R
+	if [ "$ss_basic_netflix_enalbe" == "1" ]; then
+		for ip in $(cat ${NETFLIX_LIST:=/dev/null} 2>/dev/null); do ipset -! add netflix $ip; done
+	fi
 	#for router
 	ipset add router 172.217.4.131
 }
@@ -1835,6 +1847,9 @@ get_action_chain() {
 		;;
 	6)
 		echo "SHADOWSOCKS_HOM"
+		;;
+	7)
+		echo "SHADOWSOCKS_NETFLIX"
 		;;
 	esac
 }
@@ -1974,7 +1989,8 @@ apply_nat_rules() {
 	iptables -t nat -A SHADOWSOCKS_HOM -p tcp -m set --match-set black_list dst -j REDIRECT --to-ports 3333
 	# cidr黑名单控制-chnroute（走ss）
 	iptables -t nat -A SHADOWSOCKS_HOM -p tcp -m set --match-set chnroute dst -j REDIRECT --to-ports 3333
-
+	iptables -t nat -N SHADOWSOCKS_NETFLIX
+	iptables -t nat -A SHADOWSOCKS_NETFLIX -p tcp -m set --match-set netflix dst -j REDIRECT --to-ports 4321
 	[ "$mangle" == "1" ] && load_tproxy
 	[ "$mangle" == "1" ] && ip rule add fwmark 0x07 table 310
 	[ "$mangle" == "1" ] && ip route add local 0.0.0.0/0 dev lo table 310
