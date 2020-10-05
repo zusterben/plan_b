@@ -2,8 +2,8 @@
 
 MODULE=helloworld
 VERSION=0.0.1
-TITLE=科学上网
-DESCRIPTION=科学上网
+TITLE="ShadowSocksR Plus"
+DESCRIPTION="ShadowSocksR Plus"
 HOME_URL=Module_helloworld.asp
 arch_list="mips arm armng arm64 mipsle"
 

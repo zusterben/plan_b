@@ -9,6 +9,8 @@ LOG_FILE=/tmp/upload/ss_log.txt
 CONFIG_FILE=/jffs/softcenter/ss/ss.json
 V2RAY_CONFIG_FILE_TMP="/tmp/v2ray_tmp.json"
 V2RAY_CONFIG_FILE="/jffs/softcenter/ss/v2ray.json"
+CONFIG_SOCK5_FILE=/jffs/softcenter/ss/ss_s.json
+CONFIG_NETFLIX_FILE=/jffs/softcenter/ss/ss_n.json
 LOCK_FILE=/var/lock/koolss.lock
 DNSF_PORT=7913
 DNSC_PORT=53
@@ -380,6 +382,30 @@ create_ss_json(){
 			    "method":"$ss_basic_method"
 			}
 		EOF
+		if [ "$ss_basic_netflix" == "1" ]; then
+			cat >$CONFIG_NETFLIX_FILE <<-EOF
+				{
+				    "server":"$ss_basic_server",
+				    "server_port":$ss_basic_port,
+				    "local_address":"0.0.0.0",
+				    "local_port":4321,
+				    "password":"$ss_basic_password",
+				    "timeout":600,
+				    "method":"$ss_basic_method"
+				}
+			EOF
+			cat >$CONFIG_SOCK5_FILE <<-EOF
+				{
+				    "server":"$ss_basic_server",
+				    "server_port":$ss_basic_port,
+				    "local_address":"0.0.0.0",
+				    "local_port":1088,
+				    "password":"$ss_basic_password",
+				    "timeout":600,
+				    "method":"$ss_basic_method"
+				}
+			EOF
+		fi
 	elif [ "$ss_basic_type" == "1" ]; then
 		cat >$CONFIG_FILE <<-EOF
 			{
@@ -396,7 +422,40 @@ create_ss_json(){
 			    "method":"$ss_basic_method"
 			}
 		EOF
+		if [ "$ss_basic_netflix" == "1" ]; then
+			cat >$CONFIG_NETFLIX_FILE <<-EOF
+				{
+			    "server":"$ss_basic_server",
+			    "server_port":$ss_basic_port,
+			    "local_address":"0.0.0.0",
+			    "local_port":4321,
+			    "password":"$ss_basic_password",
+			    "timeout":600,
+			    "protocol":"$ss_basic_ssr_protocol",
+			    "protocol_param":"$ss_basic_ssr_protocol_param",
+			    "obfs":"$ss_basic_ssr_obfs",
+			    "obfs_param":"$ss_basic_ssr_obfs_param",
+			    "method":"$ss_basic_method"
+				}
+			EOF
+			cat >$CONFIG_SOCK5_FILE <<-EOF
+				{
+			    "server":"$ss_basic_server",
+			    "server_port":$ss_basic_port,
+			    "local_address":"0.0.0.0",
+			    "local_port":1088,
+			    "password":"$ss_basic_password",
+			    "timeout":600,
+			    "protocol":"$ss_basic_ssr_protocol",
+			    "protocol_param":"$ss_basic_ssr_protocol_param",
+			    "obfs":"$ss_basic_ssr_obfs",
+			    "obfs_param":"$ss_basic_ssr_obfs_param",
+			    "method":"$ss_basic_method"
+				}
+			EOF
+		fi
 	fi
+
 }
 
 get_dns_name() {
@@ -1230,6 +1289,357 @@ create_v2ray_json(){
 	fi
 }
 
+create_v2ray_netflix(){
+	V2RAY_CONFIG_FILE="v2-ssr-netflix.json"
+	echo_date "创建$(__get_type_abbr_name)配置文件到$V2RAY_CONFIG_FILE"
+	local tmp v2ray_server_ip
+	rm -rf "$V2RAY_CONFIG_FILE_TMP"
+	rm -rf "$V2RAY_CONFIG_FILE"
+	if [ "$ss_basic_v2ray_use_json" == "0" ]; then
+		echo_date 生成V2Ray配置文件...
+		local kcp="null"
+		local tcp="null"
+		local ws="null"
+		local h2="null"
+		local tls="null"
+		local xtls="null"
+		local vless_flow=""
+
+		# tcp和kcp下tlsSettings为null，ws和h2下tlsSettings
+		[ -z "$ss_basic_v2ray_mux_concurrency" ] && local ss_basic_v2ray_mux_concurrency=8
+		[ "$ss_basic_v2ray_network_security" == "none" ] && local ss_basic_v2ray_network_security=""
+		#if [ "$ss_basic_v2ray_network" == "ws" -o "$ss_basic_v2ray_network" == "h2" ];then
+		case "$ss_basic_v2ray_network_security" in
+		tls)
+			local tls="{
+					\"allowInsecure\": true,
+					\"serverName\": \"$ss_basic_v2ray_network_tlshost\"
+					}"
+			;;
+		xtls)
+			local xtls="{
+					\"serverName\": \"$ss_basic_v2ray_network_tlshost\"
+					}"
+			local vless_flow="\"flow\": \"xtls-rprx-origin\","
+			;;
+		*)
+			local tls="null"
+			local xtls="null"
+			;;
+		esac
+		#fi
+		# incase multi-domain input
+		if [ "$(echo $ss_basic_v2ray_network_host | grep ",")" ]; then
+			ss_basic_v2ray_network_host=$(echo $ss_basic_v2ray_network_host | sed 's/,/", "/g')
+		fi
+
+		case "$ss_basic_v2ray_network" in
+		tcp)
+			if [ "$ss_basic_v2ray_headtype_tcp" == "http" ]; then
+				local tcp="{
+					\"connectionReuse\": true,
+					\"header\": {
+					\"type\": \"http\",
+					\"request\": {
+					\"version\": \"1.1\",
+					\"method\": \"GET\",
+					\"path\": [\"/\"],
+					\"headers\": {
+					\"Host\": [\"$ss_basic_v2ray_network_host\"],
+					\"User-Agent\": [\"Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.75 Safari/537.36\",\"Mozilla/5.0 (iPhone; CPU iPhone OS 10_0_2 like Mac OS X) AppleWebKit/601.1 (KHTML, like Gecko) CriOS/53.0.2785.109 Mobile/14A456 Safari/601.1.46\"],
+					\"Accept-Encoding\": [\"gzip, deflate\"],
+					\"Connection\": [\"keep-alive\"],
+					\"Pragma\": \"no-cache\"
+					}
+					},
+					\"response\": {
+					\"version\": \"1.1\",
+					\"status\": \"200\",
+					\"reason\": \"OK\",
+					\"headers\": {
+					\"Content-Type\": [\"application/octet-stream\",\"video/mpeg\"],
+					\"Transfer-Encoding\": [\"chunked\"],
+					\"Connection\": [\"keep-alive\"],
+					\"Pragma\": \"no-cache\"
+					}
+					}
+					}
+					}"
+			else
+				local tcp="null"
+			fi
+			;;
+		kcp)
+			local kcp="{
+				\"mtu\": 1350,
+				\"tti\": 50,
+				\"uplinkCapacity\": 12,
+				\"downlinkCapacity\": 100,
+				\"congestion\": false,
+				\"readBufferSize\": 2,
+				\"writeBufferSize\": 2,
+				\"header\": {
+				\"type\": \"$ss_basic_v2ray_headtype_kcp\",
+				\"request\": null,
+				\"response\": null
+				}
+				}"
+			;;
+		ws)
+			local ws="{
+				\"connectionReuse\": true,
+				\"path\": $(get_path $ss_basic_v2ray_network_path),
+				\"headers\": $(get_ws_header $ss_basic_v2ray_network_host)
+				}"
+			;;
+		h2)
+			local h2="{
+				\"path\": $(get_path $ss_basic_v2ray_network_path),
+				\"host\": $(get_h2_host $ss_basic_v2ray_network_host)
+				}"
+			;;
+		esac
+		# log area
+		cat >"$V2RAY_CONFIG_FILE_TMP" <<-EOF
+			{
+			"log": {
+				"access": "/dev/null",
+				"error": "/tmp/v2ray_log.log",
+				"loglevel": "error"
+			},
+		EOF
+			echo_date 配置v2ray dns，用于dns解析...
+			cat >>"$V2RAY_CONFIG_FILE_TMP" <<-EOF
+				"inbounds": [
+					{
+					"protocol": "socks",
+					"port": 1088,
+					"settings": {
+						"auth": "noauth",
+						"udp": true
+						}
+					},
+					{
+					"listen": "0.0.0.0",
+					"port": 4321,
+					"protocol": "dokodemo-door",
+					"settings": {
+						"network": "tcp,udp",
+						"followRedirect": true
+						}
+					}
+				],
+			EOF
+		# outbounds area
+		if [ "$ss_basic_v2ray_vmessvless" == "vmess" ]; then
+		cat >>"$V2RAY_CONFIG_FILE_TMP" <<-EOF
+			"outbounds": [
+				{
+					"tag": "agentout",
+					"protocol": "vmess",
+					"settings": {
+						"vnext": [
+							{
+								"address": "$ss_basic_server_orig",
+								"port": $ss_basic_port,
+								"users": [
+									{
+										"id": "$ss_basic_v2ray_uuid",
+										"alterId": $ss_basic_v2ray_alterid,
+										"security": "$ss_basic_v2ray_security"
+									}
+								]
+							}
+						],
+						"servers": null
+					},
+					"streamSettings": {
+						"network": "$ss_basic_v2ray_network",
+						"security": "$ss_basic_v2ray_network_security",
+						"tlsSettings": $tls,
+						"tcpSettings": $tcp,
+						"kcpSettings": $kcp,
+						"wsSettings": $ws,
+						"httpSettings": $h2
+					},
+					"mux": {
+						"enabled": $(get_function_switch $ss_basic_v2ray_mux_enable),
+						"concurrency": $ss_basic_v2ray_mux_concurrency
+					}
+				}
+			]
+			}
+		EOF
+		else
+		  #vless
+		  cat >>"$V2RAY_CONFIG_FILE_TMP" <<-EOF
+				"outbounds": [
+				  {
+					"tag": "agentout",
+					"protocol": "vless",
+					"settings": {
+					  "vnext": [
+						{
+						  "address": "$ss_basic_server_orig",
+						  "port": $ss_basic_port,
+						  "users": [
+							{
+							  "id": "$ss_basic_v2ray_uuid",
+							  "level": 1,
+							  $vless_flow
+							  "encryption": "none"
+							}
+						  ]
+						}
+					  ],
+					  "servers": null
+					},
+					"streamSettings": {
+					  "network": "$ss_basic_v2ray_network",
+					  "security": "$ss_basic_v2ray_network_security",
+					  "tlsSettings": $tls,
+					  "xtlsSettings": $xtls,
+					  "tcpSettings": $tcp,
+					  "kcpSettings": $kcp,
+					  "wsSettings": $ws,
+					  "httpSettings": $h2
+					},
+					"mux": {
+					  "enabled": $(get_function_switch $ss_basic_v2ray_mux_enable),
+					  "concurrency": $ss_basic_v2ray_mux_concurrency
+					}
+				  }
+				]
+				}
+			EOF
+		fi
+		echo_date 解析V2Ray配置文件...
+		cat "$V2RAY_CONFIG_FILE_TMP" | jq --tab . >"$V2RAY_CONFIG_FILE"
+		echo_date V2Ray配置文件写入成功到"$V2RAY_CONFIG_FILE"
+	elif [ "$ss_basic_v2ray_use_json" == "1" ]; then
+		echo_date 使用自定义的v2ray json配置文件...
+		echo "$ss_basic_v2ray_json" | base64_decode >"$V2RAY_CONFIG_FILE_TMP"
+		local OB=$(cat "$V2RAY_CONFIG_FILE_TMP" | jq .outbound)
+		local OBS=$(cat "$V2RAY_CONFIG_FILE_TMP" | jq .outbounds)
+
+		# 兼容旧格式：outbound
+		if [ "$OB" != "null" ]; then
+			OUTBOUNDS=$(cat "$V2RAY_CONFIG_FILE_TMP" | jq .outbound)
+		fi
+		
+		# 新格式：outbound[]
+		if [ "$OBS" != "null" ]; then
+			OUTBOUNDS=$(cat "$V2RAY_CONFIG_FILE_TMP" | jq .outbounds[])
+		fi
+			local TEMPLATE="{
+								\"log\": {
+									\"access\": \"/dev/null\",
+									\"error\": \"/tmp/v2ray_log.log\",
+									\"loglevel\": \"error\"
+								},
+								\"inbounds\": [
+									{
+										\"protocol\": \"socks\", 
+										\"port\": 1088,
+										\"settings\": {
+											\"auth\": \"noauth\",
+											\"udp\": true
+										}
+									},
+									{
+										\"listen\": \"0.0.0.0\",
+										\"port\": 5555,
+										\"protocol\": \"dokodemo-door\",
+										\"settings\": {
+											\"network\": \"tcp,udp\",
+											\"followRedirect\": true
+										}
+									}
+								]
+							}"
+
+		echo_date 解析V2Ray配置文件...
+		echo $TEMPLATE | jq --argjson args "$OUTBOUNDS" '. + {outbounds: [$args]}' >"$V2RAY_CONFIG_FILE"
+		echo_date V2Ray配置文件写入成功到"$V2RAY_CONFIG_FILE"
+
+		# 检测用户json的服务器ip地址
+		v2ray_protocal=$(cat "$V2RAY_CONFIG_FILE" | jq -r .outbounds[0].protocol)
+		case $v2ray_protocal in
+		vmess)
+			v2ray_server=$(cat "$V2RAY_CONFIG_FILE" | jq -r .outbounds[0].settings.vnext[0].address)
+			;;
+		socks)
+			v2ray_server=$(cat "$V2RAY_CONFIG_FILE" | jq -r .outbounds[0].settings.servers[0].address)
+			;;
+		shadowsocks)
+			v2ray_server=$(cat "$V2RAY_CONFIG_FILE" | jq -r .outbounds[0].settings.servers[0].address)
+			;;
+		*)
+			v2ray_server=""
+			;;
+		esac
+
+		if [ -n "$v2ray_server" -a "$v2ray_server" != "null" ]; then
+			# 服务器地址强制由用户选择的DNS解析，以免插件还未开始工作而导致解析失败
+			echo "server=/$v2ray_server/$(__get_server_resolver)#$(__get_server_resolver_port)" >/etc/dnsmasq.user/ss_server.conf
+			# 判断服务器域名格式
+			tmp=$(__valid_ip "$v2ray_server")
+			if [ $? == 0 ]; then
+				echo_date "检测到你的json配置的v2ray服务器是：$v2ray_server"
+				ss_basic_server_ip="$v2ray_server"
+			else
+				echo_date "检测到你的json配置的v2ray服务器：【$v2ray_server】不是ip格式！"
+				echo_date "尝试解析v2ray服务器的ip地址，使用DNS：$(__get_server_resolver):$(__get_server_resolver_port)"
+				echo_date "如果此处等待时间较久，建议在【节点域名解析DNS服务器】处更换DNS服务器..."
+				v2ray_server_ip=$(__resolve_ip "$v2ray_server")
+				case $? in
+				0)
+					# server is domain format and success resolved.
+					echo_date "v2ray服务器的ip地址解析成功：$v2ray_server_ip"
+					# 解析并记录一次ip，方便插件触发重启设定工作
+					echo "address=/$v2ray_server/$v2ray_server_ip" >/tmp/ss_host.conf
+					# 去掉此功能，以免ip发生变更导致问题，或者影响域名对应的其它二级域名
+					#ln -sf /tmp/ss_host.conf /tmp/etc/dnsmasq.user/ss_host.conf
+					ss_basic_server_ip="$v2ray_server_ip"
+					;;
+				1)
+					# server is domain format and failed to resolve.
+					unset ss_basic_server_ip
+					echo_date "v2ray服务器的ip地址解析失败!插件将继续运行，域名解析将由v2ray自己进行！"
+					echo_date "请自行将v2ray服务器的ip地址填入IP/CIDR白名单中!"
+					echo_date "为了确保v2ray的正常工作，建议配置ip格式的v2ray服务器地址！"
+					;;
+				2)
+					# server is not ip either domain!
+					echo_date "错误！！检测到json配置内的v2ray服务器既不是ip地址，也不是域名格式！"
+					echo_date "请更正你的错误然后重试！！"
+					close_in_five
+					;;
+				esac
+			fi
+		else
+			echo_date "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+			echo_date "+       没有检测到你的v2ray服务器地址，如果你确定你的配置是正确的        +"
+			echo_date "+   请自行将v2ray服务器的ip地址填入【IP/CIDR】黑名单中，以确保正常使用   +"
+			echo_date "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+		fi
+	fi
+
+	echo_date 测试V2Ray配置文件.....
+	cd /jffs/softcenter/bin
+	result=$(v2ray -test -config="$V2RAY_CONFIG_FILE" | grep "Configuration OK.")
+	if [ -n "$result" ]; then
+		echo_date $result
+		echo_date V2Ray配置文件通过测试!!!
+	else
+		echo_date V2Ray配置文件没有通过测试，请检查设置!!!
+		rm -rf "$V2RAY_CONFIG_FILE_TMP"
+		rm -rf "$V2RAY_CONFIG_FILE"
+		close_in_five
+	fi
+}
+
+
 start_v2ray() {
 	# tfo start
 	if [ "$ss_basic_tfo" == "1" ] && [ "$FASTOPEN" == "1" ]; then
@@ -1756,6 +2166,51 @@ ss_pre_stop() {
 	done
 }
 
+find_bin() {
+	case "$1" in
+	0) ret="/jffs/softcenter/bin/ss-redir" ;;
+	1) ret="/jffs/softcenter/bin/ssr-redir" ;;
+	2) ret="/jffs/softcenter/bin/v2ray/v2ray" ;;
+	3) ret="/jffs/softcenter/bin/trojan" ;;
+	esac
+	echo $ret
+}
+find_bin2() {
+	case "$1" in
+	0) ret="/jffs/softcenter/bin/ss-local" ;;
+	1) ret="/jffs/softcenter/bin/ssr-local" ;;
+	esac
+	echo $ret
+}
+
+start_netflix() {
+	if [ "$ss_basic_netflix" == "1" ]; then
+		local bin=$(find_bin $ss_basic_type)
+		case "$ss_basic_type" in
+		0 | 1)
+			local bin2=$(find_bin2 $type)
+			$bin -c /jffs/softcenter/ss/ss_n.json -f /var/run/ssr-netflix.pid >/dev/null 2>&1
+			$bin2 -c /jffs/softcenter/ss/ss_s.json -f /var/run/ssr-socksdns.pid >/dev/null 2>&1
+			dns2socks 127.0.0.1:1088 8.8.8.8:53 127.0.0.1:5555 -q >/dev/null 2>&1 &
+			;;
+		2)
+			create_v2ray_netflix
+			$bin -config /jffs/softcenter/ss/v2-ssr-netflix.json >/dev/null 2>&1 &
+			dns2socks 127.0.0.1:1088 8.8.8.8:53 127.0.0.1:5555 -q >/dev/null 2>&1 &
+			;;
+		3)
+			create_trojan_netflix nat 4321
+			#lua /usr/share/shadowsocksr/gentrojanconfig.lua $NETFLIX_SERVER nat 4321 >/jffs/softcenter/ss/trojan-ssr-netflix.json
+			$bin --config /jffs/softcenter/ss/trojan-ssr-netflix.json >/dev/null 2>&1 &
+			create_trojan_netflix client 1088
+			#lua /usr/share/shadowsocksr/gentrojanconfig.lua $NETFLIX_SERVER client 1088 >/jffs/softcenter/ss/trojan-ssr-socksdns.json
+			$bin --config /jffs/softcenter/ss/trojan-ssr-socksdns.json >/dev/null 2>&1 &
+			dns2socks 127.0.0.1:1088 8.8.8.8:53 127.0.0.1:5555 -q >/dev/null 2>&1 &
+			;;
+		esac
+	fi
+}
+
 detect(){
 	
 	# 检测是否在lan设置中是否自定义过dns,如果有给干掉
@@ -1859,6 +2314,7 @@ apply_ss() {
 	[ "$ss_basic_type" == "0" ] || [ "$ss_basic_type" == "1" ] && start_ss_redir
 	[ "$ss_basic_type" == "2" ] && start_v2ray
 	[ "$ss_basic_type" != "2" ] && start_kcp
+	start_netflix
 	start_dns
 	#===load nat start===
 	load_nat
