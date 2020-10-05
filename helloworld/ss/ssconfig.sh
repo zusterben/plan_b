@@ -382,7 +382,7 @@ create_ss_json(){
 			    "method":"$ss_basic_method"
 			}
 		EOF
-		if [ "$ss_basic_netflix" == "1" ]; then
+		if [ "$ss_basic_netflix_enable" == "1" ]; then
 			cat >$CONFIG_NETFLIX_FILE <<-EOF
 				{
 				    "server":"$ss_basic_server",
@@ -422,7 +422,7 @@ create_ss_json(){
 			    "method":"$ss_basic_method"
 			}
 		EOF
-		if [ "$ss_basic_netflix" == "1" ]; then
+		if [ "$ss_basic_netflix_enable" == "1" ]; then
 			cat >$CONFIG_NETFLIX_FILE <<-EOF
 				{
 			    "server":"$ss_basic_server",
@@ -2170,7 +2170,7 @@ find_bin() {
 	case "$1" in
 	0) ret="/jffs/softcenter/bin/ss-redir" ;;
 	1) ret="/jffs/softcenter/bin/ssr-redir" ;;
-	2) ret="/jffs/softcenter/bin/v2ray/v2ray" ;;
+	2) ret="/jffs/softcenter/bin/v2ray" ;;
 	3) ret="/jffs/softcenter/bin/trojan" ;;
 	esac
 	echo $ret
@@ -2184,7 +2184,7 @@ find_bin2() {
 }
 
 start_netflix() {
-	if [ "$ss_basic_netflix" == "1" ]; then
+	if [ "$ss_basic_netflix_enable" == "1" ]; then
 		local bin=$(find_bin $ss_basic_type)
 		case "$ss_basic_type" in
 		0 | 1)

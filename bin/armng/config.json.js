@@ -1,10 +1,10 @@
 {
-"build_date":"2020-10-05_10:14:35",
-"description":"科学上网",
+"build_date":"2020-10-05_17:05:52",
+"description":"ShadowSocksR Plus",
 "home_url":"Module_helloworld.asp",
-"md5":"dcf8600ccbe4c1dd163109e6132d1259",
+"md5":"4a59c99dcfa6f99588eed1f04c77e458",
 "name":"helloworld",
 "tar_url": "https://raw.githubusercontent.com/zusterben/plan_b/master/bin/armng/helloworld.tar.gz", 
-"title":"科学上网",
+"title":"ShadowSocksR Plus",
 "version":"0.0.1"
 }
