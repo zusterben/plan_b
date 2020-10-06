@@ -183,12 +183,11 @@ function pop_help() {
 			moveType: 1,
 			content: '<div style="padding: 50px; line-height: 22px; background-color: #393D49; color: #fff; font-weight: 300;">\
 				<b><% nvram_get("productid"); %> - 科学上网插件 - ' + db_ss["ss_basic_version_local"] + '</b><br><br>\
-				本插件是支持<a target="_blank" href="https://github.com/shadowsocks/shadowsocks-libev" ><u>SS</u></a>、<a target="_blank" href="https://github.com/shadowsocksrr/shadowsocksr-libev"><u>SSR</u></a>、<a target="_blank" href="http://firmware.koolshare.cn/binary/koolgame"><u>KoolGame</u></a>、<a target="_blank" href="https://github.com/v2ray/v2ray-core"><u>V2Ray</u></a>四种客户端的科学上网、游戏加速工具。<br>\
-				本插件仅支持Asuswrt/Merlin hnd platform 4.1.27内核的固件，请不要用于其它固件安装。<br>\
+				本插件是支持<a target="_blank" href="https://github.com/shadowsocks/shadowsocks-libev" ><u>SS</u></a>、<a target="_blank" href="https://github.com/shadowsocksrr/shadowsocksr-libev"><u>SSR</u></a>、<a target="_blank" href="https://github.com/v2ray/v2ray-core"><u>V2Ray</u></a>客户端的科学上网、游戏加速工具。<br>\
+				本插件仅支持Asuswrt/MerlinR固件，请不要用于其它固件安装。<br>\
 				使用本插件有任何问题，可以前往<a style="color:#e7bd16" target="_blank" href="https://github.com/zusterben/plan_b/issues"><u>github的issue页面</u></a>反馈~<br><br>\
 				● SS/SSR一键脚本：<a style="color:#e7bd16" target="_blank" href="https://github.com/onekeyshell/kcptun_for_ss_ssr/tree/master"><u>一键安装KCPTUN for SS/SSR on Linux</u></a><br>\
 				● V2Ray一键脚本：<a style="color:#e7bd16" target="_blank" href="https://233blog.com/post/17/"><u>V2Ray 搭建和优化详细图文教程</u></a><br>\
-				● 插件交流：<a style="color:#e7bd16" target="_blank" href="https://t.me/joinchat/AAAAAEC7pgV9vPdPcJ4dJw"><u>加入telegram群组</u></a><br><br>\
 				我们的征途是星辰大海 ^_^</div>'
 		});
 	});
@@ -310,7 +309,7 @@ function getNowFormatDate(s) {
 	console.log(s, currentdate);
 }
 function menu_hook() {
-	tabtitle[tabtitle.length - 1] = new Array("", "科学上网设置", "Socks5设置", "__INHERIT__");
+	tabtitle[tabtitle.length - 1] = new Array("", "ShadowSocksR Plus设置", "Socks5设置", "__INHERIT__");
 	tablink[tablink.length - 1] = new Array("", "Module_helloworld.asp", "Module_helloworld_local.asp", "NULL");
 }
 function versionCompare(v1, v2, options) {
