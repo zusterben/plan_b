@@ -21,22 +21,18 @@ gfw_on=`dbus list ss_acl_mode_|cut -d "=" -f 2 | grep -E "1"`
 chn_on=`dbus list ss_acl_mode_|cut -d "=" -f 2 | grep -E "2|3|4"`
 all_on=`dbus list ss_acl_mode_|cut -d "=" -f 2 | grep -E "5"`
 game_on=`dbus list ss_acl_mode|cut -d "=" -f 2 | grep 3`
-[ -n "$game_on" ] || [ "$ss_basic_mode" == "3" ] && mangle=1
+[ -n "$game_on" ] || [ "$ss_basic_mode" == "3" ] || [ "$ss_basic_netflix_enable" == "1" ] && mangle=1
 ss_basic_password=`echo $ss_basic_password|base64_decode`
 ss_basic_server_orig=$ss_basic_server
 
 [ -z "$ss_basic_type" ] && {
-	if [ -n "$ss_basic_rss_protocol" ];then
+	if [ -n "$ss_basic_ssr_protocol" ];then
 		ss_basic_type="1"
 	else
-		if [ -n "$ss_basic_koolgame_udp" ];then
+		if [ -n "$ss_basic_v2ray_use_json" ];then
 			ss_basic_type="2"
 		else
-			if [ -n "$ss_basic_v2ray_use_json" ];then
-				ss_basic_type="3"
-			else
-				ss_basic_type="0"
-			fi
+			ss_basic_type="0"
 		fi
 	fi
 }

@@ -364,7 +364,7 @@ get_v2ray_remote_config(){
 add_v2ray_servers(){
 	let NODE_INDEX+=1
 	[ -z "$1" ] && dbus set ssconf_basic_group_$NODE_INDEX=$v2ray_group
-	dbus set ssconf_basic_type_$NODE_INDEX=3
+	dbus set ssconf_basic_type_$NODE_INDEX=2
 	dbus set ssconf_basic_v2ray_mux_enable_$NODE_INDEX=0
 	dbus set ssconf_basic_v2ray_use_json_$NODE_INDEX=0
 	dbus set ssconf_basic_v2ray_security_$NODE_INDEX="auto"

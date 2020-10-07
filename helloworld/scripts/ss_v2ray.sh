@@ -188,7 +188,7 @@ case $2 in
 	echo " " > /tmp/upload/ss_log.txt
 	http_response "$1"
 	echo_date "===================================================================" >> /tmp/upload/ss_log.txt
-	echo_date "                v2ray程序更新(Shell by sadog)" >> /tmp/upload/ss_log.txt
+	echo_date "                v2ray程序更新" >> /tmp/upload/ss_log.txt
 	echo_date "===================================================================" >> /tmp/upload/ss_log.txt
 	get_latest_version >> /tmp/upload/ss_log.txt 2>&1
 	echo_date "===================================================================" >> /tmp/upload/ss_log.txt

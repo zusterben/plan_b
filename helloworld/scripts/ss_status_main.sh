@@ -53,24 +53,24 @@ failover_action(){
 	FLAG=$1
 	PING=$2
 	if [ "$ss_failover_s4_1" == "0" ];then
-		[ "$FLAG" == "1" ] && LOGM "$LOGTIME1 fancyss：检测到连续$ss_failover_s1个状态故障，关闭插件！"
-		[ "$FLAG" == "2" ] && LOGM "$LOGTIME1 fancyss：检测到最近$ss_failover_s2_1个状态中，故障次数超过$ss_failover_s2_2个，关闭插件！"
-		[ "$FLAG" == "3" ] && LOGM "$LOGTIME1 fancyss：检测到最近$ss_failover_s3_1个状态平均延迟:$PING超过$ss_failover_s3_2 ms，关闭插件！"
+		[ "$FLAG" == "1" ] && LOGM "$LOGTIME1 helloworld：检测到连续$ss_failover_s1个状态故障，关闭插件！"
+		[ "$FLAG" == "2" ] && LOGM "$LOGTIME1 helloworld：检测到最近$ss_failover_s2_1个状态中，故障次数超过$ss_failover_s2_2个，关闭插件！"
+		[ "$FLAG" == "3" ] && LOGM "$LOGTIME1 helloworld：检测到最近$ss_failover_s3_1个状态平均延迟:$PING超过$ss_failover_s3_2 ms，关闭插件！"
 		dbus set ss_basic_enable="0"
 		# 关闭
 		dbus set ss_heart_beat="1"
 		start-stop-daemon -S -q -b -x /jffs/softcenter/ss/ssconfig.sh -- stop
 	elif [ "$ss_failover_s4_1" == "1" ];then
-		[ "$FLAG" == "1" ] && LOGM "$LOGTIME1 fancyss：检测到连续$ss_failover_s1个状态故障，重启插件！"
-		[ "$FLAG" == "2" ] && LOGM "$LOGTIME1 fancyss：检测到最近$ss_failover_s2_1个状态中，故障次数超过$ss_failover_s2_2个，重启插件！"
-		[ "$FLAG" == "3" ] && LOGM "$LOGTIME1 fancyss：检测到最近$ss_failover_s3_1个状态平均延迟:$PING超过$ss_failover_s3_2 ms，重启插件！"
+		[ "$FLAG" == "1" ] && LOGM "$LOGTIME1 helloworld：检测到连续$ss_failover_s1个状态故障，重启插件！"
+		[ "$FLAG" == "2" ] && LOGM "$LOGTIME1 helloworld：检测到最近$ss_failover_s2_1个状态中，故障次数超过$ss_failover_s2_2个，重启插件！"
+		[ "$FLAG" == "3" ] && LOGM "$LOGTIME1 helloworld：检测到最近$ss_failover_s3_1个状态平均延迟:$PING超过$ss_failover_s3_2 ms，重启插件！"
 		# 重启
 		start-stop-daemon -S -q -b -x /jffs/softcenter/ss/ssconfig.sh -- restart
 	elif [ "$ss_failover_s4_1" == "2" ];then
 		if [ "$ss_failover_s4_2" == "1" ];then
-			[ "$FLAG" == "1" ] && LOGM "$LOGTIME1 fancyss：检测到连续$ss_failover_s1个状态故障，切换到备用节点：[$(dbus get ssconf_basic_name_$ss_failover_s4_3)]！同时把主节点降级为备用节点！"
-			[ "$FLAG" == "2" ] && LOGM "$LOGTIME1 fancyss：检测到最近$ss_failover_s2_1个状态中，故障次数超过$ss_failover_s2_2个，切换到备用节点：[$(dbus get ssconf_basic_name_$ss_failover_s4_3)]！同时把主节点降级为备用节点！"
-			[ "$FLAG" == "3" ] && LOGM "$LOGTIME1 fancyss：检测到最近$ss_failover_s3_1个状态平均延迟:$PING超过$ss_failover_s3_2 ms，切换到备用节点：[$(dbus get ssconf_basic_name_$ss_failover_s4_3)]！同时把主节点降级为备用节点！"
+			[ "$FLAG" == "1" ] && LOGM "$LOGTIME1 helloworld：检测到连续$ss_failover_s1个状态故障，切换到备用节点：[$(dbus get ssconf_basic_name_$ss_failover_s4_3)]！同时把主节点降级为备用节点！"
+			[ "$FLAG" == "2" ] && LOGM "$LOGTIME1 helloworld：检测到最近$ss_failover_s2_1个状态中，故障次数超过$ss_failover_s2_2个，切换到备用节点：[$(dbus get ssconf_basic_name_$ss_failover_s4_3)]！同时把主节点降级为备用节点！"
+			[ "$FLAG" == "3" ] && LOGM "$LOGTIME1 helloworld：检测到最近$ss_failover_s3_1个状态平均延迟:$PING超过$ss_failover_s3_2 ms，切换到备用节点：[$(dbus get ssconf_basic_name_$ss_failover_s4_3)]！同时把主节点降级为备用节点！"
 			# 切换
 			dbus set ssconf_basic_node=$ss_failover_s4_3
 			# 降级
@@ -81,9 +81,9 @@ failover_action(){
 		elif [ "$ss_failover_s4_2" == "2" ];then
 			NEXT_NODE=$(($ssconf_basic_node + 1))
 			MAXT_NODE=$(dbus list ssconf_basic_|grep _name_ | cut -d "=" -f1|cut -d "_" -f4|sort -rn|head -n1)
-			[ "$FLAG" == "1" ] && LOGM "$LOGTIME1 fancyss：检测到连续$ss_failover_s1个状态故障，切换到节点列表的下个节点：[$(dbus get ssconf_basic_name_$NEXT_NODE)]！"
-			[ "$FLAG" == "2" ] && LOGM "$LOGTIME1 fancyss：检测到最近$ss_failover_s2_1个状态中，故障次数超过$ss_failover_s2_2个，切换到节点列表的下个节点：[$(dbus get ssconf_basic_name_$NEXT_NODE)]！"
-			[ "$FLAG" == "3" ] && LOGM "$LOGTIME1 fancyss：检测到最近$ss_failover_s3_1个状态平均延迟:$PING超过$ss_failover_s3_2 ms，切换到节点列表的下个节点：[$(dbus get ssconf_basic_name_$NEXT_NODE)]！"
+			[ "$FLAG" == "1" ] && LOGM "$LOGTIME1 helloworld：检测到连续$ss_failover_s1个状态故障，切换到节点列表的下个节点：[$(dbus get ssconf_basic_name_$NEXT_NODE)]！"
+			[ "$FLAG" == "2" ] && LOGM "$LOGTIME1 helloworld：检测到最近$ss_failover_s2_1个状态中，故障次数超过$ss_failover_s2_2个，切换到节点列表的下个节点：[$(dbus get ssconf_basic_name_$NEXT_NODE)]！"
+			[ "$FLAG" == "3" ] && LOGM "$LOGTIME1 helloworld：检测到最近$ss_failover_s3_1个状态平均延迟:$PING超过$ss_failover_s3_2 ms，切换到节点列表的下个节点：[$(dbus get ssconf_basic_name_$NEXT_NODE)]！"
 			if [ "$MAXT_NODE" == "1" ];then
 				LOGM "$LOGTIME1 fancyss：检测到你只有一个节点！无法切换到下一个节点！只好关闭插件了！"
 				dbus set ss_basic_enable="0"
@@ -101,13 +101,13 @@ failover_action(){
 
 failover_check_1(){
 	local LINES=$(($ss_failover_s1 + 3))
-	local START_MARK=$(cat "$LOGFILE_F" | sed '/fancyss/d' | tail -n "$LINES" | grep "===")
+	local START_MARK=$(cat "$LOGFILE_F" | sed '/helloworld/d' | tail -n "$LINES" | grep "===")
 	if [ -n "$START_MARK" ];then
 		#echo "$LOGTIME1 fancyss：1-检测到前$LINES行刚提交，先不检测！"
 		return
 	fi
 	
-	local OK_MARK=$(cat "$LOGFILE_F" | sed '/fancyss/d' | tail -n "$ss_failover_s1" | grep -c "200 OK")
+	local OK_MARK=$(cat "$LOGFILE_F" | sed '/helloworld/d' | tail -n "$ss_failover_s1" | grep -c "200 OK")
 	if [ "$OK_MARK" == "0" ];then
 		failover_action 1
 	fi
@@ -115,13 +115,13 @@ failover_check_1(){
 
 failover_check_2(){
 	local LINES=$(($ss_failover_s2_1 + 3))
-	local START_MARK=$(cat "$LOGFILE_F" | sed '/fancyss/d' | tail -n "$LINES" | grep "===")
+	local START_MARK=$(cat "$LOGFILE_F" | sed '/helloworld/d' | tail -n "$LINES" | grep "===")
 	if [ -n "$START_MARK" ];then
 		#echo "$LOGTIME1 fancyss：2-检测到前$LINES行刚提交，先不检测！"
 		return
 	fi
 
-	local OK_MARK=$(cat "$LOGFILE_F" | sed '/fancyss/d' | tail -n "$ss_failover_s2_1" | grep -vc "200 OK")
+	local OK_MARK=$(cat "$LOGFILE_F" | sed '/helloworld/d' | tail -n "$ss_failover_s2_1" | grep -vc "200 OK")
 	if [ "$OK_MARK" -gt "$ss_failover_s2_2" ];then
 		failover_action 2
 	fi
@@ -129,13 +129,13 @@ failover_check_2(){
 
 failover_check_3(){
 	local LINES=$(($ss_failover_s3_1 + 3))
-	local START_MARK=$(cat "$LOGFILE_F" | sed '/fancyss/d' | tail -n "$LINES" | grep "===")
+	local START_MARK=$(cat "$LOGFILE_F" | sed '/helloworld/d' | tail -n "$LINES" | grep "===")
 	if [ -n "$START_MARK" ];then
 		#echo "$LOGTIME1 fancyss：3-检测到前$LINES行刚提交，先不检测！"
 		return
 	fi
 
-	local OK_MARK=$(cat "$LOGFILE_F" | sed '/fancyss/d' | tail -n "$ss_failover_s3_1" | grep -E "200 OK" | grep -oe time=[0-9]* | sed 's/time=//g' | awk '{sum+=$1} END {print sum/NR}' | awk '{printf "%.0f\n",$1}')
+	local OK_MARK=$(cat "$LOGFILE_F" | sed '/helloworld/d' | tail -n "$ss_failover_s3_1" | grep -E "200 OK" | grep -oe time=[0-9]* | sed 's/time=//g' | awk '{sum+=$1} END {print sum/NR}' | awk '{printf "%.0f\n",$1}')
 	#echo "$LOGTIME1 fancyss：前15次状态平均延迟：$OK_MARK ！"
 	if [ "$OK_MARK" -gt "$ss_failover_s3_2" ];then
 		failover_action 3 "$OK_MARK"
@@ -146,7 +146,7 @@ heath_check(){
 	LOGTIME1=$(TZ=UTC-8 date -R "+%m-%d %H:%M:%S")
 	
 	[ "$ss_failover_enable" != "1" ] && return
-	[ "$COUNT" -eq "2" ] && echo "$LOGTIME1 fancyss：跳过刚提交后的2个状态，从此处开始的状态用于故障检测"
+	[ "$COUNT" -eq "2" ] && echo "$LOGTIME1 helloworld：跳过刚提交后的2个状态，从此处开始的状态用于故障检测"
 	[ "$COUNT" -le "2" ] && return
 
 	[ "$ss_failover_c1" == "1" ] && failover_check_1

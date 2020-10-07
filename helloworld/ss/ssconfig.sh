@@ -537,6 +537,7 @@ start_dns() {
 			purge_cache=off;
 			}
 		EOF
+		chmod 644 /etc/pdnsd.conf
 		/jffs/softcenter/bin/pdnsd -c /etc/pdnsd.conf >/dev/null 2>&1 &
 	fi
 
@@ -1787,7 +1788,7 @@ create_ipset(){
 	ipset -! create netflix nethash && ipset flush netflix
 	sed -e "s/^/add chnroute &/g" /jffs/softcenter/ss/rules/chnroute.txt | awk '{print $0} END{print "COMMIT"}' | ipset -R
 	if [ "$ss_basic_netflix_enalbe" == "1" ]; then
-		for ip in $(cat ${NETFLIX_LIST:=/dev/null} 2>/dev/null); do ipset -! add netflix $ip; done
+		for ip in $(cat /jffs/softcenter/ss/rules/netflixip.list); do ipset -! add netflix $ip; done
 	fi
 	#for router
 	ipset add router 172.217.4.131
@@ -1796,7 +1797,7 @@ create_ipset(){
 add_white_black_ip() {
 	# black ip/cidr
 	if [ "$ss_basic_mode" != "6" ]; then
-		ip_tg="149.154.0.0/16 91.108.4.0/22 91.108.56.0/24 109.239.140.0/24 67.198.55.0/24"
+		ip_tg="149.154.0.0/16 91.108.4.0/22 91.108.56.0/24 109.239.140.0/24 67.198.55.0/24 8.8.8.8"
 		for ip in $ip_tg; do
 			ipset -! add black_list $ip >/dev/null 2>&1
 		done
@@ -1968,6 +1969,7 @@ apply_nat_rules() {
 	iptables -t nat -A SHADOWSOCKS_GFW -p tcp -m set --match-set black_list dst -j REDIRECT --to-ports 3333
 	# IP黑名单控制-gfwlist（走ss）
 	iptables -t nat -A SHADOWSOCKS_GFW -p tcp -m set --match-set gfwlist dst -j REDIRECT --to-ports 3333
+	[ "$ss_basic_netflix_enable" == "1" ] && iptables -t nat -A SHADOWSOCKS_GFW -p tcp -m set --match-set netflix dst -j REDIRECT --to-ports 4321
 	#-----------------------FOR CHNMODE---------------------
 	# 创建大陆白名单模式nat rule
 	iptables -t nat -N SHADOWSOCKS_CHN
@@ -1975,6 +1977,7 @@ apply_nat_rules() {
 	iptables -t nat -A SHADOWSOCKS_CHN -p tcp -m set --match-set black_list dst -j REDIRECT --to-ports 3333
 	# cidr黑名单控制-chnroute（走ss）
 	iptables -t nat -A SHADOWSOCKS_CHN -p tcp -m set ! --match-set chnroute dst -j REDIRECT --to-ports 3333
+	[ "$ss_basic_netflix_enable" == "1" ] && iptables -t nat -A SHADOWSOCKS_CHN -p tcp -m set --match-set netflix dst -j REDIRECT --to-ports 4321
 	#-----------------------FOR GAMEMODE---------------------
 	# 创建游戏模式nat rule
 	iptables -t nat -N SHADOWSOCKS_GAM
@@ -1982,6 +1985,7 @@ apply_nat_rules() {
 	iptables -t nat -A SHADOWSOCKS_GAM -p tcp -m set --match-set black_list dst -j REDIRECT --to-ports 3333
 	# cidr黑名单控制-chnroute（走ss）
 	iptables -t nat -A SHADOWSOCKS_GAM -p tcp -m set ! --match-set chnroute dst -j REDIRECT --to-ports 3333
+	[ "$ss_basic_netflix_enable" == "1" ] && iptables -t nat -A SHADOWSOCKS_GAM -p tcp -m set --match-set netflix dst -j REDIRECT --to-ports 4321
 	#-----------------------FOR HOMEMODE---------------------
 	# 创建回国模式nat rule
 	iptables -t nat -N SHADOWSOCKS_HOM
@@ -1989,8 +1993,8 @@ apply_nat_rules() {
 	iptables -t nat -A SHADOWSOCKS_HOM -p tcp -m set --match-set black_list dst -j REDIRECT --to-ports 3333
 	# cidr黑名单控制-chnroute（走ss）
 	iptables -t nat -A SHADOWSOCKS_HOM -p tcp -m set --match-set chnroute dst -j REDIRECT --to-ports 3333
-	iptables -t nat -N SHADOWSOCKS_NETFLIX
-	iptables -t nat -A SHADOWSOCKS_NETFLIX -p tcp -m set --match-set netflix dst -j REDIRECT --to-ports 4321
+	#iptables -t nat -N SHADOWSOCKS_NETFLIX
+	#iptables -t nat -A SHADOWSOCKS_NETFLIX -p tcp -m set --match-set netflix dst -j REDIRECT --to-ports 4321
 	[ "$mangle" == "1" ] && load_tproxy
 	[ "$mangle" == "1" ] && ip rule add fwmark 0x07 table 310
 	[ "$mangle" == "1" ] && ip route add local 0.0.0.0/0 dev lo table 310
@@ -2004,6 +2008,12 @@ apply_nat_rules() {
 	[ "$mangle" == "1" ] && iptables -t mangle -A SHADOWSOCKS_GAM -p udp -m set --match-set black_list dst -j TPROXY --on-port 3333 --tproxy-mark 0x07
 	# cidr黑名单控制-chnroute（走ss）
 	[ "$mangle" == "1" ] && iptables -t mangle -A SHADOWSOCKS_GAM -p udp -m set ! --match-set chnroute dst -j TPROXY --on-port 3333 --tproxy-mark 0x07
+	[ "$ss_basic_netflix_enable" == "1" ] && iptables -t mangle -A SHADOWSOCKS_GAM -p udp -m set --match-set netflix dst -j TPROXY --to-ports 4321 --tproxy-mark 0x07
+	[ "$ss_basic_netflix_enable" == "1" ] && iptables -t mangle -A SHADOWSOCKS_CHN -p udp -m set --match-set netflix dst -j TPROXY --to-ports 4321 --tproxy-mark 0x07
+	[ "$ss_basic_netflix_enable" == "1" ] && iptables -t mangle -A SHADOWSOCKS_GFW -p udp -m set --match-set netflix dst -j TPROXY --to-ports 4321 --tproxy-mark 0x07
+	[ "$ss_basic_netflix_enable" == "1" ] && iptables -t mangle -A SHADOWSOCKS_GLO -p udp -m set --match-set netflix dst -j TPROXY --to-ports 4321 --tproxy-mark 0x07
+	#iptables -t mangle -N SHADOWSOCKS_NETFLIX
+	#iptables -t mangle -A SHADOWSOCKS_NETFLIX -p udp -m set --match-set netflix dst -j TPROXY --to-ports 4321 --tproxy-mark 0x07
 	#-------------------------------------------------------
 	# 局域网黑名单（不走ss）/局域网黑名单（走ss）
 	lan_acess_control

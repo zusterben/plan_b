@@ -134,7 +134,7 @@ dbus set softcenter_module_helloworld_title="科学上网"
 dbus set softcenter_module_helloworld_description="科学上网"
 
 # 设置v2ray 版本号
-dbus set ss_basic_v2ray_version="v4.26.0"
+dbus set ss_basic_v2ray_version="v4.28.2"
 
 echo_date 一点点清理工作...
 rm -rf /tmp/helloworld* >/dev/null 2>&1

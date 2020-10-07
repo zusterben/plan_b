@@ -204,7 +204,7 @@ function refresh_options() {
 	option1.append('<option value="0" selected>全部节点</option>');
 	for (var field in confs) {
 		var c = confs[field];
-		if(c["type"] == "3" && c.v2ray_use_json == "1"){
+		if(c["type"] == "2" && c.v2ray_use_json == "1"){
 			continue;
 		}else{
 			option1.append('<option value="' + field + '">' + c["name"] + '</option>');
@@ -363,8 +363,8 @@ function save() {
 	} else {
 		if (typeof(db_ss["ssconf_basic_v2ray_use_json_" + node_sel]) != "undefined"){
 			var remove_v2ray = [ "ss_obfs", "ss_obfs_host", "ss_v2ray", "ss_v2ray_opts", "ssr_protocol", "ssr_protocol_param", "ssr_obfs", "ssr_obfs_param"];
-			dbus["ss_basic_type"] = "3"
-			dbus["ssconf_basic_type_" + node_sel] = "3"
+			dbus["ss_basic_type"] = "2"
+			dbus["ssconf_basic_type_" + node_sel] = "2"
 			for (var i = 0; i < remove_v2ray.length; i++) {
 				dbus["ss_basic_" + remove_v2ray[i]] = "";
 				dbus["ssconf_basic_" + remove_v2ray[i] + "_" + node_sel] = "";
@@ -1149,7 +1149,7 @@ function generate_node_info() {
 			obj["type"] = "1";
 		} else {
 			if (typeof(db_ss["ssconf_basic_v2ray_use_json_" + idx]) != "undefined"){
-				obj["type"] = "3";
+				obj["type"] = "2";
 			}else{
 				obj["type"] = "0";
 			}
@@ -1328,7 +1328,7 @@ function refresh_html() {
 		html +='</td>';
 		//ping/丢包
 		if(node_nu && db_ss["ss_basic_ping_node"] != "off" && E("ss_basic_ping_node") != ""){
-			if(c["type"] == "3" && c["v2ray_use_json"] == "1"){
+			if(c["type"] == "2" && c["v2ray_use_json"] == "1"){
 				html += '<td style="width:' + width[5] + ';"></td>';
 			}else{
 				html += '<td style="width:' + width[5] + ';" id="ss_node_ping_' + c["node"] + '" class="ping"></td>';
@@ -1605,7 +1605,7 @@ function makeQRcode(node){
     	var base64group = Base64.encode(c["group"]).replace(/=+/,"");
     	var config_ssr = c["server"] + ":" + c["port"] + ":" + c["ssr_protocol"] + ":" + c["method"] + ":" + c["ssr_obfs"] + ":" + base64pass + "/?obfsparam=" + base64obfsparm + "&protoparam=" + base64protoparam + "&remarks=" + base64remark + "&group=" + base64group;
     	var code = "ssr:\/\/" + Base64.encode(config_ssr).replace(/=+/,"").replace(/\+/,"-").replace(/\//,"_");
-	}else if(c["type"] == "3"){
+	}else if(c["type"] == "2"){
 		if(c["v2ray_use_json"] == "1"){
 			var code = 0;
 		}else{

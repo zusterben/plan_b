@@ -27,7 +27,7 @@ elif [ "$ARCH" == "mipsle" ]; then
 else
 	ARCH_SUFFIX="arm"
 fi
-main_url="https://raw.githubusercontent.com/zusterben/plan_b/master/bin/$scarch/"
+main_url="https://raw.githubusercontent.com/zusterben/plan_b/master/bin/$ARCH_SUFFIX/"
 backup_url=""
 
 install_ss(){
@@ -82,7 +82,7 @@ update_ss(){
 
 update_ss2(){
 	echo_date "目前还没有任何备用服务器！请尝试使用离线安装功能！"
-	echo_date "历史版本下载地址：https://raw.githubusercontent.com/zusterben/plan_b/master/history_package/$scarch/"
+	echo_date "历史版本下载地址：https://raw.githubusercontent.com/zusterben/plan_b/master/history_package/$ARCH_SUFFIX/"
 	echo_date "下载后请将下载包名字改为：helloworld.tar.gz，再使用软件中心离线安装功能进行安装！"
 	sleep 1
 	echo XU6J03M6
