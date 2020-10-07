@@ -2008,12 +2008,8 @@ apply_nat_rules() {
 	[ "$mangle" == "1" ] && iptables -t mangle -A SHADOWSOCKS_GAM -p udp -m set --match-set black_list dst -j TPROXY --on-port 3333 --tproxy-mark 0x07
 	# cidr黑名单控制-chnroute（走ss）
 	[ "$mangle" == "1" ] && iptables -t mangle -A SHADOWSOCKS_GAM -p udp -m set ! --match-set chnroute dst -j TPROXY --on-port 3333 --tproxy-mark 0x07
-	[ "$ss_basic_netflix_enable" == "1" ] && iptables -t mangle -A SHADOWSOCKS_GAM -p udp -m set --match-set netflix dst -j TPROXY --to-ports 4321 --tproxy-mark 0x07
-	[ "$ss_basic_netflix_enable" == "1" ] && iptables -t mangle -A SHADOWSOCKS_CHN -p udp -m set --match-set netflix dst -j TPROXY --to-ports 4321 --tproxy-mark 0x07
-	[ "$ss_basic_netflix_enable" == "1" ] && iptables -t mangle -A SHADOWSOCKS_GFW -p udp -m set --match-set netflix dst -j TPROXY --to-ports 4321 --tproxy-mark 0x07
-	[ "$ss_basic_netflix_enable" == "1" ] && iptables -t mangle -A SHADOWSOCKS_GLO -p udp -m set --match-set netflix dst -j TPROXY --to-ports 4321 --tproxy-mark 0x07
-	#iptables -t mangle -N SHADOWSOCKS_NETFLIX
-	#iptables -t mangle -A SHADOWSOCKS_NETFLIX -p udp -m set --match-set netflix dst -j TPROXY --to-ports 4321 --tproxy-mark 0x07
+	[ "$ss_basic_netflix_enable" == "1" ] && iptables -t mangle -N SHADOWSOCKS_NETFLIX
+	[ "$ss_basic_netflix_enable" == "1" ] && iptables -t mangle -A SHADOWSOCKS_NETFLIX -j TPROXY --to-ports 4321 --tproxy-mark 0x07
 	#-------------------------------------------------------
 	# 局域网黑名单（不走ss）/局域网黑名单（走ss）
 	lan_acess_control
@@ -2031,6 +2027,7 @@ apply_nat_rules() {
 	###[ "$mangle" == "1" ] && ss_acl_default_mode=3
 	[ "$ss_acl_default_mode" != "0" ] && [ "$ss_acl_default_mode" != "3" ] && ss_acl_default_mode=0
 	[ "$ss_basic_mode" == "3" ] && iptables -t mangle -A SHADOWSOCKS -p udp -j $(get_action_chain $ss_acl_default_mode)
+	[ "$ss_basic_netflix_enable" == "1" ] && iptables -t mangle -A SHADOWSOCKS -p udp -m set --match-set netflix dst -j SHADOWSOCKS_NETFLIX
 	# 重定所有流量到 SHADOWSOCKS
 	KP_NU=$(iptables -nvL PREROUTING -t nat | sed 1,2d | sed -n '/KOOLPROXY/=' | head -n1)
 	[ "$KP_NU" == "" ] && KP_NU=0
