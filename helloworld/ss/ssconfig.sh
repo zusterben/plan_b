@@ -1792,6 +1792,7 @@ create_ipset(){
 	fi
 	#for router
 	ipset add router 172.217.4.131
+	ipset add router 8.8.8.8
 }
 
 add_white_black_ip() {

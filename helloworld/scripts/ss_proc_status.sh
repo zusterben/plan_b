@@ -123,8 +123,6 @@ check_status() {
 				[ -n "$DNS2SOCKS" ] && echo "dns2socks	工作中	pid：$DNS2SOCKS" || echo "dns2socks	未运行"
 			fi
 		fi
-	[ -n "$DMQ" ] && echo "dnsmasq		工作中	pid：$DMQ" || echo "dnsmasq	未运行"
-
 	echo -----------------------------------------------------------
 	echo
 	echo
