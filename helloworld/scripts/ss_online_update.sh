@@ -440,7 +440,7 @@ update_v2ray_config(){
 			[ "$local_v2ray_path" != "$v2ray_path" ] && dbus set ssconf_basic_v2ray_network_path_$index=$v2ray_path && let i+=1
 			;;
 		esac
-
+		dbus set ssconf_basic_v2ray_vmessvless_$index=vmess
 		if [ "$i" -gt "0" ]; then
 			echo_date "修改v2ray节点：【$v2ray_ps】" && let updatenum+=1
 		else
