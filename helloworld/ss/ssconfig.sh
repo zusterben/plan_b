@@ -545,7 +545,7 @@ start_dns() {
 	if [ "$ss_foreign_dns" == "2" ]; then
 		start_sslocal
 		echo_date 开启dns2socks，用于chinadns-ng的国外上游...
-		dns2socks 127.0.0.1:23456 "$ss_chinadns1_user" 127.0.0.1:1055 >/dev/null 2>&1 &
+		dns2socks 127.0.0.1:23456 8.8.8.8:53 127.0.0.1:1055 >/dev/null 2>&1 &
 		[ "$DNS_PLAN" == "1" ] && echo_date "开启chinadns-ng，用于【国内所有网站 + 国外gfwlist站点】的DNS解析..."
 		[ "$DNS_PLAN" == "2" ] && echo_date "开启chinadns-ng，用于【国内所有网站 + 国外所有网站】的DNS解析..."
 		cat /jffs/softcenter/ss/rules/gfwlist.conf|sed '/^server=/d'|sed 's/ipset=\/.//g'|sed 's/\/gfwlist//g' > /tmp/gfwlist.txt
@@ -558,7 +558,7 @@ start_dns() {
 		start_sslocal
 		[ "$DNS_PLAN" == "1" ] && echo_date "开启dns2socks，用于【国外gfwlist站点】的DNS解析..."
 		[ "$DNS_PLAN" == "2" ] && echo_date "开启dns2socks，用于【国外所有网站】的DNS解析..."
-		dns2socks 127.0.0.1:23456 "$ss_dns2socks_user" 127.0.0.1:$DNSF_PORT >/dev/null 2>&1 &
+		dns2socks 127.0.0.1:23456 8.8.8.8:53 127.0.0.1:$DNSF_PORT >/dev/null 2>&1 &
 	fi
 
 	# direct
@@ -571,7 +571,7 @@ start_dns() {
 			start_sslocal
 			[ "$DNS_PLAN" == "1" ] && echo_date "开启dns2socks，用于【国外gfwlist站点】的DNS解析..."
 			[ "$DNS_PLAN" == "2" ] && echo_date "开启dns2socks，用于【国外所有网站】的DNS解析..."
-			dns2socks 127.0.0.1:23456 "$ss_dns2socks_user" 127.0.0.1:$DNSF_PORT >/dev/null 2>&1 &
+			dns2socks 127.0.0.1:23456 8.8.8.8:53 127.0.0.1:$DNSF_PORT >/dev/null 2>&1 &
 		fi
 	fi
 }
@@ -1083,7 +1083,7 @@ create_v2ray_json(){
 		EOF
 
 		# outbounds area
-		if [ "$ss_basic_v2ray_vmessvless" == "vmess" ]; then
+		if [ "$ss_basic_v2ray_vmessvless" != "vless" ]; then
 		cat >>"$V2RAY_CONFIG_FILE_TMP" <<-EOF
 			"outbounds": [
 				{
