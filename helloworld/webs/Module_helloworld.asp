@@ -1003,7 +1003,7 @@ function edit_conf_table(o) {
 			E("ssrTitle").style.display = "none";
 			E("v2rayTitle").style.display = "";
 			$("#v2rayTitle").html("编辑V2Ray账号");
-			tabclickhandler(3);
+			tabclickhandler(2);
 		}else{
 			E("ssTitle").style.display = "";
 			E("ssrTitle").style.display = "none";

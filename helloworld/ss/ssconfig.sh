@@ -1297,7 +1297,7 @@ create_v2ray_json(){
 }
 
 create_v2ray_netflix(){
-	V2RAY_CONFIG_FILE="v2-ssr-netflix.json"
+	V2RAY_CONFIG_FILE="/jffs/softcenter/ss/v2-ssr-netflix.json"
 	echo_date "创建$(__get_type_abbr_name)配置文件到$V2RAY_CONFIG_FILE"
 	local tmp v2ray_server_ip
 	rm -rf "$V2RAY_CONFIG_FILE_TMP"

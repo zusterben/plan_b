@@ -130,8 +130,8 @@ CUR_VERSION=$(cat /jffs/softcenter/ss/version)
 dbus set ss_basic_version_local="$CUR_VERSION"
 dbus set softcenter_module_helloworld_install="4"
 dbus set softcenter_module_helloworld_version="$CUR_VERSION"
-dbus set softcenter_module_helloworld_title="科学上网"
-dbus set softcenter_module_helloworld_description="科学上网"
+dbus set softcenter_module_helloworld_title="helloworld"
+dbus set softcenter_module_helloworld_description="helloworld"
 
 # 设置v2ray 版本号
 dbus set ss_basic_v2ray_version="v4.28.2"
