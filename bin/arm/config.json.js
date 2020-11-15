@@ -1,10 +1,10 @@
 {
-"build_date":"2020-10-18_22:10:26",
+"build_date":"2020-11-15_17:33:44",
 "description":"ShadowSocksR Plus",
 "home_url":"Module_helloworld.asp",
-"md5":"0f05e08bc93f4d0cb83d3a294f693601",
+"md5":"e6eed0f5ce36af689f3649bf99fc9438",
 "name":"helloworld",
 "tar_url": "https://raw.githubusercontent.com/zusterben/plan_b/master/bin/arm/helloworld.tar.gz", 
 "title":"ShadowSocksR Plus",
-"version":"0.0.8"
+"version":"0.0.9"
 }

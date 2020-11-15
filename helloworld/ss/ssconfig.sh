@@ -5,6 +5,7 @@ source /jffs/softcenter/scripts/ss_base.sh
 # Variable definitions
 THREAD=$(grep -c '^processor' /proc/cpuinfo)
 dbus set ss_basic_version_local=`cat /jffs/softcenter/ss/version`
+mkdir -p /tmp/upload
 LOG_FILE=/tmp/upload/ss_log.txt
 CONFIG_FILE=/jffs/softcenter/ss/ss.json
 V2RAY_CONFIG_FILE_TMP="/tmp/v2ray_tmp.json"
