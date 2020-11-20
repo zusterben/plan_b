@@ -27,7 +27,7 @@ elif [ "$ARCH" == "mipsle" ]; then
 else
 	ARCH_SUFFIX="arm"
 fi
-main_url="https://raw.githubusercontent.com/zusterben/plan_b/master/bin/$ARCH_SUFFIX/"
+main_url="https://raw.githubusercontent.com/zusterben/plan_b/master/bin/$ARCH_SUFFIX"
 backup_url=""
 
 install_ss(){
