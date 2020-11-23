@@ -376,6 +376,7 @@ add_v2ray_servers(){
 	dbus set ssconf_basic_v2ray_alterid_$NODE_INDEX=$v2ray_aid
 	dbus set ssconf_basic_v2ray_network_security_$NODE_INDEX=$v2ray_tls
 	dbus set ssconf_basic_v2ray_network_$NODE_INDEX=$v2ray_net
+	dbus set ssconf_basic_v2ray_vmessvless_$NODE_INDEX=vmess
 	case $v2ray_net in
 	tcp)
 		# tcp协议设置【 tcp伪装类型 (type)】和【伪装域名 (host)】
@@ -392,6 +393,7 @@ add_v2ray_servers(){
 		[ -n "$v2ray_path" ] && dbus set ssconf_basic_v2ray_network_path_$NODE_INDEX=$v2ray_path
 		;;
 	esac
+	[ -n "$v2ray_path" ] && dbus set ssconf_basic_v2ray_network_tlshost_$NODE_INDEX=$v2ray_host
 	echo_date "v2ray节点：新增加【$v2ray_ps】到节点列表第 $NODE_INDEX 位。"
 }
 
@@ -924,9 +926,16 @@ get_oneline_rule_now(){
 		NODE_FORMAT2=$(cat /tmp/ssr_subscribe_file_temp1.txt | grep -E "^ssr://")
 		NODE_FORMAT3=$(cat /tmp/ssr_subscribe_file_temp1.txt | grep -E "^vmess://")
 		if [ -n "$NODE_FORMAT1" ]; then
+		#	echo_date "暂时不支持ss节点订阅..."
+		#	echo_date "退出订阅程序..."
 			echo_date "暂时不支持ss节点订阅..."
-			echo_date "退出订阅程序..."
-		elif [ -n "$NODE_FORMAT2" ]; then
+			echo_date "已删除"
+			cat /tmp/ssr_subscribe_file_temp1.txt |grep -E "^vmess://" > /tmp/ssr_subscribe_file_v2.txt
+			cat /tmp/ssr_subscribe_file_temp1.txt |grep -E "^ssr://" > /tmp/ssr_subscribe_file_ssr.txt
+			cat /tmp/ssr_subscribe_file_v2.txt /tmp/ssr_subscribe_file_ssr.txt > /tmp/ssr_subscribe_file_temp1.txt
+			rm -rf /tmp/ssr_subscribe_file_v2.txt /tmp/ssr_subscribe_file_ssr.txt
+		fi
+		if [ -n "$NODE_FORMAT2" ]; then
 			# SSR 订阅
 			local NODE_NU=$(cat /tmp/ssr_subscribe_file_temp1.txt | grep -c "ssr://")
 			echo_date "检测到ssr节点格式，共计$NODE_NU个节点..."
@@ -975,16 +984,16 @@ get_oneline_rule_now(){
 			dbus set ss_online_group_$z=$v2ray_group_tmp
 			echo $v2ray_group_tmp >> /tmp/group_info.txt
 			# detect format again
-			if [ -n "$NODE_FORMAT1" ]; then
+			#if [ -n "$NODE_FORMAT1" ]; then
 				#vmess://里夹杂着ss://
-				local NODE_NU=$(cat /tmp/ssr_subscribe_file_temp1.txt | grep -Ec "vmess://|ss://")
-				echo_date "检测到vmess和ss节点格式，共计$NODE_NU个节点..."
-				urllinks=$(decode_url_link $(cat /tmp/ssr_subscribe_file.txt) | sed 's/ssr:\/\///g')
-			else
+				#local NODE_NU=$(cat /tmp/ssr_subscribe_file_temp1.txt | grep -Ec "vmess://|ss://")
+				#echo_date "检测到vmess和ss节点格式，共计$NODE_NU个节点..."
+				#urllinks=$(decode_url_link $(cat /tmp/ssr_subscribe_file.txt) | sed 's/ssr:\/\///g')
+			#else
 				# 纯vmess://
 				local NODE_NU=$(cat /tmp/ssr_subscribe_file_temp1.txt | grep -Ec "vmess://")
 				echo_date "检测到vmess节点格式，共计$NODE_NU个节点..."
-				urllinks=$(decode_url_link $(cat /tmp/ssr_subscribe_file.txt) | sed 's/vmess:\/\///g')
+				urllinks=$(cat /tmp/ssr_subscribe_file_temp1.txt | sed 's/vmess:\/\///g')
 				for link in $urllinks
 				do
 					decode_link=$(decode_url_link $link)
@@ -996,7 +1005,7 @@ get_oneline_rule_now(){
 						echo_date "解析失败！！！"
 					fi
 				done
-			fi
+			#fi
 			# INFO
 			USER_ADD=$(($(export -p | grep ssconf_basic_ | grep _name_ | wc -l) - $(export -p | grep ssconf_basic_ | grep _group_ | wc -l))) || "0"
 			ONLINE_GET=$(dbus list ssconf_basic_ | grep _group_ | wc -l) || "0"
@@ -1179,7 +1188,7 @@ start_offline_update() {
 				new_v2raylink=$(echo -n "$ssrlink" | sed 's/vmess:\/\///g')
 				decode_v2raylink=$(decode_url_link $new_v2raylink)
 				decode_v2raylink=$(echo $decode_v2raylink | jq -c .)
-				get_v2ray_remote_config $decode_v2raylink
+				get_v2ray_remote_config "$decode_v2raylink"
 				add_v2ray_servers 1
 			elif [ -n "$(echo -n "$ssrlink" | grep "ss://")" ]; then
 				echo_date "检测到SS链接...开始尝试解析..."
