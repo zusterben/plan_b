@@ -231,6 +231,12 @@ kill_process() {
 		killall v2ray >/dev/null 2>&1
 		kill -9 "$v2ray_process" >/dev/null 2>&1
 	fi
+	xray_process=$(pidof xray)
+	if [ -n "$xray_process" ]; then
+		echo_date 关闭xray进程...
+		killall xray >/dev/null 2>&1
+		kill -9 "$xray_process" >/dev/null 2>&1
+	fi
 	ssredir=$(pidof ss-redir)
 	if [ -n "$ssredir" ]; then
 		echo_date 关闭ss-redir进程...
@@ -1658,12 +1664,17 @@ start_v2ray() {
 	# v2ray start
 	cd /jffs/softcenter/bin
 	#export GOGC=30
-	v2ray -config=/jffs/softcenter/ss/v2ray.json >/dev/null 2>&1 &
+	if [ "$ss_basic_xray_enable" == "1" ]; then
+		v2bin="xray"
+	else
+		v2bin="v2ray"
+	fi
+	$v2bin -config=/jffs/softcenter/ss/v2ray.json >/dev/null 2>&1 &
 	local V2PID
 	local i=10
 	until [ -n "$V2PID" ]; do
 		i=$(($i - 1))
-		V2PID=$(pidof v2ray)
+		V2PID=$(pidof $v2bin)
 		if [ "$i" -lt 1 ]; then
 			echo_date "v2ray进程启动失败！"
 			close_in_five
@@ -2195,7 +2206,13 @@ find_bin() {
 	case "$1" in
 	0) ret="/jffs/softcenter/bin/ss-redir" ;;
 	1) ret="/jffs/softcenter/bin/ssr-redir" ;;
-	2) ret="/jffs/softcenter/bin/v2ray" ;;
+	2) 
+		if [ "$ss_basic_xray_enable" == "1" ]; then
+			ret="/jffs/softcenter/bin/xray"
+		else
+			ret="/jffs/softcenter/bin/v2ray"
+		fi
+	;;
 	3) ret="/jffs/softcenter/bin/trojan" ;;
 	esac
 	echo $ret

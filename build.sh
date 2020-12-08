@@ -1,7 +1,7 @@
 #!/bin/sh
 
 MODULE=helloworld
-VERSION=0.1.4
+VERSION=0.1.5
 TITLE="ShadowSocksR Plus"
 DESCRIPTION="ShadowSocksR Plus"
 HOME_URL=Module_helloworld.asp
@@ -22,6 +22,16 @@ sync_v2ray_binary(){
 		echo update v2ray binary！
 		cp -rf ./v2ray_binary/$1/$v2ray_version/v2ray ./bin_arch/$1/
 		cp -rf ./v2ray_binary/$1/$v2ray_version/v2ctl ./bin_arch/$1/
+	fi
+}
+
+sync_xray_binary(){
+	xray_version=`cat ./xray_binary/latest.txt`
+	md5_latest=`md5sum ./xray_binary/$1/$xray_version/xray | sed 's/ /\n/g'| sed -n 1p`
+	md5_old=`md5sum ./bin_arch/$1/xray | sed 's/ /\n/g'| sed -n 1p`
+	if [ "$md5_latest"x != "$md5_old"x ]; then
+		echo update xray！
+		cp -rf ./xray_binary/$1/$xray_version/xray ./bin_arch/$1/
 	fi
 }
 
@@ -81,6 +91,7 @@ cp_rules
 for arch in $arch_list
 do
 sync_v2ray_binary $arch
+sync_xray_binary $arch
 do_build $arch
 do_backup $arch
 done
