@@ -10,8 +10,10 @@ LOG_FILE=/tmp/upload/ss_log.txt
 CONFIG_FILE=/jffs/softcenter/ss/ss.json
 V2RAY_CONFIG_FILE_TMP="/tmp/v2ray_tmp.json"
 V2RAY_CONFIG_FILE="/jffs/softcenter/ss/v2ray.json"
-CONFIG_SOCK5_FILE=/jffs/softcenter/ss/ss_s.json
-CONFIG_NETFLIX_FILE=/jffs/softcenter/ss/ss_n.json
+CONFIG_SOCK5_FILE="/jffs/softcenter/ss/ss_s.json"
+CONFIG_NETFLIX_FILE="/jffs/softcenter/ss/ss_n.json"
+TROJAN_CONFIG_FILE="/jffs/softcenter/ss/trojan.json"
+TROJAN2_CONFIG_FILE="/jffs/softcenter/ss/trojan2.json"
 LOCK_FILE=/var/lock/koolss.lock
 DNSF_PORT=7913
 DNSC_PORT=53
@@ -98,6 +100,9 @@ __get_type_full_name() {
 	2)
 		echo "v2ray"
 		;;
+	3)
+		echo "trojan"
+		;;
 	esac
 }
 
@@ -111,6 +116,9 @@ __get_type_abbr_name() {
 		;;
 	2)
 		echo "v2ray"
+		;;
+	3)
+		echo "trojan"
 		;;
 	esac
 }
@@ -287,6 +295,11 @@ kill_process() {
 	#	echo_date 关闭smartdns进程...
 	#	killall smartdns >/dev/null 2>&1
 	#fi
+	trojan_process=$(pidof trojan)
+	if [ -n "$trojan_process" ];then 
+		echo_date 关闭trojan进程... >> $LOG_FILE
+		killall trojan >/dev/null 2>&1
+	fi
 	client_linux_process=$(pidof client_linux)
 	if [ -n "$client_linux_process" ];then 
 		echo_date 关闭kcp协议进程...
@@ -488,6 +501,9 @@ start_sslocal() {
 		else
 			ss-local -l 23456 -c $CONFIG_FILE $ARG_OBFS -u -f /var/run/sslocal1.pid >/dev/null 2>&1
 		fi
+	elif [ "$ss_basic_type" == "3" ]; then
+		echo_date "开启trojan，提供socks5代理端口：23456" >> $LOG_FILE
+		trojan -c $TROJAN2_CONFIG_FILE >/dev/null 2>&1 &
 	fi
 }
 
@@ -507,7 +523,10 @@ start_dns() {
 		ss_foreign_dns="8"
 		dbus set ss_foreign_dns="8"
 	fi
-
+	if [ "$ss_basic_type" == "3" -a "$ss_foreign_dns" == "1" ]; then
+		ss_foreign_dns=3
+		dbus set ss_foreign_dns=3
+	fi
 	# Start pdnsd
 	if [ "$ss_foreign_dns" == "1" ]; then
 		[ "$DNS_PLAN" == "1" ] && echo_date "开启pdnsd，用于【国外gfwlist站点】的DNS解析..."
@@ -879,6 +898,360 @@ start_ss_redir() {
 	fi
 	echo_date $BIN 启动完毕！.
 }
+creat_trojan_json(){
+		echo_date "创建$(__get_type_abbr_name)配置文件到$TROJAN_CONFIG_FILE" >> $LOG_FILE
+		rm -rf "$TROJAN_CONFIG_FILE"
+		rm -rf "$TROJAN2_CONFIG_FILE"
+		
+		if [ "$ss_basic_type" == "3" ]; then
+			if [ "$ss_basic_ss_kcp_support" == "1" ]; then
+				cat > "$TROJAN_CONFIG_FILE" <<-EOF
+				{
+					"run_type": "nat",
+					"local_addr": "0.0.0.0",
+					"local_port": 3333,
+					"remote_addr": "127.0.0.1",
+					"remote_port": 1091,
+					"password": [
+					"$ss_basic_password"
+					],
+					"log_level": 1,
+					"ssl": {
+					"verify": $(get_function_switch $ss_basic_ssl_verify_enable),
+					"verify_hostname": true,
+					"cert": "/rom/etc/ssl/certs/ca-certificates.crt",
+					"cipher": "ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES256-SHA:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES128-SHA:ECDHE-RSA-AES256-SHA:DHE-RSA-AES128-SHA:DHE-RSA-AES256-SHA:AES128-SHA:AES256-SHA:DES-CBC3-SHA",
+					"cipher_tls13": "TLS_AES_128_GCM_SHA256:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_256_GCM_SHA384",
+					"sni": "$ss_basic_trojan_sni",
+					"alpn": [
+						"h2",
+						"http/1.1"
+					],
+					"reuse_session": true,
+					"session_ticket": false,
+					"curves": ""
+					},
+					"tcp": {
+					"no_delay": true,
+					"keep_alive": true,
+					"reuse_port": $(get_function_switch $ss_basic_mcore),
+					"fast_open": false,
+					"fast_open_qlen": 20
+					}
+				}
+					EOF
+				#20201029修正	
+				cat > "$TROJAN2_CONFIG_FILE" <<-EOF
+				{
+					"run_type": "client",
+					"local_addr": "0.0.0.0",
+					"local_port": 23456,
+					"remote_addr": "$ss_basic_server",
+					"remote_port": $ss_basic_port,
+					"password": [
+					"$ss_basic_password"
+					],
+					"log_level": 1,
+					"ssl": {
+					"verify": $(get_function_switch $ss_basic_ssl_verify_enable),
+					"verify_hostname": true,
+					"cert": "/rom/etc/ssl/certs/ca-certificates.crt",
+					"cipher": "ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES256-SHA:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES128-SHA:ECDHE-RSA-AES256-SHA:DHE-RSA-AES128-SHA:DHE-RSA-AES256-SHA:AES128-SHA:AES256-SHA:DES-CBC3-SHA",
+					"cipher_tls13": "TLS_AES_128_GCM_SHA256:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_256_GCM_SHA384",
+					"sni": "$ss_basic_trojan_sni",
+					"alpn": [
+						"h2",
+						"http/1.1"
+					],
+					"reuse_session": true,
+					"session_ticket": false,
+					"curves": ""
+					},
+					"tcp": {
+					"no_delay": true,
+					"keep_alive": true,
+					"reuse_port": $(get_function_switch $ss_basic_mcore),
+					"fast_open": false,
+					"fast_open_qlen": 20
+					}
+				}
+					EOF
+					
+					#echo_date "trojan配置文件生成成功." >> $LOG_FILE
+			else
+				cat > "$TROJAN_CONFIG_FILE" <<-EOF
+				{
+					"run_type": "nat",
+					"local_addr": "0.0.0.0",
+					"local_port": 3333,
+					"remote_addr": "$ss_basic_server",
+					"remote_port": $ss_basic_port,
+					"password": [
+					"$ss_basic_password"
+					],
+					"log_level": 1,
+					"ssl": {
+					"verify": $(get_function_switch $ss_basic_ssl_verify_enable),
+					"verify_hostname": true,
+					"cert": "/rom/etc/ssl/certs/ca-certificates.crt",
+					"cipher": "ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES256-SHA:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES128-SHA:ECDHE-RSA-AES256-SHA:DHE-RSA-AES128-SHA:DHE-RSA-AES256-SHA:AES128-SHA:AES256-SHA:DES-CBC3-SHA",
+					"cipher_tls13": "TLS_AES_128_GCM_SHA256:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_256_GCM_SHA384",
+					"sni": "$ss_basic_trojan_sni",
+					"alpn": [
+						"h2",
+						"http/1.1"
+					],
+					"reuse_session": true,
+					"session_ticket": false,
+					"curves": ""
+					},
+					"tcp": {
+					"no_delay": true,
+					"keep_alive": true,
+					"reuse_port": $(get_function_switch $ss_basic_mcore),
+					"fast_open": false,
+					"fast_open_qlen": 20
+					}
+				}
+					EOF
+				cat > "$TROJAN2_CONFIG_FILE" <<-EOF
+				{
+					"run_type": "client",
+					"local_addr": "0.0.0.0",
+					"local_port": 23456,
+					"remote_addr": "$ss_basic_server",
+					"remote_port": $ss_basic_port,
+					"password": [
+					"$ss_basic_password"
+					],
+					"log_level": 1,
+					"ssl": {
+					"verify": $(get_function_switch $ss_basic_ssl_verify_enable),
+					"verify_hostname": true,
+					"cert": "/rom/etc/ssl/certs/ca-certificates.crt",
+					"cipher": "ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES256-SHA:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES128-SHA:ECDHE-RSA-AES256-SHA:DHE-RSA-AES128-SHA:DHE-RSA-AES256-SHA:AES128-SHA:AES256-SHA:DES-CBC3-SHA",
+					"cipher_tls13": "TLS_AES_128_GCM_SHA256:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_256_GCM_SHA384",
+					"sni": "$ss_basic_trojan_sni",
+					"alpn": [
+						"h2",
+						"http/1.1"
+					],
+					"reuse_session": true,
+					"session_ticket": false,
+					"curves": ""
+					},
+					"tcp": {
+					"no_delay": true,
+					"keep_alive": true,
+					"reuse_port": $(get_function_switch $ss_basic_mcore),
+					"fast_open": false,
+					"fast_open_qlen": 20
+					}
+				}
+					EOF
+					
+					#echo_date "trojan配置文件生成成功." >> $LOG_FILE
+			fi
+		else
+			
+			echo_date "trojan配置文件生成失败，请检查设置!!!" >> $LOG_FILE
+		fi
+
+}
+
+start_trojan(){
+	if [ "$ss_basic_tfo" == "1" ] && [ "$FASTOPEN" == "1" ]; then
+		echo_date 开启tcp fast open支持. >> $LOG_FILE
+		echo 3 >/proc/sys/net/ipv4/tcp_fastopen
+		echo_date "开启TROJAN前，开启tcp fast open支持，需服务端开启支持" >> $LOG_FILE
+
+	fi
+	
+	if [ "$ss_basic_mcore" == "1" ]; then
+		echo_date $BIN开启$THREAD线程支持. >> $LOG_FILE
+		local i=1
+		while [ $i -le $THREAD ]; do
+			trojan -c $TROJAN_CONFIG_FILE >/dev/null 2>&1 &
+			let i++
+		done
+	else
+		trojan -c $TROJAN_CONFIG_FILE >/dev/null 2>&1 &
+	fi
+	echo_date "trojan启用进程!!!"  >> $LOG_FILE
+	local trojanpid
+	local i=10
+	until [ -n "$trojanpid" ]; do
+		i=$(($i - 1))
+		trojanpid=$(pidof trojan)
+		if [ "$i" -lt 1 ];then
+			echo_date "trojan进程启动失败！"
+			close_in_five
+		fi
+		sleep 1
+	done
+	echo_date trojan启动成功，pid：$trojanpid >> $LOG_FILE
+}
+
+create_trojan_netflix(){
+		echo_date "创建$(__get_type_abbr_name)配置文件到$CONFIG_NETFLIX_FILE" >> $LOG_FILE
+		rm -rf "$CONFIG_NETFLIX_FILE"
+		rm -rf "$CONFIG_SOCK5_FILE"
+		
+		if [ "$ss_basic_type" == "3" ]; then
+			if [ "$ss_basic_ss_kcp_support" == "1" ]; then
+				cat > "$CONFIG_NETFLIX_FILE" <<-EOF
+				{
+					"run_type": "nat",
+					"local_addr": "0.0.0.0",
+					"local_port": 4321,
+					"remote_addr": "127.0.0.1",
+					"remote_port": 1091,
+					"password": [
+					"$ss_basic_password"
+					],
+					"log_level": 1,
+					"ssl": {
+					"verify": $(get_function_switch $ss_basic_ssl_verify_enable),
+					"verify_hostname": true,
+					"cert": "/rom/etc/ssl/certs/ca-certificates.crt",
+					"cipher": "ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES256-SHA:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES128-SHA:ECDHE-RSA-AES256-SHA:DHE-RSA-AES128-SHA:DHE-RSA-AES256-SHA:AES128-SHA:AES256-SHA:DES-CBC3-SHA",
+					"cipher_tls13": "TLS_AES_128_GCM_SHA256:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_256_GCM_SHA384",
+					"sni": "$ss_basic_trojan_sni",
+					"alpn": [
+						"h2",
+						"http/1.1"
+					],
+					"reuse_session": true,
+					"session_ticket": false,
+					"curves": ""
+					},
+					"tcp": {
+					"no_delay": true,
+					"keep_alive": true,
+					"reuse_port": $(get_function_switch $ss_basic_mcore),
+					"fast_open": false,
+					"fast_open_qlen": 20
+					}
+				}
+					EOF
+				#20201029修正	
+				cat > "$CONFIG_SOCK5_FILE" <<-EOF
+				{
+					"run_type": "client",
+					"local_addr": "0.0.0.0",
+					"local_port": 1088,
+					"remote_addr": "$ss_basic_server",
+					"remote_port": $ss_basic_port,
+					"password": [
+					"$ss_basic_password"
+					],
+					"log_level": 1,
+					"ssl": {
+					"verify": $(get_function_switch $ss_basic_ssl_verify_enable),
+					"verify_hostname": true,
+					"cert": "/rom/etc/ssl/certs/ca-certificates.crt",
+					"cipher": "ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES256-SHA:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES128-SHA:ECDHE-RSA-AES256-SHA:DHE-RSA-AES128-SHA:DHE-RSA-AES256-SHA:AES128-SHA:AES256-SHA:DES-CBC3-SHA",
+					"cipher_tls13": "TLS_AES_128_GCM_SHA256:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_256_GCM_SHA384",
+					"sni": "$ss_basic_trojan_sni",
+					"alpn": [
+						"h2",
+						"http/1.1"
+					],
+					"reuse_session": true,
+					"session_ticket": false,
+					"curves": ""
+					},
+					"tcp": {
+					"no_delay": true,
+					"keep_alive": true,
+					"reuse_port": $(get_function_switch $ss_basic_mcore),
+					"fast_open": false,
+					"fast_open_qlen": 20
+					}
+				}
+					EOF
+					
+					#echo_date "trojan配置文件生成成功." >> $LOG_FILE
+			else
+				cat > "$CONFIG_NETFLIX_FILE" <<-EOF
+				{
+					"run_type": "nat",
+					"local_addr": "0.0.0.0",
+					"local_port": 4321,
+					"remote_addr": "$ss_basic_server",
+					"remote_port": $ss_basic_port,
+					"password": [
+					"$ss_basic_password"
+					],
+					"log_level": 1,
+					"ssl": {
+					"verify": $(get_function_switch $ss_basic_ssl_verify_enable),
+					"verify_hostname": true,
+					"cert": "/rom/etc/ssl/certs/ca-certificates.crt",
+					"cipher": "ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES256-SHA:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES128-SHA:ECDHE-RSA-AES256-SHA:DHE-RSA-AES128-SHA:DHE-RSA-AES256-SHA:AES128-SHA:AES256-SHA:DES-CBC3-SHA",
+					"cipher_tls13": "TLS_AES_128_GCM_SHA256:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_256_GCM_SHA384",
+					"sni": "$ss_basic_trojan_sni",
+					"alpn": [
+						"h2",
+						"http/1.1"
+					],
+					"reuse_session": true,
+					"session_ticket": false,
+					"curves": ""
+					},
+					"tcp": {
+					"no_delay": true,
+					"keep_alive": true,
+					"reuse_port": $(get_function_switch $ss_basic_mcore),
+					"fast_open": false,
+					"fast_open_qlen": 20
+					}
+				}
+					EOF
+				cat > "$CONFIG_SOCK5_FILE" <<-EOF
+				{
+					"run_type": "client",
+					"local_addr": "0.0.0.0",
+					"local_port": 1088,
+					"remote_addr": "$ss_basic_server",
+					"remote_port": $ss_basic_port,
+					"password": [
+					"$ss_basic_password"
+					],
+					"log_level": 1,
+					"ssl": {
+					"verify": $(get_function_switch $ss_basic_ssl_verify_enable),
+					"verify_hostname": true,
+					"cert": "/rom/etc/ssl/certs/ca-certificates.crt",
+					"cipher": "ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES256-SHA:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES128-SHA:ECDHE-RSA-AES256-SHA:DHE-RSA-AES128-SHA:DHE-RSA-AES256-SHA:AES128-SHA:AES256-SHA:DES-CBC3-SHA",
+					"cipher_tls13": "TLS_AES_128_GCM_SHA256:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_256_GCM_SHA384",
+					"sni": "$ss_basic_trojan_sni",
+					"alpn": [
+						"h2",
+						"http/1.1"
+					],
+					"reuse_session": true,
+					"session_ticket": false,
+					"curves": ""
+					},
+					"tcp": {
+					"no_delay": true,
+					"keep_alive": true,
+					"reuse_port": $(get_function_switch $ss_basic_mcore),
+					"fast_open": false,
+					"fast_open_qlen": 20
+					}
+				}
+					EOF
+					
+					#echo_date "trojan配置文件生成成功." >> $LOG_FILE
+			fi
+		else
+			
+			echo_date "trojan配置文件生成失败，请检查设置!!!" >> $LOG_FILE
+		fi
+
+}
 
 fire_redir() {
 	[ "$ss_basic_type" == "0" ] && [ "$ss_basic_mcore" == "1" ] && local ARG_1="--reuse-port" || local ARG_1=""
@@ -973,7 +1346,7 @@ create_v2ray_json(){
 			local xtls="{
 					\"serverName\": \"$ss_basic_v2ray_network_tlshost\"
 					}"
-			local vless_flow="\"flow\": \"xtls-rprx-origin\","
+			local vless_flow="\"flow\": \"$ss_basic_v2ray_network_flow\","
 			;;
 		*)
 			local tls="null"
@@ -1291,9 +1664,8 @@ create_v2ray_json(){
 
 	echo_date 测试V2Ray配置文件.....
 	cd /jffs/softcenter/bin
-	result=$(v2ray -test -config="$V2RAY_CONFIG_FILE" | grep "Configuration OK.")
+	result=$(xray -test -config="$V2RAY_CONFIG_FILE" | grep "Configuration OK.")
 	if [ -n "$result" ]; then
-		echo_date $result
 		echo_date V2Ray配置文件通过测试!!!
 	else
 		echo_date V2Ray配置文件没有通过测试，请检查设置!!!
@@ -1334,7 +1706,7 @@ create_v2ray_netflix(){
 			local xtls="{
 					\"serverName\": \"$ss_basic_v2ray_network_tlshost\"
 					}"
-			local vless_flow="\"flow\": \"xtls-rprx-origin\","
+			local vless_flow="\"flow\": \"$ss_basic_v2ray_network_flow\","
 			;;
 		*)
 			local tls="null"
@@ -1641,9 +2013,8 @@ create_v2ray_netflix(){
 
 	echo_date 测试V2Ray配置文件.....
 	cd /jffs/softcenter/bin
-	result=$(v2ray -test -config="$V2RAY_CONFIG_FILE" | grep "Configuration OK.")
+	result=$(xray -test -config="$V2RAY_CONFIG_FILE" | grep "Configuration OK.")
 	if [ -n "$result" ]; then
-		echo_date $result
 		echo_date V2Ray配置文件通过测试!!!
 	else
 		echo_date V2Ray配置文件没有通过测试，请检查设置!!!
@@ -1663,7 +2034,7 @@ start_v2ray() {
 
 	# v2ray start
 	cd /jffs/softcenter/bin
-	#export GOGC=30
+	export GOGC=30
 	if [ "$ss_basic_xray_enable" == "1" ]; then
 		v2bin="xray"
 	else
@@ -2241,12 +2612,11 @@ start_netflix() {
 			dns2socks 127.0.0.1:1088 8.8.8.8:53 127.0.0.1:5555 -q >/dev/null 2>&1 &
 			;;
 		3)
-			create_trojan_netflix nat 4321
+			create_trojan_netflix
 			#lua /usr/share/shadowsocksr/gentrojanconfig.lua $NETFLIX_SERVER nat 4321 >/jffs/softcenter/ss/trojan-ssr-netflix.json
-			$bin --config /jffs/softcenter/ss/trojan-ssr-netflix.json >/dev/null 2>&1 &
-			create_trojan_netflix client 1088
+			$bin --config $CONFIG_NETFLIX_FILE >/dev/null 2>&1 &
 			#lua /usr/share/shadowsocksr/gentrojanconfig.lua $NETFLIX_SERVER client 1088 >/jffs/softcenter/ss/trojan-ssr-socksdns.json
-			$bin --config /jffs/softcenter/ss/trojan-ssr-socksdns.json >/dev/null 2>&1 &
+			$bin --config $CONFIG_SOCK5_FILE >/dev/null 2>&1 &
 			dns2socks 127.0.0.1:1088 8.8.8.8:53 127.0.0.1:5555 -q >/dev/null 2>&1 &
 			;;
 		esac
@@ -2353,8 +2723,10 @@ apply_ss() {
 	# do not re generate json on router start, use old one
 	[ "$ss_basic_type" != "2" ] && create_ss_json
 	[ "$ss_basic_type" == "2" ] && create_v2ray_json
+	[ "$ss_basic_type" = "3" ] && creat_trojan_json
 	[ "$ss_basic_type" == "0" ] || [ "$ss_basic_type" == "1" ] && start_ss_redir
 	[ "$ss_basic_type" == "2" ] && start_v2ray
+	[ "$ss_basic_type" == "3" ] && start_trojan
 	[ "$ss_basic_type" != "2" ] && start_kcp
 	start_netflix
 	start_dns

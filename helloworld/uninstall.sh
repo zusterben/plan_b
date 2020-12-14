@@ -19,6 +19,8 @@ rm -rf /jffs/softcenter/bin/client_linux
 rm -rf /jffs/softcenter/bin/v2ray
 rm -rf /jffs/softcenter/bin/v2ctl
 rm -rf /jffs/softcenter/bin/v2ray-plugin
+rm -rf /jffs/softcenter/bin/trojan
+rm -rf /jffs/softcenter/bin/xray
 rm -rf /jffs/softcenter/bin/httping
 rm -rf /jffs/softcenter/res/icon-helloworld.png
 rm -rf /jffs/softcenter/res/ss-menu.js
