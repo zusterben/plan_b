@@ -1060,7 +1060,7 @@ get_oneline_rule_now(){
 		else
 			#订阅地址有跳转
 			local blank=$(cat /tmp/ssr_subscribe_file.txt | grep -E " |Redirecting|301")
-			if [ -n "$blank" ]; then
+			if [ -n "$blank" -o -z "$(cat /tmp/ssr_subscribe_file.txt)" ]; then
 				echo_date "订阅链接可能有跳转，尝试更换wget进行下载..."
 				rm /tmp/ssr_subscribe_file.txt
 				if [ -n $(echo $ssr_subscribe_link | grep -E "^https") ]; then

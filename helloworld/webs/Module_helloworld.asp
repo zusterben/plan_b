@@ -2235,7 +2235,7 @@ function toggle_func() {
 		});
 	$("#update_log").click(
 		function() {
-			window.open("https://github.com/hq450/fancyss/blob/master/fancyss_hnd/Changelog.txt");
+			window.open("https://github.com/zusterben/plan_b");
 		});
 	$("#log_content2").click(
 		function() {

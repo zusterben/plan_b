@@ -15,9 +15,11 @@ sort -k 2 -t. -u gfwlist_merge.conf >gfwlist1.conf
 rm gfwlist_merge.conf
 
 # delete site below
-sed -i '/m-team/d' "gfwlist1.conf"
+#sed -i '/m-team/d' "gfwlist1.conf"
 sed -i '/windowsupdate/d' "gfwlist1.conf"
 sed -i '/v2ex/d' "gfwlist1.conf"
+sed -i '/apple\.com/d' "gfwlist1.conf"
+sed -i '/dmhy\.org/d' "gfwlist1.conf"
 
 md5sum1=$(md5sum gfwlist1.conf | sed 's/ /\n/g' | sed -n 1p)
 md5sum2=$(md5sum ../gfwlist.conf | sed 's/ /\n/g' | sed -n 1p)

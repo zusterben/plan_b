@@ -2147,9 +2147,9 @@ flush_nat() {
 	ipset -F router >/dev/null 2>&1 && ipset -X router >/dev/null 2>&1
 	#remove_redundant_rule
 	ip_rule_exist=$(ip rule show | grep "lookup 310" | grep -c 310)
-	if [ -n "ip_rule_exist" ]; then
+	if [ -n "{ip_rule_exist}" ]; then
 		#echo_date 清除重复的ip rule规则.
-		until [ "$ip_rule_exist" == "0" ]; do
+		until [ "${ip_rule_exist}" == "0" ]; do
 			IP_ARG=$(ip rule show | grep "lookup 310" | head -n 1 | cut -d " " -f3,4,5,6)
 			ip rule del $IP_ARG
 			ip_rule_exist=$(expr $ip_rule_exist - 1)
@@ -2176,6 +2176,10 @@ create_ipset(){
 	#for router
 	ipset add router 172.217.4.131
 	ipset add router 8.8.8.8
+	ipset add router 151.101.0.133
+	ipset add router 151.101.64.133
+	ipset add router 151.101.128.133
+	ipset add router 151.101.192.133
 }
 
 add_white_black_ip() {

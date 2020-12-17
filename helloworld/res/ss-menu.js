@@ -156,7 +156,7 @@ function pop_111() {
 			shade: .7,
 			scrollbar: 0,
 			title: '国内外分流信息:ip111.cn',
-			area: ['850px', '350px'],
+			area: ['850px', '450px'],
 			fixed: false,
 			maxmin: true,
 			shadeClose: 1,
