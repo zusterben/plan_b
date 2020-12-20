@@ -71,8 +71,6 @@ perpare(){
 	fi
 	sed -i '/google.com.tw/d' /etc/hosts
 	echo "172.217.4.131 www.google.com.tw" >> /etc/hosts
-	sed -i '/raw.githubusercontent.com/d' /etc/hosts
-	echo "151.101.0.133 raw.githubusercontent.com" >> /etc/hosts
 }
 	
 use_chn_plan(){
