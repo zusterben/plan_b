@@ -22,6 +22,7 @@ prev = cur;
 rm gfwlist_tmp.txt
 }
 generate_china_banned gfwlist_download.conf > gfwlist_download_tmp.conf
+echo "dmhy.org" >> gfwlist_download_tmp.conf
 sed '/.*/s/.*/server=\/&\/127.0.0.1#7913\nipset=\/&\/gfwlist/' gfwlist_download_tmp.conf > gfwlist1.conf
 
 md5sum1=$(md5sum gfwlist1.conf | sed 's/ /\n/g' | sed -n 1p)
@@ -76,6 +77,8 @@ else
 	sed -i "4c $(date +%Y-%m-%d) # $md5sum5 cdn" ../version1
 fi
 echo =================
+
+#curl https://cdn.jsdelivr.net/gh/QiuSimons/Netflix_IP/getflix.txt > netflix_download.txt
 # ======================================
 rm google.china.conf
 rm apple.china.conf
