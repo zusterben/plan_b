@@ -23,6 +23,7 @@ rm gfwlist_tmp.txt
 }
 generate_china_banned gfwlist_download.conf > gfwlist_download_tmp.conf
 echo "dmhy.org" >> gfwlist_download_tmp.conf
+echo "s3.amazonaws.com" >> gfwlist_download_tmp.conf
 sed '/.*/s/.*/server=\/&\/127.0.0.1#7913\nipset=\/&\/gfwlist/' gfwlist_download_tmp.conf > gfwlist1.conf
 
 md5sum1=$(md5sum gfwlist1.conf | sed 's/ /\n/g' | sed -n 1p)
