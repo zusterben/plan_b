@@ -75,7 +75,7 @@ if [ "$md5sum5"x = "$md5sum6"x ]; then
 else
 	echo update cdn!
 	cp -f cdn1.txt ../cdn.txt
-	sed -i "4c $(date +%Y-%m-%d) # $md5sum5 cdn" ../version1
+	sed -i "3c $(date +%Y-%m-%d) # $md5sum5 cdn" ../version1
 fi
 echo =================
 

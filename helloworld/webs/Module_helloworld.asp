@@ -2644,7 +2644,7 @@ function set_mode_1() {
 		E("ss_acl_port").readonly = "readonly";
 		E("ss_acl_port").title = "";
 	} else if ($('#ss_acl_mode').val() == 2 || $('#ss_acl_mode').val() == 5) {
-		$("#ss_acl_port").val("22,80,443");
+		$("#ss_acl_port").val("22,53,587,465,995,993,143,80,443,853,9418");
 		E("ss_acl_port").readonly = "";
 		E("ss_acl_port").title = "";
 	}
@@ -2658,7 +2658,7 @@ function set_mode_2(o) {
 	} else if ($(o).val() == 1) {
 		$("#ss_acl_port_" + id2).val("80,443");
 	} else if ($(o).val() == 2) {
-		$("#ss_acl_port_" + id2).val("22,80,443");
+		$("#ss_acl_port_" + id2).val("22,53,587,465,995,993,143,80,443,853,9418");
 	}
 }
 function set_default_port() {
@@ -2716,7 +2716,7 @@ function refresh_acl_html() {
 	code += '<td width="23%">'
 	code += '<select id="ss_acl_port" style="width:152px;margin:0px 0px 0px 2px;text-align-last:center;padding-left: 12px;" class="input_option">'
 	code += '<option value="80,443">80,443</option>'
-	code += '<option value="22,80,443">22,80,443</option>'
+	code += '<option value="22,53,587,465,995,993,143,80,443,853,9418">22,53,587,465,995,993,143,80,443,853,9418</option>'
 	code += '<option value="all">all</option>'
 	code += '</select>'
 	code += '</td>'

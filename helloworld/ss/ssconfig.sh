@@ -1344,6 +1344,7 @@ create_v2ray_json(){
 			;;
 		xtls)
 			local xtls="{
+					\"allowInsecure\": true,
 					\"serverName\": \"$ss_basic_v2ray_network_tlshost\"
 					}"
 			local vless_flow="\"flow\": \"$ss_basic_v2ray_network_flow\","
@@ -1704,6 +1705,7 @@ create_v2ray_netflix(){
 			;;
 		xtls)
 			local xtls="{
+					\"allowInsecure\": true,
 					\"serverName\": \"$ss_basic_v2ray_network_tlshost\"
 					}"
 			local vless_flow="\"flow\": \"$ss_basic_v2ray_network_flow\","
