@@ -27,18 +27,18 @@ sed -i 's/\tdetect_package/\t# detect_package/g' /jffs/softcenter/scripts/ks_tar
 
 #### 注意：
 
-* 目前此系列必须挂载U盘才能开启软件中心，同时因为驱动bug的原因无法支持fat格式，优先推荐ext格式，且推荐读写速度高的U盘
+* 目前此系列当jffs小于40m时必须挂载U盘才能开启软件中心，同时因为驱动bug的原因无法支持fat格式，优先推荐ext格式，且推荐读写速度高的U盘
 * 强烈建议使用chrome或者chrouium内核的或者firefox浏览器！以保证最佳兼容性！
 
 ---
 
 ### [arm](https://github.com/zusterben/plan_b/tree/master/bin/arm)
 
-> **arm**离线安装包仅能在博通平台，且linux内核为2.6.36.4的armv7架构的机器上使用！
+> **arm**离线安装包仅能在博通arm平台，且linux内核为2.6.36.4的armv7架构的机器上使用！
 
 **arm**支持机型如下：
 
-* 华硕系列：[`RT-AC68U` `RT-AC66U-B1` `RT-AC1900P` `RT-AC87U` `RT-AC88U` `RT-AC3100` `RT-AC3200` `RT-AC5300`](https://github.com/zusterben/plan_b/tree/master/bin/arm)
+* 华硕系列：[`RT-AC68U` `RT-AC66U-B1` `RT-AC1900P` `RT-AC88U` `RT-AC3100` `RT-AC3200` `RT-AC5300`](https://github.com/zusterben/plan_b/tree/master/bin/arm)
 * 斐讯系列：[`K3`](https://github.com/zusterben/plan_b/tree/master/bin/arm)
 * 网件系列：[`R6900P` `R7000P` `R7000`](https://github.com/zusterben/plan_b/tree/master/bin/arm)
 * 领势系列：[`EA6700`](https://github.com/zusterben/plan_b/tree/master/bin/arm)
@@ -47,6 +47,7 @@ sed -i 's/\tdetect_package/\t# detect_package/g' /jffs/softcenter/scripts/ks_tar
 
 #### 注意：
 
+* 目前此系列当jffs小于40m时必须挂载U盘才能开启软件中心，同时因为驱动bug的原因无法支持fat格式，优先推荐ext格式，且推荐读写速度高的U盘
 * 强烈建议使用chrome或者chrouium内核的或者firefox浏览器！以保证最佳兼容性！
 
 ---
@@ -69,11 +70,11 @@ sed -i 's/\tdetect_package/\t# detect_package/g' /jffs/softcenter/scripts/ks_tar
 
 ### [armng](https://github.com/zusterben/plan_b/tree/master/bin/armng)
 
-> **armng**离线安装包能在内核为4.1和3.14的armv7架构的机器上使用！
+> **armng**离线安装包能在带有FPU的armv7架构的机器上使用(包含博通、高通、mtk)！
 
 **armng**支持机型如下：
 
-* 华硕系列：[`RT-AX56U` `RT-AX58U` `TUF-AX3000` `RT-AX82U` `RT-ACRH17` `RT-AC2200` `RT-AX89X`](https://github.com/zusterben/plan_b/tree/master/bin/armng)
+* 华硕系列：[`RT-AX56U` `RT-AX58U` `TUF-AX3000` `RT-AX82U` `RT-ACRH17` `RT-AC2200` `RT-AX89X` `RT-ACRH18`](https://github.com/zusterben/plan_b/tree/master/bin/armng)
 * 网件系列：[`RAX20` `RAX50`](https://github.com/zusterben/plan_b/tree/master/bin/armng)
 * 天邑系列：[`TY6201`](https://github.com/zusterben/plan_b/tree/master/bin/armng)
 
@@ -95,7 +96,7 @@ sed -i 's/\tdetect_package/\t# detect_package/g' /jffs/softcenter/scripts/ks_tar
 
 #### 注意：
 
-* 目前此系列必须挂载U盘才能开启软件中心，同时因为驱动bug的原因无法支持fat格式，优先推荐ext格式，且推荐读写速度高的U盘
+* 目前此系列当jffs小于40m时必须挂载U盘才能开启软件中心，同时因为驱动bug的原因无法支持fat格式，优先推荐ext格式，且推荐读写速度高的U盘
 * 强烈建议使用chrome或者chrouium内核的或者firefox浏览器！以保证最佳兼容性！
   
 
