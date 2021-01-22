@@ -6,7 +6,7 @@ curl https://cdn.jsdelivr.net/gh/gfwlist/gfwlist/gfwlist.txt > gfwlist_download.
 generate_china_banned() {
 cat $1 | base64 -d > gfwlist_tmp.txt
 sed -i '/^@@|/d' gfwlist_tmp.txt
-cat gfwlist_tmp.txt | sort -u |
+cat gfwlist_tmp.txt gfwlist_tmp.conf | sort -u |
 sed 's#!.\+##; s#|##g; s#@##g; s#http:\/\/##; s#https:\/\/##;' |
 sed '/\*/d; /apple\.com/d; /sina\.cn/d; /sina\.com\.cn/d; /baidu\.com/d; /byr\.cn/d; /jlike\.com/d; /weibo\.com/d; /zhongsou\.com/d; /youdao\.com/d; /sogou\.com/d; /so\.com/d; /soso\.com/d; /aliyun\.com/d; /taobao\.com/d; /jd\.com/d; /qq\.com/d; /windowsupdate/d' |
 sed '/^[0-9]\+\.[0-9]\+\.[0-9]\+\.[0-9]\+$/d' |
@@ -21,9 +21,11 @@ prev = cur;
 }' | sort -u
 rm gfwlist_tmp.txt
 }
+echo "dmhy.org" >> gfwlist_tmp.conf
+echo "gab.com" >> gfwlist_tmp.conf
+echo "safechat.com" >> gfwlist_tmp.conf
 generate_china_banned gfwlist_download.conf > gfwlist_download_tmp.conf
-echo "dmhy.org" >> gfwlist_download_tmp.conf
-echo "s3.amazonaws.com" >> gfwlist_download_tmp.conf
+
 sed '/.*/s/.*/server=\/&\/127.0.0.1#7913\nipset=\/&\/gfwlist/' gfwlist_download_tmp.conf > gfwlist1.conf
 
 md5sum1=$(md5sum gfwlist1.conf | sed 's/ /\n/g' | sed -n 1p)
@@ -83,5 +85,5 @@ echo =================
 # ======================================
 rm google.china.conf
 rm apple.china.conf
-rm gfwlist1.conf gfwlist_download.conf gfwlist_download_tmp.conf chnroute1.txt
+rm gfwlist1.conf gfwlist_download.conf gfwlist_download_tmp.conf chnroute1.txt gfwlist_tmp.conf
 rm cdn1.txt accelerated-domains.china.conf cdn_download.txt
