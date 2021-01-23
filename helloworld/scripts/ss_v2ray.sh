@@ -187,6 +187,8 @@ case $2 in
 1)
 	echo " " > /tmp/upload/ss_log.txt
 	http_response "$1"
+	echo_date "使用xray替换v2ray"
+	exit 0
 	echo_date "===================================================================" >> /tmp/upload/ss_log.txt
 	echo_date "                v2ray程序更新" >> /tmp/upload/ss_log.txt
 	echo_date "===================================================================" >> /tmp/upload/ss_log.txt

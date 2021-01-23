@@ -16,8 +16,6 @@ rm -rf /jffs/softcenter/bin/rss-local
 rm -rf /jffs/softcenter/bin/obfs-local
 rm -rf /jffs/softcenter/bin/dns2socks
 rm -rf /jffs/softcenter/bin/client_linux
-rm -rf /jffs/softcenter/bin/v2ray
-rm -rf /jffs/softcenter/bin/v2ctl
 rm -rf /jffs/softcenter/bin/v2ray-plugin
 rm -rf /jffs/softcenter/bin/trojan
 rm -rf /jffs/softcenter/bin/xray

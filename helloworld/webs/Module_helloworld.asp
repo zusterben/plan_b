@@ -431,7 +431,8 @@ function push_data(script, arg, obj, flag){
 		data: JSON.stringify(postData),
 		dataType: "json",
 		success: function(response){
-			if(response.result == id){
+			//返回太快变成string"1111"
+			if(response.result == id || parseInt(response.result) == id){
 				if(flag && flag == "1"){
 					refreshpage();
 				}else if(flag && flag == "2"){

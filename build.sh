@@ -1,7 +1,7 @@
 #!/bin/sh
 
 MODULE=helloworld
-VERSION=0.2.4
+VERSION=0.2.5
 TITLE="ShadowSocksR Plus"
 DESCRIPTION="ShadowSocksR Plus"
 HOME_URL=Module_helloworld.asp
@@ -90,7 +90,7 @@ do_backup(){
 cp_rules
 for arch in $arch_list
 do
-sync_v2ray_binary $arch
+#sync_v2ray_binary $arch
 sync_xray_binary $arch
 do_build $arch
 do_backup $arch
