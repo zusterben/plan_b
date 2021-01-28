@@ -1330,10 +1330,6 @@ create_v2ray_json(){
 		local tls="null"
 		local xtls="null"
 		local vless_flow=""
-		local mux="\"mux\": {
-						\"enabled\": $(get_function_switch $ss_basic_v2ray_mux_enable),
-						\"concurrency\": $ss_basic_v2ray_mux_concurrency
-					}"
 
 		# tcp和kcp下tlsSettings为null，ws和h2下tlsSettings
 		[ -z "$ss_basic_v2ray_mux_concurrency" ] && local ss_basic_v2ray_mux_concurrency=8
@@ -1352,7 +1348,7 @@ create_v2ray_json(){
 					\"serverName\": \"$ss_basic_v2ray_network_tlshost\"
 					}"
 			local vless_flow="\"flow\": \"$ss_basic_v2ray_network_flow\","
-			local mux="\"mux\": null"
+			ss_basic_v2ray_mux_enable=0
 			;;
 		*)
 			local tls="null"
@@ -1542,7 +1538,10 @@ create_v2ray_json(){
 					  "wsSettings": $ws,
 					  "httpSettings": $h2
 					},
-					$mux
+					"mux": {
+						"enabled": $(get_function_switch $ss_basic_v2ray_mux_enable),
+						"concurrency": $ss_basic_v2ray_mux_concurrency
+					}
 				  }
 				]
 				}
@@ -1693,10 +1692,6 @@ create_v2ray_netflix(){
 		local tls="null"
 		local xtls="null"
 		local vless_flow=""
-		local mux="\"mux\": {
-						\"enabled\": $(get_function_switch $ss_basic_v2ray_mux_enable),
-						\"concurrency\": $ss_basic_v2ray_mux_concurrency
-					}"
 
 		# tcp和kcp下tlsSettings为null，ws和h2下tlsSettings
 		[ -z "$ss_basic_v2ray_mux_concurrency" ] && local ss_basic_v2ray_mux_concurrency=8
@@ -1715,7 +1710,7 @@ create_v2ray_netflix(){
 					\"serverName\": \"$ss_basic_v2ray_network_tlshost\"
 					}"
 			local vless_flow="\"flow\": \"$ss_basic_v2ray_network_flow\","
-			local mux="\"mux\": null"
+			ss_basic_v2ray_mux_enable=0
 			;;
 		*)
 			local tls="null"
@@ -1826,7 +1821,7 @@ create_v2ray_netflix(){
 				],
 			EOF
 		# outbounds area
-		if [ "$ss_basic_v2ray_vmessvless" == "vmess" ]; then
+		if [ "$ss_basic_v2ray_vmessvless" != "vless" ]; then
 		cat >>"$V2RAY_CONFIG_FILE_TMP" <<-EOF
 			"outbounds": [
 				{
@@ -1899,7 +1894,10 @@ create_v2ray_netflix(){
 					  "wsSettings": $ws,
 					  "httpSettings": $h2
 					},
-					$mux
+					"mux": {
+						"enabled": $(get_function_switch $ss_basic_v2ray_mux_enable),
+						"concurrency": $ss_basic_v2ray_mux_concurrency
+					}
 				  }
 				]
 				}

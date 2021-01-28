@@ -45,7 +45,7 @@ fi
 # 先关闭ss
 if [ "$ss_basic_enable" == "1" ];then
 	echo_date 先关闭科学上网插件，保证文件更新成功!
-	[ -f "/jffs/softcenter/ss/stop.sh" ] && sh /jffs/softcenter/ss/stop.sh stop_all || sh /jffs/softcenter/ss/ssconfig.sh stop
+	sh /jffs/softcenter/ss/ssconfig.sh stop
 fi
 
 if [ -n "$(ls /jffs/softcenter/ss/postscripts/P*.sh 2>/dev/null)" ];then
