@@ -7,7 +7,7 @@ MODEL=$(nvram get productid)
 mkdir -p /jffs/softcenter/ss
 mkdir -p /tmp/upload
 
-firmware_version=`nvram get extendno|cut -d "_" -f2|cut -d "-" -f1|cut -c2-6`
+firmware_version=`dbus get softcenter_firmware_version`
 #api1.5
 firmware_check=5.1.2
 
@@ -34,11 +34,9 @@ else
 	echo_date U盘已挂载，继续安装！
 fi
 
-if [ "$MODEL" == "GT-AC5300" ] || [ "$MODEL" == "GT-AC2900" ] || [ "$(nvram get merlinr_rog)" == "1" ];then
+if [ "${MODEL:0:3}" == "GT-" ] || [ "$(nvram get merlinr_rog)" == "1" ];then
 	ROG=1
-fi
-
-if [ "$MODEL" == "TUF-AX3000" ] || [ "$(nvram get merlinr_tuf)" == "1" ];then
+elif [ "${MODEL:0:3}" == "TUF" ] || [ "$(nvram get merlinr_tuf)" == "1" ];then
 	TUF=1
 fi
 
