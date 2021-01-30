@@ -1333,7 +1333,6 @@ create_v2ray_json(){
 
 		# tcp和kcp下tlsSettings为null，ws和h2下tlsSettings
 		[ -z "$ss_basic_v2ray_mux_concurrency" ] && local ss_basic_v2ray_mux_concurrency=8
-		[ "$ss_basic_v2ray_network_security" == "none" ] && local ss_basic_v2ray_network_security=""
 		#if [ "$ss_basic_v2ray_network" == "ws" -o "$ss_basic_v2ray_network" == "h2" ];then
 		case "$ss_basic_v2ray_network_security" in
 		tls)
@@ -1695,7 +1694,6 @@ create_v2ray_netflix(){
 
 		# tcp和kcp下tlsSettings为null，ws和h2下tlsSettings
 		[ -z "$ss_basic_v2ray_mux_concurrency" ] && local ss_basic_v2ray_mux_concurrency=8
-		[ "$ss_basic_v2ray_network_security" == "none" ] && local ss_basic_v2ray_network_security=""
 		#if [ "$ss_basic_v2ray_network" == "ws" -o "$ss_basic_v2ray_network" == "h2" ];then
 		case "$ss_basic_v2ray_network_security" in
 		tls)

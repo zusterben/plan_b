@@ -1,1 +1,2 @@
 e0be972a94142514bf1cd74bfb621cb4 helloworld_0.2.6.tar.gz
+42fa49b522e840ee601aa3e7aecd2742 helloworld_0.2.7.tar.gz

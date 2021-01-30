@@ -387,7 +387,7 @@ function save() {
 					dbus["ssconf_basic_" + remove_ss[i] + "_" + node_sel] = "";
 				}
 			}else{
-				var remove_trojan = [ "method", "ssr_protocol", "ssr_protocol_param", "ssr_obfs", "ssr_obfs_param", "v2ray_use_json", "v2ray_uuid", "v2ray_alterid", "v2ray_security", "v2ray_network", "v2ray_headtype_tcp", "v2ray_headtype_kcp", "v2ray_network_path", "v2ray_network_host", "v2ray_network_security", "v2ray_network_tlshost", "v2ray_network_flow", "v2ray_json"];
+				var remove_trojan = [ "method", "ssr_protocol", "ssr_protocol_param", "ssr_obfs", "ssr_obfs_param", "v2ray_use_json", "v2ray_uuid", "v2ray_alterid", "v2ray_vmessvless", "v2ray_security", "v2ray_network", "v2ray_headtype_tcp", "v2ray_headtype_kcp", "v2ray_network_path", "v2ray_network_host", "v2ray_network_security", "v2ray_network_tlshost", "v2ray_network_flow", "v2ray_json"];
 				dbus["ss_basic_type"] = "3"
 				dbus["ssconf_basic_type_" + node_sel] = "3"
 				for (var i = 0; i < remove_trojan.length; i++) {
@@ -1036,6 +1036,7 @@ function add_ss_node_conf(flag) {
 				E("ss_node_table_ssr_obfs_param").value = "";
 				E("ss_node_table_v2ray_uuid").value = "";
 				E("ss_node_table_v2ray_alterid").value = "";
+				E("ss_node_table_v2ray_vmessvless").value = "";
 				E("ss_node_table_v2ray_json").value = "";
 				cancel_add_rule();
 			}
@@ -1264,6 +1265,7 @@ function edit_ss_node_conf(flag) {
 			E("ss_node_table_ssr_obfs_param").value = "";
 			E("ss_node_table_v2ray_uuid").value = "";
 			E("ss_node_table_v2ray_alterid").value = "";
+			E("ss_node_table_v2ray_vmessvless").value = "";
 			E("ss_node_table_v2ray_json").value = "";
 		}
 	});
@@ -3179,7 +3181,7 @@ function save_failover() {
 																	{ title: '混淆参数 (obfs_param)', rid:'ssr_obfs_param_tr', id:'ss_node_table_ssr_obfs_param', type:'text', maxlen:'300', style:'width:338px', ph:'bing.com'},
 																	{ title: '用户id（id）', rid:'v2ray_uuid_tr', id:'ss_node_table_v2ray_uuid', type:'text', maxlen:'300', style:'width:338px'},
 																	{ title: '额外ID (Alterld)', rid:'v2ray_alterid_tr', id:'ss_node_table_v2ray_alterid', type:'text', maxlen:'300', style:'width:338px'},
-																	{ title: '协议protocol（vmess/vless）', rid:'v2ray_vmessvless_tr', id:'ss_node_table_v2ray_vmessvless', type:'select', func:'v', options:["vmess", "vless"], style:'width:350px', value: "vmess"},
+																	{ title: '协议protocol（vmess/vless）', rid:'v2ray_vmessvless_tr', id:'ss_node_table_v2ray_vmessvless', type:'select', func:'v', options:[["vmess", "vmess"], ["vless", "vless"]], style:'width:350px', value: "vmess"},
 																	{ title: '加密方式 (security)', rid:'v2ray_security_tr', id:'ss_node_table_v2ray_security', type:'select', options:option_v2enc, style:'width:350px', value: "auto"},
 																	{ title: '传输协议 (network)', rid:'v2ray_network_tr', id:'ss_node_table_v2ray_network', type:'select', func:'v', options:["tcp", "kcp", "ws", "h2"], style:'width:350px', value: "tcp"},
 																	{ title: 'tcp伪装类型 (type)', rid:'v2ray_headtype_tcp_tr', id:'ss_node_table_v2ray_headtype_tcp', type:'select', func:'v', options:option_headtcp, style:'width:350px', value: "none"},
@@ -3233,7 +3235,7 @@ function save_failover() {
 														{ title: '混淆参数 (obfs_param)', id:'ss_basic_ssr_obfs_param', type:'text', hint:'11', maxlen:'300', ph:'cloudflare.com;bing.com'},
 														{ title: '用户id (id)', id:'ss_basic_v2ray_uuid', type:'password', hint:'49', maxlen:'300', style:'width:300px;', peekaboo:'1'},
 														{ title: '额外ID (Alterld)', id:'ss_basic_v2ray_alterid', type:'text', hint:'48', maxlen:'50'},
-														{ title: '协议protocol（vmess/vless）', id:'ss_basic_v2ray_vmessvless', type:'select', func:'v', hint:'49', options:["vmess", "vless"], value: "vmess"},
+														{ title: '协议protocol（vmess/vless）', id:'ss_basic_v2ray_vmessvless', type:'select', func:'v', hint:'49', options:[["vmess", "vmess"], ["vless", "vless"]], value: "vmess"},
 														{ title: '加密方式 (security)', id:'ss_basic_v2ray_security', type:'select', hint:'47', options:option_v2enc},
 														{ title: '传输协议 (network)', id:'ss_basic_v2ray_network', type:'select', func:'v', hint:'35', options:["tcp", "kcp", "ws", "h2"]},
 														{ title: '* tcp伪装类型 (type)', id:'ss_basic_v2ray_headtype_tcp', type:'select', func:'v', hint:'36', options:option_headtcp},
