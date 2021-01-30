@@ -174,7 +174,7 @@ function conf2obj(obj, action) {
 function ssconf_node2obj(node_sel) {
 	var p = "ssconf_basic";
 	var obj = {};
-	var params2 = ["password", "v2ray_json", "server", "mode", "port", "password", "method", "ss_obfs", "ss_obfs_host", "ss_v2ray", "ss_v2ray_opts", "ssr_protocol", "ssr_protocol_param", "ssr_obfs", "ssr_obfs_param", "use_kcp", "v2ray_uuid", "v2ray_alterid", "v2ray_vmessvless", "v2ray_security", "v2ray_network", "v2ray_headtype_tcp", "v2ray_headtype_kcp", "v2ray_network_path", "v2ray_network_host", "v2ray_mux_enable", "v2ray_network_security", "v2ray_network_tlshost", "v2ray_network_flow", "v2ray_mux_concurrency", "v2ray_use_json","trojan", "trojan_sni", "ssl_verify_enable", "trojan_mp_enable","trojan_mulprocess"];
+	var params2 = ["password", "v2ray_json", "server", "mode", "port", "password", "method", "ss_obfs", "ss_obfs_host", "ss_v2ray", "ss_v2ray_opts", "ssr_protocol", "ssr_protocol_param", "ssr_obfs", "ssr_obfs_param", "use_kcp", "v2ray_uuid", "v2ray_alterid", "v2ray_vmessvless", "v2ray_security", "v2ray_network", "v2ray_headtype_tcp", "v2ray_headtype_kcp", "v2ray_network_path", "v2ray_network_host", "v2ray_mux_enable", "v2ray_network_security", "v2ray_network_tlshost", "v2ray_network_flow", "v2ray_mux_concurrency", "v2ray_use_json", "trojan_sni", "ssl_verify_enable", "trojan_mp_enable","trojan_mulprocess"];
 	for (var i = 0; i < params2.length; i++) {
 		obj["ss_basic_" + params2[i]] = db_ss[p + "_" + params2[i] + "_" + node_sel] || "";
 	}
@@ -345,7 +345,7 @@ function save() {
 		}
 	}
 	// node data: write node data under using from the main pannel incase of data change
-	var params = ["server", "mode", "port", "method", "ss_obfs", "ss_obfs_host", "ss_v2ray", "ss_v2ray_opts", "ssr_protocol", "ssr_protocol_param", "ssr_obfs", "ssr_obfs_param", "v2ray_uuid", "v2ray_alterid", "v2ray_vmessvless", "v2ray_security", "v2ray_network", "v2ray_headtype_tcp", "v2ray_headtype_kcp", "v2ray_network_path", "v2ray_network_host", "v2ray_network_security", "v2ray_network_tlshost", "v2ray_network_flow", "v2ray_mux_concurrency", "trojan", "trojan_sni", "trojan_mulprocess"];
+	var params = ["server", "mode", "port", "method", "ss_obfs", "ss_obfs_host", "ss_v2ray", "ss_v2ray_opts", "ssr_protocol", "ssr_protocol_param", "ssr_obfs", "ssr_obfs_param", "v2ray_uuid", "v2ray_alterid", "v2ray_vmessvless", "v2ray_security", "v2ray_network", "v2ray_headtype_tcp", "v2ray_headtype_kcp", "v2ray_network_path", "v2ray_network_host", "v2ray_network_security", "v2ray_network_tlshost", "v2ray_network_flow", "v2ray_mux_concurrency", "trojan_sni", "trojan_mulprocess"];
 	for (var i = 0; i < params.length; i++) {
 		dbus["ssconf_basic_" + params[i] + "_" + node_sel] = E("ss_basic_" + params[i]).value;
 	}
@@ -353,9 +353,7 @@ function save() {
 	dbus["ssconf_basic_use_kcp_" + node_sel] = E("ss_basic_use_kcp").checked ? '1' : '0';
 	dbus["ssconf_basic_v2ray_use_json_" + node_sel] = E("ss_basic_v2ray_use_json").checked ? '1' : '0';
 	dbus["ssconf_basic_v2ray_mux_enable_" + node_sel] = E("ss_basic_v2ray_mux_enable").checked ? '1' : '0';
-	dbus["ss_basic_ssl_verify_enable"] = E("ss_basic_ssl_verify_enable").checked ? '1' : '0'; 
 	dbus["ssconf_basic_ssl_verify_enable_" + node_sel] = E("ss_basic_ssl_verify_enable").checked ? '1' : '0'; 
-	dbus["ss_basic_trojan_mp_enable"] = E("ss_basic_trojan_mp_enable").checked ? '1' : '0';
 	dbus["ssconf_basic_trojan_mp_enable_" + node_sel] = E("ss_basic_trojan_mp_enable").checked ? '1' : '0';
 	// node data: base64
 	dbus["ssconf_basic_password_" + node_sel] = Base64.encode(E("ss_basic_password").value);
@@ -667,7 +665,6 @@ function Add_profile() { //点击节点页面内添加节点动作
 	E("ss_node_table_port").value = "";
 	E("ss_node_table_password").value = "";
 	E("ss_node_table_method").value = "aes-256-cfb";
-	E("ss_node_table_trojan").value = "";
 	E("ss_node_table_trojan_mulprocess").value = "";
 	E("ss_node_table_trojan_mp_enable").checked == false;
 	E("ss_node_table_mode").value = "1";
@@ -790,7 +787,6 @@ function tabclickhandler(_type) {
 		E('ss_name_support_tr').style.display = "";
 		E('ss_passwd_support_tr').style.display = "none";
 		E('ss_method_support_tr').style.display = "none";
-		E("ss_node_table_trojan").value = ""; 
 		E("ss_node_table_trojan_mp_enable").checked = false;
 		E("ss_node_table_trojan_mulprocess").value = "";
 		E('ss_trojan_tr').style.display ="none";
@@ -881,7 +877,6 @@ function tabclickhandler(_type) {
 		E('ss_port_support_tr').style.display = "";
 		E('ss_passwd_support_tr').style.display = "";
 		E('ss_method_support_tr').style.display = "none";
-		E("ss_node_table_trojan").value = "trojan";
 		E('ss_trojan_tr').style.display ="none";
 		E('ssl_verify_enable_tr').style.display ="";
 		E("ss_node_table_ssl_verify_enable").checked = true; 
@@ -1022,7 +1017,6 @@ function add_ss_node_conf(flag) {
 				E("ss_node_table_port").value = "";
 				E("ss_node_table_password").value = "";
 				E("ss_node_table_method").value = "aes-256-cfb";
-				E("ss_node_table_trojan").value = "";
 				E("ss_node_table_trojan_mp_enable").checked = false;
 				E("ss_node_table_trojan_mulprocess").value = "";
 				E("ss_node_table_mode").value = "1";
@@ -1056,7 +1050,7 @@ function remove_conf_table(o) {
 
 	var dbus_tmp = {};
 	var perf = "ssconf_basic_"
-	var temp = ["name", "server", "server_ip", "mode", "port", "password", "method", "ssr_protocol", "ssr_protocol_param", "ssr_obfs", "ssr_obfs_param", "use_kcp", "ss_obfs", "ss_obfs_host", "ss_v2ray", "ss_v2ray_opts", "use_lb", "ping", "lbmode", "weight", "use_kcp", "group", "v2ray_uuid", "v2ray_alterid", "v2ray_vmessvless", "v2ray_security", "v2ray_network", "v2ray_headtype_tcp", "v2ray_headtype_kcp", "v2ray_network_path", "v2ray_network_host", "v2ray_network_security", "v2ray_network_tlshost", "v2ray_network_flow", "v2ray_mux_concurrency", "v2ray_json", "v2ray_use_json", "v2ray_mux_enable", "type","trojan", "trojan_sni", "ssl_verify_enable", "trojan_mp_enable","trojan_mulprocess"];
+	var temp = ["name", "server", "server_ip", "mode", "port", "password", "method", "ssr_protocol", "ssr_protocol_param", "ssr_obfs", "ssr_obfs_param", "use_kcp", "ss_obfs", "ss_obfs_host", "ss_v2ray", "ss_v2ray_opts", "use_lb", "ping", "lbmode", "weight", "use_kcp", "group", "v2ray_uuid", "v2ray_alterid", "v2ray_vmessvless", "v2ray_security", "v2ray_network", "v2ray_headtype_tcp", "v2ray_headtype_kcp", "v2ray_network_path", "v2ray_network_host", "v2ray_network_security", "v2ray_network_tlshost", "v2ray_network_flow", "v2ray_mux_concurrency", "v2ray_json", "v2ray_use_json", "v2ray_mux_enable", "type", "trojan_sni", "ssl_verify_enable", "trojan_mp_enable","trojan_mulprocess"];
 	var new_nodes = ss_nodes.concat()
 	new_nodes.splice(new_nodes.indexOf(id), 1);
 	//first: mark all node from ss_nodes data as empty
@@ -1107,7 +1101,7 @@ function edit_conf_table(o) {
 	var c = confs[id];
 	var params1_base64 = ["password"];
 	var params1_check = ["v2ray_use_json", "v2ray_mux_enable", "ssl_verify_enable", "trojan_mp_enable"];
-	var params1_input = ["name", "server", "mode", "port", "method", "ss_obfs", "ss_obfs_host", "ss_v2ray", "ss_v2ray_opts", "ssr_protocol", "ssr_protocol_param", "ssr_obfs", "ssr_obfs_param", "v2ray_uuid", "v2ray_alterid", "v2ray_vmessvless", "v2ray_security", "v2ray_network", "v2ray_headtype_tcp", "v2ray_headtype_kcp", "v2ray_network_path", "v2ray_network_host", "v2ray_network_security", "v2ray_network_tlshost", "v2ray_network_flow", "v2ray_mux_concurrency","trojan", "trojan_sni","trojan_mulprocess"];
+	var params1_input = ["name", "server", "mode", "port", "method", "ss_obfs", "ss_obfs_host", "ss_v2ray", "ss_v2ray_opts", "ssr_protocol", "ssr_protocol_param", "ssr_obfs", "ssr_obfs_param", "v2ray_uuid", "v2ray_alterid", "v2ray_vmessvless", "v2ray_security", "v2ray_network", "v2ray_headtype_tcp", "v2ray_headtype_kcp", "v2ray_network_path", "v2ray_network_host", "v2ray_network_security", "v2ray_network_tlshost", "v2ray_network_flow", "v2ray_mux_concurrency", "trojan_sni","trojan_mulprocess"];
 	if(c["v2ray_json"]){
 		E("ss_node_table_v2ray_json").value = do_js_beautify(Base64.decode(c["v2ray_json"]));
 	}
@@ -1253,7 +1247,6 @@ function edit_ss_node_conf(flag) {
 			E("ss_node_table_server").value = "";
 			E("ss_node_table_password").value = "";
 			E("ss_node_table_method").value = "aes-256-cfb";
-			E("ss_node_table_trojan").value = "";
 			E("ss_node_table_mode").value = "1";
 			E("ss_node_table_ss_obfs").value = "0"
 			E("ss_node_table_ss_obfs_host").value = "";
@@ -1317,7 +1310,7 @@ function generate_node_info() {
 			}
 		}
 		//这些值统一处理
-		var params = ["group", "name", "port", "method", "password", "mode", "ss_obfs", "ss_obfs_host", "ss_v2ray", "ss_v2ray_opts", "ssr_protocol", "ssr_protocol_param", "ssr_obfs", "ssr_obfs_param", "weight", "lbmode", "v2ray_uuid", "v2ray_alterid", "v2ray_vmessvless", "v2ray_security", "v2ray_network", "v2ray_headtype_tcp", "v2ray_headtype_kcp", "v2ray_network_path", "v2ray_network_host", "v2ray_network_security", "v2ray_network_tlshost", "v2ray_network_flow", "v2ray_mux_concurrency", "v2ray_json", "v2ray_use_json", "trojan", "trojan_sni","trojan_mulprocess"];
+		var params = ["group", "name", "port", "method", "password", "mode", "ss_obfs", "ss_obfs_host", "ss_v2ray", "ss_v2ray_opts", "ssr_protocol", "ssr_protocol_param", "ssr_obfs", "ssr_obfs_param", "weight", "lbmode", "v2ray_uuid", "v2ray_alterid", "v2ray_vmessvless", "v2ray_security", "v2ray_network", "v2ray_headtype_tcp", "v2ray_headtype_kcp", "v2ray_network_path", "v2ray_network_host", "v2ray_network_security", "v2ray_network_tlshost", "v2ray_network_flow", "v2ray_mux_concurrency", "v2ray_json", "v2ray_use_json", "trojan_sni","trojan_mulprocess"];
 		for (var i = 0; i < params.length; i++) {
 			var ofield = p + "_" + params[i] + "_" + idx;
 			if (typeof db_ss[ofield] == "undefined") {
@@ -1589,7 +1582,7 @@ function save_new_order(){
 	var tr = table.getElementsByTagName("tr");
 	var dbus_tmp = {};
 	var perf = "ssconf_basic_"
-	var temp = ["name", "server", "server_ip", "mode", "port", "password", "method", "ssr_protocol", "ssr_protocol_param", "ssr_obfs", "ssr_obfs_param", "use_kcp", "ss_obfs", "ss_obfs_host", "ss_v2ray", "ss_v2ray_opts", "use_lb", "ping", "lbmode", "weight", "use_kcp", "group", "v2ray_uuid", "v2ray_alterid", "v2ray_vmessvless", "v2ray_security", "v2ray_network", "v2ray_headtype_tcp", "v2ray_headtype_kcp", "v2ray_network_path", "v2ray_network_host", "v2ray_network_security", "v2ray_network_tlshost", "v2ray_network_flow", "v2ray_mux_concurrency", "v2ray_json", "v2ray_use_json", "v2ray_mux_enable", "type","trojan", "trojan_sni", "ssl_verify_enable", "trojan_mp_enable", "trojan_mulprocess"];
+	var temp = ["name", "server", "server_ip", "mode", "port", "password", "method", "ssr_protocol", "ssr_protocol_param", "ssr_obfs", "ssr_obfs_param", "use_kcp", "ss_obfs", "ss_obfs_host", "ss_v2ray", "ss_v2ray_opts", "use_lb", "ping", "lbmode", "weight", "use_kcp", "group", "v2ray_uuid", "v2ray_alterid", "v2ray_vmessvless", "v2ray_security", "v2ray_network", "v2ray_headtype_tcp", "v2ray_headtype_kcp", "v2ray_network_path", "v2ray_network_host", "v2ray_network_security", "v2ray_network_tlshost", "v2ray_network_flow", "v2ray_mux_concurrency", "v2ray_json", "v2ray_use_json", "v2ray_mux_enable", "type", "trojan_sni", "ssl_verify_enable", "trojan_mp_enable", "trojan_mulprocess"];
 	//first: mark all node from ss_nodes data as empty
 	for (var i = 0; i < tr.length; i++) {
 		var rowid = tr[i].getAttribute("id").split("_")[1];
@@ -3166,7 +3159,6 @@ function save_failover() {
 																	{ title: '服务器端口', rid:'ss_port_support_tr', id:'ss_node_table_port', type:'text', maxlen:'64', style:'width:338px'},
 																	{ title: '密码', rid:'ss_passwd_support_tr', id:'ss_node_table_password', type:'text', maxlen:'64', style:'width:338px'},
 																	{ title: '加密方式', rid:'ss_method_support_tr', id:'ss_node_table_method', type:'select', options:option_method, style:'width:350px', value: "aes-256-cfb"},
-																	{ title: 'Trojan模式', rid:'ss_trojan_tr', id:'ss_node_table_trojan', type:'text', maxlen:'64', style:'width:338px',value:"trojan"},
 																	{ title: '验证SSL证书', rid:'ssl_verify_enable_tr', id:'ss_node_table_ssl_verify_enable', type:'checkbox', func:'v', value:true},
 																	{ title: 'sni', rid:'trojan_sni_tr', id:'ss_node_table_trojan_sni', type:'text', maxlen:'300', style:'width:338px'},
 																	{ title: 'Trojan多开', rid:'ss_trojan_mp_enable_tr', id:'ss_node_table_trojan_mp_enable', type:'checkbox', func:'v', value:false},
