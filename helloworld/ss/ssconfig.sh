@@ -561,6 +561,9 @@ start_dns() {
 			uptest=none;
 			interval=10m;
 			purge_cache=off;
+			reject=::/0;
+			reject_policy=negate;
+			reject_recursively=on;
 			}
 		EOF
 		chmod 644 /etc/pdnsd.conf
