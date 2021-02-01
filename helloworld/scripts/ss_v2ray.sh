@@ -3,23 +3,27 @@
 source /jffs/softcenter/scripts/base.sh
 eval $(dbus export ss_basic_)
 alias echo_date='echo 【$(TZ=UTC-8 date -R +%Y年%m月%d日\ %X)】:'
-V2RAY_CONFIG_FILE="/koolshare/ss/v2ray.json"
 url_main="https://raw.githubusercontent.com/zusterben/plan_b/master/v2ray_binary"
 url_back=""
 ARCH=`uname -m`
 KVER=`uname -r`
 if [ "$ARCH" == "armv7l" ]; then
-	if [ "$KVER" == "4.1.52" -o "$KVER" == "3.14.77" ];then
+	if [ "$KVER" != "2.6.36.4brcmarm" ];then
+#bcm675x/ipq4/5/6/80xx/mt7622
 		ARCH_SUFFIX="armng"
 	else
+#bcm470x
 		ARCH_SUFFIX="arm"
 	fi
 elif [ "$ARCH" == "aarch64" ]; then
+#bcm490x
 	ARCH_SUFFIX="arm64"
 elif [ "$ARCH" == "mips" ]; then
 	if [ "$KVER" == "3.10.14" ];then
+#mtk6721
 		ARCH_SUFFIX="mipsle"
 	else
+#grx500
 		ARCH_SUFFIX="mips"
 	fi
 elif [ "$ARCH" == "mipsle" ]; then

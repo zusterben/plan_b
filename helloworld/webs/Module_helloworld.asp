@@ -710,7 +710,6 @@ function tabclickhandler(_type) {
 		E('ss_method_support_tr').style.display = "";
 		E("ss_node_table_trojan_mp_enable").checked = false;
 		E("ss_node_table_trojan_mulprocess").value = "";
-		E('ss_trojan_tr').style.display ="none";
 		E('ssl_verify_enable_tr').style.display ="none";
 		E("ss_node_table_ssl_verify_enable").checked = false; 
 		E('ss_trojan_mp_enable_tr').style.display ="none";
@@ -750,7 +749,6 @@ function tabclickhandler(_type) {
 		E('ss_method_support_tr').style.display = "";
 		E("ss_node_table_trojan_mp_enable").checked = false;
 		E("ss_node_table_trojan_mulprocess").value = "";
-		E('ss_trojan_tr').style.display ="none";
 		E('ssl_verify_enable_tr').style.display ="none";
 		E("ss_node_table_ssl_verify_enable").checked = false; 
 		E('ss_trojan_mp_enable_tr').style.display ="none";
@@ -789,7 +787,6 @@ function tabclickhandler(_type) {
 		E('ss_method_support_tr').style.display = "none";
 		E("ss_node_table_trojan_mp_enable").checked = false;
 		E("ss_node_table_trojan_mulprocess").value = "";
-		E('ss_trojan_tr').style.display ="none";
 		E('ssl_verify_enable_tr').style.display ="none";
 		E("ss_node_table_ssl_verify_enable").checked = false; 
 		E('trojan_sni_tr').style.display ="none";
@@ -877,7 +874,6 @@ function tabclickhandler(_type) {
 		E('ss_port_support_tr').style.display = "";
 		E('ss_passwd_support_tr').style.display = "";
 		E('ss_method_support_tr').style.display = "none";
-		E('ss_trojan_tr').style.display ="none";
 		E('ssl_verify_enable_tr').style.display ="";
 		E("ss_node_table_ssl_verify_enable").checked = true; 
 		E('trojan_sni_tr').style.display ="";

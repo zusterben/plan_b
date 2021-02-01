@@ -9,7 +9,7 @@ alias echo_date='echo 【$(TZ=UTC-8 date -R +%Y年%m月%d日\ %X)】:'
 ARCH=`uname -m`
 KVER=`uname -r`
 if [ "$ARCH" == "armv7l" ]; then
-	if [ "$KVER" != "2.6.36" ];then
+	if [ "$KVER" != "2.6.36.4brcmarm" ];then
 #bcm675x/ipq4/5/6/80xx/mt7622
 		ARCH_SUFFIX="armng"
 	else
