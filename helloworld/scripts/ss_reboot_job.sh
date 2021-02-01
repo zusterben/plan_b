@@ -160,10 +160,10 @@ __get_type_abbr_name() {
 			echo "ssr"
 		;;
 		2)
-			echo "koolgame"
+			echo "v2ray"
 		;;
 		3)
-			echo "v2ray"
+			echo "trojan"
 		;;
 	esac
 }

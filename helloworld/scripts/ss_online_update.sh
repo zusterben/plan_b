@@ -49,7 +49,6 @@ readonly PREFIX="ssconf_basic_name_
 				ssconf_basic_ss_v2ray_
 				ssconf_basic_ss_v2ray_opts_
 				ssconf_basic_type_
-				ssconf_basic_trojan_
 				ssconf_basic_trojan_mp_enable_
 				ssconf_basic_trojan_mulprocess_
 				ssconf_basic_trojan_sni_

@@ -23,7 +23,6 @@ IFIP_DNS1=$(echo $ISP_DNS1 | grep -E "([0-9]{1,3}[\.]){3}[0-9]{1,3}|:")
 IFIP_DNS2=$(echo $ISP_DNS2 | grep -E "([0-9]{1,3}[\.]){3}[0-9]{1,3}|:")
 lan_ipaddr=$(nvram get lan_ipaddr)
 ip_prefix_hex=$(nvram get lan_ipaddr | awk -F "." '{printf ("0x%02x", $1)} {printf ("%02x", $2)} {printf ("%02x", $3)} {printf ("00/0xffffff00\n")}')
-ARG_OBFS=""
 OUTBOUNDS="[]"
 KVER=$(uname -r)
 if [ "$(/jffs/softcenter/bin/versioncmp 3.10 $KVER)" == "1" ];then
@@ -361,116 +360,22 @@ resolv_server_ip() {
 	fi
 }
 
-ss_arg() {
-	[ "$ss_basic_type" != "0" ] && return
-	
-	# v2ray-plugin or simple obfs
-	if [ "$ss_basic_ss_v2ray" == "1" ]; then
-		ARG_OBFS="--plugin v2ray-plugin --plugin-opts $ss_basic_ss_v2ray_opts"
-		echo_date "检测到开启了v2ray-plugin，将忽略obfs设置。"
-	elif [ "$ss_basic_ss_obfs" == "http" ]; then
-		echo_date "检测到开启了obfs。"
-		ARG_OBFS="--plugin obfs-local --plugin-opts obfs=http"
-		if [ -n "$ss_basic_ss_obfs_host" ]; then
-			ARG_OBFS=$ARG_OBFS";obfs-host=$ss_basic_ss_obfs_host"
-		fi
-	elif [ "$ss_basic_ss_obfs" == "tls" ]; then
-		echo_date "检测到开启了obfs。"
-		ARG_OBFS="--plugin obfs-local --plugin-opts obfs=tls"
-		if [ -n "$ss_basic_ss_obfs_host" ]; then
-			ARG_OBFS=$ARG_OBFS";obfs-host=$ss_basic_ss_obfs_host"
-		fi
-	else
-		echo_date "没有开启任何ss插件设置。"
-		ARG_OBFS=""
-	fi
-}
+
 # create shadowsocks config file...
 create_ss_json(){
 	echo_date "创建$(__get_type_abbr_name)配置文件到$CONFIG_FILE"
 	if [ "$ss_basic_type" == "0" ]; then
-		cat >$CONFIG_FILE <<-EOF
-			{
-			    "server":"$ss_basic_server",
-			    "server_port":$ss_basic_port,
-			    "local_address":"0.0.0.0",
-			    "local_port":3333,
-			    "password":"$ss_basic_password",
-			    "timeout":600,
-			    "method":"$ss_basic_method"
-			}
-		EOF
+		/jffs/softcenter/bin/gen_conf 0 $CONFIG_FILE 3333 0 none
+
 		if [ "$ss_basic_netflix_enable" == "1" ]; then
-			cat >$CONFIG_NETFLIX_FILE <<-EOF
-				{
-				    "server":"$ss_basic_server",
-				    "server_port":$ss_basic_port,
-				    "local_address":"0.0.0.0",
-				    "local_port":4321,
-				    "password":"$ss_basic_password",
-				    "timeout":600,
-				    "method":"$ss_basic_method"
-				}
-			EOF
-			cat >$CONFIG_SOCK5_FILE <<-EOF
-				{
-				    "server":"$ss_basic_server",
-				    "server_port":$ss_basic_port,
-				    "local_address":"0.0.0.0",
-				    "local_port":1088,
-				    "password":"$ss_basic_password",
-				    "timeout":600,
-				    "method":"$ss_basic_method"
-				}
-			EOF
+			/jffs/softcenter/bin/gen_conf 0 $CONFIG_NETFLIX_FILE 4321 0 none
+			/jffs/softcenter/bin/gen_conf 0 $CONFIG_SOCK5_FILE 1088 0 none
 		fi
 	elif [ "$ss_basic_type" == "1" ]; then
-		cat >$CONFIG_FILE <<-EOF
-			{
-			    "server":"$ss_basic_server",
-			    "server_port":$ss_basic_port,
-			    "local_address":"0.0.0.0",
-			    "local_port":3333,
-			    "password":"$ss_basic_password",
-			    "timeout":600,
-			    "protocol":"$ss_basic_ssr_protocol",
-			    "protocol_param":"$ss_basic_ssr_protocol_param",
-			    "obfs":"$ss_basic_ssr_obfs",
-			    "obfs_param":"$ss_basic_ssr_obfs_param",
-			    "method":"$ss_basic_method"
-			}
-		EOF
+		/jffs/softcenter/bin/gen_conf 0 $CONFIG_FILE 3333 0 none
 		if [ "$ss_basic_netflix_enable" == "1" ]; then
-			cat >$CONFIG_NETFLIX_FILE <<-EOF
-				{
-			    "server":"$ss_basic_server",
-			    "server_port":$ss_basic_port,
-			    "local_address":"0.0.0.0",
-			    "local_port":4321,
-			    "password":"$ss_basic_password",
-			    "timeout":600,
-			    "protocol":"$ss_basic_ssr_protocol",
-			    "protocol_param":"$ss_basic_ssr_protocol_param",
-			    "obfs":"$ss_basic_ssr_obfs",
-			    "obfs_param":"$ss_basic_ssr_obfs_param",
-			    "method":"$ss_basic_method"
-				}
-			EOF
-			cat >$CONFIG_SOCK5_FILE <<-EOF
-				{
-			    "server":"$ss_basic_server",
-			    "server_port":$ss_basic_port,
-			    "local_address":"0.0.0.0",
-			    "local_port":1088,
-			    "password":"$ss_basic_password",
-			    "timeout":600,
-			    "protocol":"$ss_basic_ssr_protocol",
-			    "protocol_param":"$ss_basic_ssr_protocol_param",
-			    "obfs":"$ss_basic_ssr_obfs",
-			    "obfs_param":"$ss_basic_ssr_obfs_param",
-			    "method":"$ss_basic_method"
-				}
-			EOF
+			/jffs/softcenter/bin/gen_conf 0 $CONFIG_NETFLIX_FILE 4321 0 none
+			/jffs/softcenter/bin/gen_conf 0 $CONFIG_SOCK5_FILE 1088 0 none
 		fi
 	fi
 
@@ -499,7 +404,7 @@ start_sslocal() {
 		if [ "$ss_basic_ss_obfs" == "0" ] && [ "$ss_basic_ss_v2ray" == "0" ]; then
 			ss-local -l 23456 -c $CONFIG_FILE -u -f /var/run/sslocal1.pid >/dev/null 2>&1
 		else
-			ss-local -l 23456 -c $CONFIG_FILE $ARG_OBFS -u -f /var/run/sslocal1.pid >/dev/null 2>&1
+			ss-local -l 23456 -c $CONFIG_FILE -u -f /var/run/sslocal1.pid >/dev/null 2>&1
 		fi
 	elif [ "$ss_basic_type" == "3" ]; then
 		echo_date "开启trojan，提供socks5代理端口：23456" >> $LOG_FILE
@@ -841,12 +746,10 @@ start_ss_redir() {
 	if [ "$ss_basic_type" == "1" ]; then
 		echo_date 开启ssr-redir进程，用于透明代理.
 		BIN=ssr-redir
-		ARG_OBFS=""
 	elif [ "$ss_basic_type" == "0" ]; then
 		echo_date 开启ss-redir进程，用于透明代理.
 		if [ "$ss_basic_ss_obfs" == "0" ] && [ "$ss_basic_ss_v2ray" == "0" ]; then
 			BIN=ss-redir
-			ARG_OBFS=""
 		else
 			BIN=ss-redir
 		fi
@@ -870,10 +773,10 @@ start_ss_redir() {
 			else
 				echo_date $BIN的 tcp 走kcptun.
 			fi
-			$BIN -s 127.0.0.1 -p 1091 -c $CONFIG_FILE $ARG_OBFS -f /var/run/shadowsocks.pid >/dev/null 2>&1
+			$BIN -s 127.0.0.1 -p 1091 -c $CONFIG_FILE -f /var/run/shadowsocks.pid >/dev/null 2>&1
 			# udp go ss
 			echo_date $BIN的 udp 走$BIN.
-			$BIN -c $CONFIG_FILE $ARG_OBFS -U -f /var/run/shadowsocks.pid >/dev/null 2>&1
+			$BIN -c $CONFIG_FILE -U -f /var/run/shadowsocks.pid >/dev/null 2>&1
 		else
 			# tcp only go kcp
 			if [ "$SPEED_KCP" == "1" ]; then
@@ -884,19 +787,19 @@ start_ss_redir() {
 				echo_date $BIN的 tcp 走kcptun.
 			fi
 			echo_date $BIN的 udp 未开启.
-			$BIN -s 127.0.0.1 -p 1091 -c $CONFIG_FILE $ARG_OBFS -f /var/run/shadowsocks.pid >/dev/null 2>&1
+			$BIN -s 127.0.0.1 -p 1091 -c $CONFIG_FILE -f /var/run/shadowsocks.pid >/dev/null 2>&1
 		fi
 	else
 		if [ "$mangle" == "1" ]; then
 			# tcp udp go ss
 			echo_date $BIN的 tcp 走$BIN.
 			echo_date $BIN的 udp 走$BIN.
-			fire_redir "$BIN -c $CONFIG_FILE $ARG_OBFS -u"
+			fire_redir "$BIN -c $CONFIG_FILE -u"
 		else
 			# tcp only go ss
 			echo_date $BIN的 tcp 走$BIN.
 			echo_date $BIN的 udp 未开启.
-			fire_redir "$BIN -c $CONFIG_FILE $ARG_OBFS"
+			fire_redir "$BIN -c $CONFIG_FILE"
 		fi
 	fi
 	echo_date $BIN 启动完毕！.
@@ -2715,7 +2618,6 @@ apply_ss() {
 	detect
 	set_sys
 	resolv_server_ip
-	ss_arg
 	create_ipset
 	create_dnsmasq_conf
 	# do not re generate json on router start, use old one
