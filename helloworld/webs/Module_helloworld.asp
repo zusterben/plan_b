@@ -174,7 +174,7 @@ function conf2obj(obj, action) {
 function ssconf_node2obj(node_sel) {
 	var p = "ssconf_basic";
 	var obj = {};
-	var params2 = ["password", "v2ray_json", "server", "mode", "port", "password", "method", "ss_obfs", "ss_obfs_host", "ss_v2ray", "ss_v2ray_opts", "ssr_protocol", "ssr_protocol_param", "ssr_obfs", "ssr_obfs_param", "use_kcp", "v2ray_uuid", "v2ray_alterid", "v2ray_vmessvless", "v2ray_security", "v2ray_network", "v2ray_headtype_tcp", "v2ray_headtype_kcp", "v2ray_network_path", "v2ray_network_host", "v2ray_mux_enable", "v2ray_network_security", "v2ray_network_tlshost", "v2ray_network_flow", "v2ray_mux_concurrency", "v2ray_use_json", "trojan_sni", "ssl_verify_enable", "trojan_mp_enable","trojan_mulprocess"];
+	var params2 = ["password", "v2ray_json", "server", "mode", "port", "password", "method", "ss_obfs", "ss_obfs_host", "ss_v2ray", "ss_v2ray_opts", "ssr_protocol", "ssr_protocol_param", "ssr_obfs", "ssr_obfs_param", "use_kcp", "v2ray_uuid", "v2ray_alterid", "v2ray_vmessvless", "v2ray_security", "v2ray_network", "v2ray_headtype_tcp", "v2ray_headtype_kcp", "v2ray_network_path", "v2ray_network_host", "v2ray_mux_enable", "v2ray_network_security", "v2ray_fingerprint", "v2ray_network_tlshost", "v2ray_network_flow", "v2ray_mux_concurrency", "v2ray_use_json", "trojan_sni", "ssl_verify_enable", "trojan_mp_enable","trojan_mulprocess"];
 	for (var i = 0; i < params2.length; i++) {
 		obj["ss_basic_" + params2[i]] = db_ss[p + "_" + params2[i] + "_" + node_sel] || "";
 	}
@@ -318,6 +318,7 @@ function save() {
 		dbus["ssconf_basic_v2ray_network_path_" + node_sel] = vmess_node.path;
 		if(vmess_node.tls == "tls"){
 			dbus["ssconf_basic_v2ray_network_security_" + node_sel] = "tls";
+			dbus["ssconf_basic_v2ray_fingerprint_" + node_sel] = "firefox";
 		}else{
 			dbus["ssconf_basic_v2ray_network_security_" + node_sel] = "none";
 		}
@@ -330,7 +331,7 @@ function save() {
 			if(isJSON(E('ss_basic_v2ray_json').value)){
 				if(E('ss_basic_v2ray_json').value.indexOf("outbound") != -1){
 					dbus["ssconf_basic_v2ray_json_" + node_sel] = Base64.encode(pack_js(E('ss_basic_v2ray_json').value));
-					var param_v2 = ["server", "port", "v2ray_uuid", "v2ray_security", "v2ray_alterid", "v2ray_vmessvless", "v2ray_network", "v2ray_headtype_tcp", "v2ray_headtype_kcp", "v2ray_network_host", "v2ray_network_path", "v2ray_network_security", "v2ray_network_tlshost", "v2ray_network_flow", "v2ray_mux_enable", "v2ray_mux_concurrency"];
+					var param_v2 = ["server", "port", "v2ray_uuid", "v2ray_security", "v2ray_alterid", "v2ray_vmessvless", "v2ray_network", "v2ray_headtype_tcp", "v2ray_headtype_kcp", "v2ray_network_host", "v2ray_network_path", "v2ray_network_security", "v2ray_fingerprint", "v2ray_network_tlshost", "v2ray_network_flow", "v2ray_mux_enable", "v2ray_mux_concurrency"];
 					for (var i = 0; i < param_v2.length; i++) {
 						dbus["ssconf_basic_" + param_v2[i] + "_" + node_sel] = "";
 					}
@@ -345,7 +346,7 @@ function save() {
 		}
 	}
 	// node data: write node data under using from the main pannel incase of data change
-	var params = ["server", "mode", "port", "method", "ss_obfs", "ss_obfs_host", "ss_v2ray", "ss_v2ray_opts", "ssr_protocol", "ssr_protocol_param", "ssr_obfs", "ssr_obfs_param", "v2ray_uuid", "v2ray_alterid", "v2ray_vmessvless", "v2ray_security", "v2ray_network", "v2ray_headtype_tcp", "v2ray_headtype_kcp", "v2ray_network_path", "v2ray_network_host", "v2ray_network_security", "v2ray_network_tlshost", "v2ray_network_flow", "v2ray_mux_concurrency", "trojan_sni", "trojan_mulprocess"];
+	var params = ["server", "mode", "port", "method", "ss_obfs", "ss_obfs_host", "ss_v2ray", "ss_v2ray_opts", "ssr_protocol", "ssr_protocol_param", "ssr_obfs", "ssr_obfs_param", "v2ray_uuid", "v2ray_alterid", "v2ray_vmessvless", "v2ray_security", "v2ray_network", "v2ray_headtype_tcp", "v2ray_headtype_kcp", "v2ray_network_path", "v2ray_network_host", "v2ray_network_security", "v2ray_fingerprint", "v2ray_network_tlshost", "v2ray_network_flow", "v2ray_mux_concurrency", "trojan_sni", "trojan_mulprocess"];
 	for (var i = 0; i < params.length; i++) {
 		dbus["ssconf_basic_" + params[i] + "_" + node_sel] = E("ss_basic_" + params[i]).value;
 	}
@@ -359,7 +360,7 @@ function save() {
 	dbus["ssconf_basic_password_" + node_sel] = Base64.encode(E("ss_basic_password").value);
 	// adjust some value when switch node between ss ssr v2ray trojan
 	if (typeof(db_ss["ssconf_basic_ssr_protocol_" + node_sel]) != "undefined"){
-		var remove_ssr = [ "ss_obfs", "ss_obfs_host", "ss_v2ray", "ss_v2ray_opts", "v2ray_use_json", "v2ray_uuid", "v2ray_alterid", "v2ray_vmessvless", "v2ray_security", "v2ray_network", "v2ray_headtype_tcp", "v2ray_headtype_kcp", "v2ray_network_path", "v2ray_network_host", "v2ray_network_security", "v2ray_network_tlshost", "v2ray_network_flow", "v2ray_mux_enable", "v2ray_mux_concurrency", "v2ray_json"];
+		var remove_ssr = [ "ss_obfs", "ss_obfs_host", "ss_v2ray", "ss_v2ray_opts", "v2ray_use_json", "v2ray_uuid", "v2ray_alterid", "v2ray_vmessvless", "v2ray_security", "v2ray_network", "v2ray_headtype_tcp", "v2ray_headtype_kcp", "v2ray_network_path", "v2ray_network_host", "v2ray_network_security", "v2ray_fingerprint", "v2ray_network_tlshost", "v2ray_network_flow", "v2ray_mux_enable", "v2ray_mux_concurrency", "v2ray_json"];
 		dbus["ss_basic_type"] = "1"
 		dbus["ssconf_basic_type_" + node_sel] = "1"
 		for (var i = 0; i < remove_ssr.length; i++) {
@@ -377,7 +378,7 @@ function save() {
 			}
 		}else{
 			if (typeof(db_ss["ssconf_basic_method_" + node_sel]) != "undefined"){
-				var remove_ss = [ "ssr_protocol", "ssr_protocol_param", "ssr_obfs", "ssr_obfs_param", "v2ray_use_json", "v2ray_uuid", "v2ray_alterid", "v2ray_vmessvless", "v2ray_security", "v2ray_network", "v2ray_headtype_tcp", "v2ray_headtype_kcp", "v2ray_network_path", "v2ray_network_host", "v2ray_network_security", "v2ray_network_tlshost", "v2ray_network_flow", "v2ray_mux_enable", "v2ray_mux_concurrency", "v2ray_json"];
+				var remove_ss = [ "ssr_protocol", "ssr_protocol_param", "ssr_obfs", "ssr_obfs_param", "v2ray_use_json", "v2ray_uuid", "v2ray_alterid", "v2ray_vmessvless", "v2ray_security", "v2ray_network", "v2ray_headtype_tcp", "v2ray_headtype_kcp", "v2ray_network_path", "v2ray_network_host", "v2ray_network_security", "v2ray_fingerprint", "v2ray_network_tlshost", "v2ray_network_flow", "v2ray_mux_enable", "v2ray_mux_concurrency", "v2ray_json"];
 				dbus["ss_basic_type"] = "0"
 				dbus["ssconf_basic_type_" + node_sel] = "0"
 				for (var i = 0; i < remove_ss.length; i++) {
@@ -385,7 +386,7 @@ function save() {
 					dbus["ssconf_basic_" + remove_ss[i] + "_" + node_sel] = "";
 				}
 			}else{
-				var remove_trojan = [ "method", "ssr_protocol", "ssr_protocol_param", "ssr_obfs", "ssr_obfs_param", "v2ray_use_json", "v2ray_uuid", "v2ray_alterid", "v2ray_vmessvless", "v2ray_security", "v2ray_network", "v2ray_headtype_tcp", "v2ray_headtype_kcp", "v2ray_network_path", "v2ray_network_host", "v2ray_network_security", "v2ray_network_tlshost", "v2ray_network_flow", "v2ray_json"];
+				var remove_trojan = [ "method", "ssr_protocol", "ssr_protocol_param", "ssr_obfs", "ssr_obfs_param", "v2ray_use_json", "v2ray_uuid", "v2ray_alterid", "v2ray_vmessvless", "v2ray_security", "v2ray_network", "v2ray_headtype_tcp", "v2ray_headtype_kcp", "v2ray_network_path", "v2ray_network_host", "v2ray_network_security", "v2ray_fingerprint", "v2ray_network_tlshost", "v2ray_network_flow", "v2ray_json"];
 				dbus["ss_basic_type"] = "3"
 				dbus["ssconf_basic_type_" + node_sel] = "3"
 				for (var i = 0; i < remove_trojan.length; i++) {
@@ -480,7 +481,6 @@ function verifyFields(r) {
 	var path_on = E("ss_basic_v2ray_network").value == "ws" || E("ss_basic_v2ray_network").value == "h2" || E("ss_basic_v2ray_network").value == "kcp";
 	var xtls_on = E("ss_basic_v2ray_network_security").value == "xtls";
 	elem.display(elem.parentElem('ss_basic_method', 'tr'), !v2ray_on && !trojan_on);
-	elem.display(elem.parentElem('ss_basic_trojan', 'tr'), (!v2ray_on && !ss_on && !ssr_on && !trojan_on));
 	elem.display(elem.parentElem('ss_basic_password', 'tr'), !v2ray_on);
 	elem.display(elem.parentElem('ss_basic_server', 'tr'), json_off);
 	elem.display(elem.parentElem('ss_basic_port', 'tr'), json_off);
@@ -496,6 +496,7 @@ function verifyFields(r) {
 	elem.display(elem.parentElem('ss_basic_v2ray_network_path', 'tr'), (v2ray_on && json_off && path_on));
 	elem.display(elem.parentElem('ss_basic_v2ray_network_security', 'tr'), (v2ray_on && json_off));
 	elem.display(elem.parentElem('ss_basic_v2ray_network_tlshost', 'tr'), (v2ray_on && json_off && E("ss_basic_v2ray_network_security").value != "none"));
+	elem.display(elem.parentElem('ss_basic_v2ray_fingerprint', 'tr'), (v2ray_on && json_off && E("ss_basic_v2ray_network_security").value =="tls"));
 	elem.display(elem.parentElem('ss_basic_v2ray_network_flow', 'tr'), (v2ray_on && json_off && E("ss_basic_v2ray_network_security").value == "xtls"));
 	elem.display(elem.parentElem('ss_basic_v2ray_mux_enable', 'tr'), (v2ray_on && json_off));
 	elem.display(elem.parentElem('ss_basic_trojan_mp_enable', 'tr'), (!v2ray_on && !ss_on && !ssr_on));
@@ -544,6 +545,7 @@ function verifyFields(r) {
 			E('v2ray_network_path_tr').style.display = "none";
 			E('v2ray_network_host_tr').style.display = "none";
 			E('v2ray_network_security_tr').style.display = "none";
+			E('v2ray_fingerprint_tr').style.display = "none";
 			E('v2ray_network_tlshost_tr').style.display = "none";
 			E('v2ray_network_flow_basic_tr').style.display = "none";		
 			E('v2ray_mux_enable_tr').style.display = "none";
@@ -570,7 +572,7 @@ function verifyFields(r) {
 			var http_on_2 = E("ss_node_table_v2ray_network").value == "tcp" && E("ss_node_table_v2ray_headtype_tcp").value == "http";
 			var host_on_2 = E("ss_node_table_v2ray_network").value == "ws" || E("ss_node_table_v2ray_network").value == "h2" || http_on_2;
 			var path_on_2 = E("ss_node_table_v2ray_network").value == "ws" || E("ss_node_table_v2ray_network").value == "h2" || E("ss_node_table_v2ray_network").value == "kcp";
-			var tlshost_on = E("ss_node_table_v2ray_network_security").value != "none";
+			var tlshost_on = E("ss_node_table_v2ray_network_security").value == "tls";
 			var xtls_on_2 = E("ss_node_table_v2ray_network_security").value == "xtls";
 			showhide("v2ray_headtype_tcp_tr", (E("ss_node_table_v2ray_network").value == "tcp"));
 			showhide("v2ray_headtype_kcp_tr", (E("ss_node_table_v2ray_network").value == "kcp"));
@@ -578,6 +580,7 @@ function verifyFields(r) {
 			showhide("v2ray_network_path_tr", path_on_2);
 			showhide("v2ray_network_tlshost_tr", tlshost_on);
 			showhide("v2ray_network_flow_basic_tr", xtls_on_2);
+			showhide("v2ray_fingerprint_tr", tlshost_on);
 			showhide("v2ray_mux_concurrency_tr", (E("ss_node_table_v2ray_mux_enable").checked));
 			showhide("v2ray_json_tr", (E("ss_node_table_v2ray_use_json").checked));
 		}
@@ -729,6 +732,7 @@ function tabclickhandler(_type) {
 		E('v2ray_network_path_tr').style.display = "none";
 		E('v2ray_network_host_tr').style.display = "none";
 		E('v2ray_network_security_tr').style.display = "none";
+		E('v2ray_fingerprint_tr').style.display = "none";
 		E('v2ray_network_tlshost_tr').style.display = "none";
 		E('v2ray_network_flow_basic_tr').style.display = "none";
 		E('v2ray_mux_enable_tr').style.display = "none";
@@ -773,6 +777,7 @@ function tabclickhandler(_type) {
 		E('v2ray_network_path_tr').style.display = "none";
 		E('v2ray_network_host_tr').style.display = "none";
 		E('v2ray_network_security_tr').style.display = "none";
+		E('v2ray_fingerprint_tr').style.display = "none";
 		E('v2ray_network_tlshost_tr').style.display = "none";
 		E('v2ray_network_flow_basic_tr').style.display = "none";
 		E('v2ray_mux_enable_tr').style.display = "none";
@@ -828,6 +833,7 @@ function tabclickhandler(_type) {
 			E('v2ray_network_path_tr').style.display = "none";
 			E('v2ray_network_host_tr').style.display = "none";
 			E('v2ray_network_security_tr').style.display = "none";
+			E('v2ray_fingerprint_tr').style.display = "none";
 			E('v2ray_network_flow_basic_tr').style.display = "none";
 			E('v2ray_network_tlshost_tr').style.display = "none";
 			E('v2ray_mux_enable_tr').style.display = "none";
@@ -862,6 +868,7 @@ function tabclickhandler(_type) {
 			showhide("v2ray_network_path_tr", path_on_2);
 			showhide("v2ray_network_tlshost_tr", tlshost_on);
 			showhide("v2ray_network_flow_basic_tr", xtlshost_on);
+			showhide("v2ray_fingerprint_tr", tlshost_on);
 			showhide("v2ray_mux_concurrency_tr", (E("ss_node_table_v2ray_mux_enable").checked));
 			showhide("v2ray_json_tr", (E("ss_node_table_v2ray_use_json").checked));
 		}
@@ -897,6 +904,7 @@ function tabclickhandler(_type) {
 		E('v2ray_network_path_tr').style.display = "none";
 		E('v2ray_network_host_tr').style.display = "none";
 		E('v2ray_network_security_tr').style.display = "none";
+		E('v2ray_fingerprint_tr').style.display = "none";
 		E('v2ray_network_tlshost_tr').style.display = "none";
 		E('v2ray_network_flow_basic_tr').style.display = "none";
 		E('v2ray_mux_enable_tr').style.display = "none";
@@ -913,7 +921,7 @@ function add_ss_node_conf(flag) {
 	node_max += 1;
 	var params1 = ["mode", "name", "server", "port", "method", "ss_obfs", "ss_obfs_host", "ss_v2ray", "ss_v2ray_opts"];
 	var params2 = ["mode", "name", "server", "port", "method", "ssr_protocol", "ssr_protocol_param", "ssr_obfs", "ssr_obfs_param"];
-	var params4_1 = ["mode", "name", "server", "port", "v2ray_uuid", "v2ray_alterid", "v2ray_vmessvless", "v2ray_security", "v2ray_network", "v2ray_headtype_tcp", "v2ray_headtype_kcp", "v2ray_network_path", "v2ray_network_host", "v2ray_network_security", "v2ray_network_tlshost", "v2ray_network_flow", "v2ray_mux_concurrency"]; //for v2ray
+	var params4_1 = ["mode", "name", "server", "port", "v2ray_uuid", "v2ray_alterid", "v2ray_vmessvless", "v2ray_security", "v2ray_network", "v2ray_headtype_tcp", "v2ray_headtype_kcp", "v2ray_network_path", "v2ray_network_host", "v2ray_network_security", "v2ray_fingerprint", "v2ray_network_tlshost", "v2ray_network_flow", "v2ray_mux_concurrency"]; //for v2ray
 	var params4_2 = ["v2ray_use_json", "v2ray_mux_enable"];
 	var params5_1 = ["mode", "name", "server", "port","trojan_sni", "trojan_mulprocess"]; 
 	var params5_2 = ["trojan_mp_enable", "ssl_verify_enable"]; 
@@ -971,6 +979,7 @@ function add_ss_node_conf(flag) {
 				ns[p + "_v2ray_network_path_" + node_max] = vmess_node.path;
 				if(vmess_node.tls == "tls"){
 					ns[p + "_v2ray_network_security_" + node_max] = "tls";
+					ns[p + "_v2ray_fingerprint_" + node_max] = "firefox";
 				}else{
 					ns[p + "_v2ray_network_security_" + node_max] = "none";
 				}	
@@ -1046,7 +1055,7 @@ function remove_conf_table(o) {
 
 	var dbus_tmp = {};
 	var perf = "ssconf_basic_"
-	var temp = ["name", "server", "server_ip", "mode", "port", "password", "method", "ssr_protocol", "ssr_protocol_param", "ssr_obfs", "ssr_obfs_param", "use_kcp", "ss_obfs", "ss_obfs_host", "ss_v2ray", "ss_v2ray_opts", "use_lb", "ping", "lbmode", "weight", "use_kcp", "group", "v2ray_uuid", "v2ray_alterid", "v2ray_vmessvless", "v2ray_security", "v2ray_network", "v2ray_headtype_tcp", "v2ray_headtype_kcp", "v2ray_network_path", "v2ray_network_host", "v2ray_network_security", "v2ray_network_tlshost", "v2ray_network_flow", "v2ray_mux_concurrency", "v2ray_json", "v2ray_use_json", "v2ray_mux_enable", "type", "trojan_sni", "ssl_verify_enable", "trojan_mp_enable","trojan_mulprocess"];
+	var temp = ["name", "server", "server_ip", "mode", "port", "password", "method", "ssr_protocol", "ssr_protocol_param", "ssr_obfs", "ssr_obfs_param", "use_kcp", "ss_obfs", "ss_obfs_host", "ss_v2ray", "ss_v2ray_opts", "use_lb", "ping", "lbmode", "weight", "use_kcp", "group", "v2ray_uuid", "v2ray_alterid", "v2ray_vmessvless", "v2ray_security", "v2ray_network", "v2ray_headtype_tcp", "v2ray_headtype_kcp", "v2ray_network_path", "v2ray_network_host", "v2ray_network_security", "v2ray_fingerprint", "v2ray_network_tlshost", "v2ray_network_flow", "v2ray_mux_concurrency", "v2ray_json", "v2ray_use_json", "v2ray_mux_enable", "type", "trojan_sni", "ssl_verify_enable", "trojan_mp_enable","trojan_mulprocess"];
 	var new_nodes = ss_nodes.concat()
 	new_nodes.splice(new_nodes.indexOf(id), 1);
 	//first: mark all node from ss_nodes data as empty
@@ -1097,7 +1106,7 @@ function edit_conf_table(o) {
 	var c = confs[id];
 	var params1_base64 = ["password"];
 	var params1_check = ["v2ray_use_json", "v2ray_mux_enable", "ssl_verify_enable", "trojan_mp_enable"];
-	var params1_input = ["name", "server", "mode", "port", "method", "ss_obfs", "ss_obfs_host", "ss_v2ray", "ss_v2ray_opts", "ssr_protocol", "ssr_protocol_param", "ssr_obfs", "ssr_obfs_param", "v2ray_uuid", "v2ray_alterid", "v2ray_vmessvless", "v2ray_security", "v2ray_network", "v2ray_headtype_tcp", "v2ray_headtype_kcp", "v2ray_network_path", "v2ray_network_host", "v2ray_network_security", "v2ray_network_tlshost", "v2ray_network_flow", "v2ray_mux_concurrency", "trojan_sni","trojan_mulprocess"];
+	var params1_input = ["name", "server", "mode", "port", "method", "ss_obfs", "ss_obfs_host", "ss_v2ray", "ss_v2ray_opts", "ssr_protocol", "ssr_protocol_param", "ssr_obfs", "ssr_obfs_param", "v2ray_uuid", "v2ray_alterid", "v2ray_vmessvless", "v2ray_security", "v2ray_network", "v2ray_headtype_tcp", "v2ray_headtype_kcp", "v2ray_network_path", "v2ray_network_host", "v2ray_network_security", "v2ray_fingerprint", "v2ray_network_tlshost", "v2ray_network_flow", "v2ray_mux_concurrency", "trojan_sni","trojan_mulprocess"];
 	if(c["v2ray_json"]){
 		E("ss_node_table_v2ray_json").value = do_js_beautify(Base64.decode(c["v2ray_json"]));
 	}
@@ -1161,7 +1170,7 @@ function edit_ss_node_conf(flag) {
 	var p = "ssconf_basic";
 	var params1 = ["name", "server", "mode", "port", "method", "ss_obfs", "ss_obfs_host", "ss_v2ray", "ss_v2ray_opts"];
 	var params2 = ["name", "server", "mode", "port", "method", "ssr_protocol", "ssr_protocol_param", "ssr_obfs", "ssr_obfs_param"];
-	var params4_1 = ["mode", "name", "server", "port", "v2ray_uuid", "v2ray_alterid", "v2ray_vmessvless", "v2ray_security", "v2ray_network", "v2ray_headtype_tcp", "v2ray_headtype_kcp", "v2ray_network_path", "v2ray_network_host", "v2ray_network_security", "v2ray_network_tlshost", "v2ray_mux_concurrency"]; //for v2ray
+	var params4_1 = ["mode", "name", "server", "port", "v2ray_uuid", "v2ray_alterid", "v2ray_vmessvless", "v2ray_security", "v2ray_network", "v2ray_headtype_tcp", "v2ray_headtype_kcp", "v2ray_network_path", "v2ray_network_host", "v2ray_network_security", "v2ray_fingerprint", "v2ray_network_tlshost", "v2ray_mux_concurrency"]; //for v2ray
 	var params4_2 = ["v2ray_use_json", "v2ray_mux_enable"];
 	var params5_1 = ["name", "server", "mode", "port", "trojan_sni", "trojan_mulprocess"]; //for trojan
 	var params5_2 = ["trojan_mp_enable", "ssl_verify_enable"]; 
@@ -1214,6 +1223,7 @@ function edit_ss_node_conf(flag) {
 				ns["ssconf_basic_v2ray_network_path_" + edit_id] = vmess_node.path;
 				if(vmess_node.tls == "tls"){
 					ns["ssconf_basic_v2ray_network_security_" + edit_id] = "tls";
+					ns["ssconf_basic_v2ray_fingerprint_" + edit_id] = "firefox";
 				}else{
 					ns["ssconf_basic_v2ray_network_security_" + edit_id] = "none";
 				}
@@ -1306,7 +1316,7 @@ function generate_node_info() {
 			}
 		}
 		//这些值统一处理
-		var params = ["group", "name", "port", "method", "password", "mode", "ss_obfs", "ss_obfs_host", "ss_v2ray", "ss_v2ray_opts", "ssr_protocol", "ssr_protocol_param", "ssr_obfs", "ssr_obfs_param", "weight", "lbmode", "v2ray_uuid", "v2ray_alterid", "v2ray_vmessvless", "v2ray_security", "v2ray_network", "v2ray_headtype_tcp", "v2ray_headtype_kcp", "v2ray_network_path", "v2ray_network_host", "v2ray_network_security", "v2ray_network_tlshost", "v2ray_network_flow", "v2ray_mux_concurrency", "v2ray_json", "v2ray_use_json", "trojan_sni","trojan_mulprocess"];
+		var params = ["group", "name", "port", "method", "password", "mode", "ss_obfs", "ss_obfs_host", "ss_v2ray", "ss_v2ray_opts", "ssr_protocol", "ssr_protocol_param", "ssr_obfs", "ssr_obfs_param", "weight", "lbmode", "v2ray_uuid", "v2ray_alterid", "v2ray_vmessvless", "v2ray_security", "v2ray_network", "v2ray_headtype_tcp", "v2ray_headtype_kcp", "v2ray_network_path", "v2ray_network_host", "v2ray_network_security", "v2ray_fingerprint", "v2ray_network_tlshost", "v2ray_network_flow", "v2ray_mux_concurrency", "v2ray_json", "v2ray_use_json", "trojan_sni","trojan_mulprocess"];
 		for (var i = 0; i < params.length; i++) {
 			var ofield = p + "_" + params[i] + "_" + idx;
 			if (typeof db_ss[ofield] == "undefined") {
@@ -1578,7 +1588,7 @@ function save_new_order(){
 	var tr = table.getElementsByTagName("tr");
 	var dbus_tmp = {};
 	var perf = "ssconf_basic_"
-	var temp = ["name", "server", "server_ip", "mode", "port", "password", "method", "ssr_protocol", "ssr_protocol_param", "ssr_obfs", "ssr_obfs_param", "use_kcp", "ss_obfs", "ss_obfs_host", "ss_v2ray", "ss_v2ray_opts", "use_lb", "ping", "lbmode", "weight", "use_kcp", "group", "v2ray_uuid", "v2ray_alterid", "v2ray_vmessvless", "v2ray_security", "v2ray_network", "v2ray_headtype_tcp", "v2ray_headtype_kcp", "v2ray_network_path", "v2ray_network_host", "v2ray_network_security", "v2ray_network_tlshost", "v2ray_network_flow", "v2ray_mux_concurrency", "v2ray_json", "v2ray_use_json", "v2ray_mux_enable", "type", "trojan_sni", "ssl_verify_enable", "trojan_mp_enable", "trojan_mulprocess"];
+	var temp = ["name", "server", "server_ip", "mode", "port", "password", "method", "ssr_protocol", "ssr_protocol_param", "ssr_obfs", "ssr_obfs_param", "use_kcp", "ss_obfs", "ss_obfs_host", "ss_v2ray", "ss_v2ray_opts", "use_lb", "ping", "lbmode", "weight", "use_kcp", "group", "v2ray_uuid", "v2ray_alterid", "v2ray_vmessvless", "v2ray_security", "v2ray_network", "v2ray_headtype_tcp", "v2ray_headtype_kcp", "v2ray_network_path", "v2ray_network_host", "v2ray_network_security", "v2ray_fingerprint", "v2ray_network_tlshost", "v2ray_network_flow", "v2ray_mux_concurrency", "v2ray_json", "v2ray_use_json", "v2ray_mux_enable", "type", "trojan_sni", "ssl_verify_enable", "trojan_mp_enable", "trojan_mulprocess"];
 	//first: mark all node from ss_nodes data as empty
 	for (var i = 0; i < tr.length; i++) {
 		var rowid = tr[i].getAttribute("id").split("_")[1];
@@ -3177,6 +3187,7 @@ function save_failover() {
 																	{ title: '伪装域名 (host)', rid:'v2ray_network_host_tr', id:'ss_node_table_v2ray_network_host', type:'text', maxlen:'300', style:'width:338px'},
 																	{ title: '路径 (path)', rid:'v2ray_network_path_tr', id:'ss_node_table_v2ray_network_path', type:'text', maxlen:'300', style:'width:338px', ph:'没有请留空'},
 																	{ title: '底层传输安全', rid:'v2ray_network_security_tr', id:'ss_node_table_v2ray_network_security', func:'v',type:'select', options:[["none", "关闭"], ["tls", "tls"], ["xtls", "xtls"]], style:'width:350px', value: "none"},
+																	{ title: '指纹伪造', rid:'v2ray_fingerprint_tr', id:'ss_node_table_v2ray_fingerprint', type:'select', func:'v', options:[["disable", "关闭"], ["firefox", "firefox"], ["chrome", "chrome"]],value: "firefox"},
 																	{ title: '流控', rid:'v2ray_network_flow_basic_tr', id:'ss_node_table_v2ray_network_flow', func:'v',type:'select', options:[["xtls-rprx-origin", "xtls-rprx-origin"], ["xtls-rprx-direct", "xtls-rprx-direct"], ["xtls-rprx-direct-udp443", "xtls-rprx-direct-udp443"], ["xtls-rprx-splice", "xtls-rprx-splice"], ["xtls-rprx-splice-udp443", "xtls-rprx-splice-udp443"]], style:'width:350px', value: "xtls-rprx-origin"},
 																	{ title: 'tls/xtls域名 (host)', rid:'v2ray_network_tlshost_tr', id:'ss_node_table_v2ray_network_tlshost', type:'text', maxlen:'300', style:'width:338px'},
 																	{ title: '多路复用 (Mux)', rid:'v2ray_mux_enable_tr', id:'ss_node_table_v2ray_mux_enable', type:'checkbox', func:'v', value:false},
@@ -3208,7 +3219,6 @@ function save_failover() {
 														{ title: '服务器端口', id:'ss_basic_port', type:'text', maxlen:'100'},
 														{ title: '密码', id:'ss_basic_password', type:'password', maxlen:'100', peekaboo:'1'},
 														{ title: '加密方式', id:'ss_basic_method', type:'select', func:'v', hint:'5', options:option_method},
-														{ title: 'Trojan模式', id:'ss_basic_trojan', type:'text', maxlen:'64'},
 														{ title: '验证SSL证书', id:'ss_basic_ssl_verify_enable', type:'checkbox', func:'v', value:true},
 														{ title: 'sni', id:'ss_basic_trojan_sni', type:'text', maxlen:'300'},
 														{ title: 'Trojan多开',  id:'ss_basic_trojan_mp_enable', type:'checkbox', func:'v',hint:'31'},
@@ -3231,6 +3241,7 @@ function save_failover() {
 														{ title: '* 伪装域名 (host)', id:'ss_basic_v2ray_network_host', type:'text', hint:'28', maxlen:'300', ph:'没有请留空'},
 														{ title: '* 路径 (path)', id:'ss_basic_v2ray_network_path', type:'text', hint:'29', maxlen:'300', ph:'没有请留空'},
 														{ title: '底层传输安全', id:'ss_basic_v2ray_network_security', type:'select', func:'v',hint:'30', options:[["none", "关闭"], ["tls", "tls"], ["xtls", "xtls"]],value: "none"},
+														{ title: '指纹伪造', id:'ss_basic_v2ray_fingerprint', type:'select', func:'v',hint:'30', options:[["disable", "关闭"], ["firefox", "firefox"], ["chrome", "chrome"]],value: "firefox"},
 														{ title: '流控', id:'ss_basic_v2ray_network_flow', type:'select', func:'v',hint:'30', options:[["xtls-rprx-origin", "xtls-rprx-origin"], ["xtls-rprx-direct", "xtls-rprx-direct"], ["xtls-rprx-direct-udp443", "xtls-rprx-direct-udp443"], ["xtls-rprx-splice", "xtls-rprx-splice"], ["xtls-rprx-splice-udp443", "xtls-rprx-splice-udp443"]],value: "xtls-rprx-origin"},
 														{ title: '* tls/xtls域名 (host)', id:'ss_basic_v2ray_network_tlshost', type:'text', hint:'31', maxlen:'300', ph:'没有请留空'},
 														{ title: '多路复用 (Mux)', id:'ss_basic_v2ray_mux_enable', type:'checkbox', func:'v', hint:'32'},

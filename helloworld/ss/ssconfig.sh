@@ -748,13 +748,8 @@ start_ss_redir() {
 		BIN=ssr-redir
 	elif [ "$ss_basic_type" == "0" ]; then
 		echo_date 开启ss-redir进程，用于透明代理.
-		if [ "$ss_basic_ss_obfs" == "0" ] && [ "$ss_basic_ss_v2ray" == "0" ]; then
-			BIN=ss-redir
-		else
-			BIN=ss-redir
-		fi
+		BIN=ss-redir
 	fi
-
 	if [ "$ss_basic_use_kcp" == "1" ] && [ "$ss_basic_kcp_server" == "127.0.0.1" ] && [ "$ss_basic_kcp_port" == "1092" ]; then
 		SPEED_KCP=1
 	fi
@@ -1160,26 +1155,16 @@ create_trojan_netflix(){
 }
 
 fire_redir() {
-	[ "$ss_basic_type" == "0" ] && [ "$ss_basic_mcore" == "1" ] && local ARG_1="--reuse-port" || local ARG_1=""
-	local ARG_2=""
 	if [ "$ss_basic_type" == "0" ] && [ "$ss_basic_tfo" == "1" ] &&  [ "$FASTOPEN" == "1" ]; then
-		local ARG_2="--fast-open"
 		echo_date $BIN开启tcp fast open支持.
 		echo 3 >/proc/sys/net/ipv4/tcp_fastopen
-	fi
-
-	if [ "$ss_basic_type" == "0" ] && [ "$ss_basic_tnd" == "1" ]; then
-		echo_date $BIN开启TCP_NODELAY支持.
-		local ARG_3="--no-delay"
-	else
-		local ARG_3=""
 	fi
 
 	if [ "$ss_basic_mcore" == "1" ]; then
 		echo_date $BIN开启$THREAD线程支持.
 		local i=1
 		while [ $i -le $THREAD ]; do
-			cmd $1 $ARG_1 $ARG_2 $ARG_3 -f /var/run/ss_$i.pid
+			cmd $1 -f /var/run/ss_$i.pid
 			let i++
 		done
 	else
@@ -1239,10 +1224,12 @@ create_v2ray_json(){
 
 		# tcp和kcp下tlsSettings为null，ws和h2下tlsSettings
 		[ -z "$ss_basic_v2ray_mux_concurrency" ] && local ss_basic_v2ray_mux_concurrency=8
+		[ "$ss_basic_v2ray_network_security" == "none"] && ss_basic_v2ray_network_security=""
 		#if [ "$ss_basic_v2ray_network" == "ws" -o "$ss_basic_v2ray_network" == "h2" ];then
 		case "$ss_basic_v2ray_network_security" in
 		tls)
 			local tls="{
+					\"fingerprint\": \"$ss_basic_v2ray_fingerprint\",
 					\"allowInsecure\": true,
 					\"serverName\": \"$ss_basic_v2ray_network_tlshost\"
 					}"
@@ -1600,10 +1587,12 @@ create_v2ray_netflix(){
 
 		# tcp和kcp下tlsSettings为null，ws和h2下tlsSettings
 		[ -z "$ss_basic_v2ray_mux_concurrency" ] && local ss_basic_v2ray_mux_concurrency=8
+		[ "$ss_basic_v2ray_network_security" == "none" ] && ss_basic_v2ray_network_security=""
 		#if [ "$ss_basic_v2ray_network" == "ws" -o "$ss_basic_v2ray_network" == "h2" ];then
 		case "$ss_basic_v2ray_network_security" in
 		tls)
 			local tls="{
+					\"fingerprint\": \"$ss_basic_v2ray_fingerprint\",
 					\"allowInsecure\": true,
 					\"serverName\": \"$ss_basic_v2ray_network_tlshost\"
 					}"
