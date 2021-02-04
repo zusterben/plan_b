@@ -8,6 +8,7 @@ dbus set ss_basic_version_local=`cat /jffs/softcenter/ss/version`
 mkdir -p /tmp/upload
 LOG_FILE=/tmp/upload/ss_log.txt
 CONFIG_FILE=/jffs/softcenter/ss/ss.json
+CONFIG_FILE_TMP=/tmp/helloworld.json
 V2RAY_CONFIG_FILE_TMP="/tmp/v2ray_tmp.json"
 V2RAY_CONFIG_FILE="/jffs/softcenter/ss/v2ray.json"
 CONFIG_SOCK5_FILE="/jffs/softcenter/ss/ss_s.json"
@@ -26,7 +27,7 @@ ip_prefix_hex=$(nvram get lan_ipaddr | awk -F "." '{printf ("0x%02x", $1)} {prin
 OUTBOUNDS="[]"
 KVER=$(uname -r)
 if [ "$(/jffs/softcenter/bin/versioncmp 3.10 $KVER)" == "1" ];then
-	FASTOPEN=1
+	FASTOPEN=0
 else
 	FASTOPEN=0
 fi
@@ -365,20 +366,25 @@ resolv_server_ip() {
 create_ss_json(){
 	echo_date "创建$(__get_type_abbr_name)配置文件到$CONFIG_FILE"
 	if [ "$ss_basic_type" == "0" ]; then
-		/jffs/softcenter/bin/gen_conf 0 $CONFIG_FILE 3333 0 none
-
+		/jffs/softcenter/bin/gen_conf 0 $CONFIG_FILE_TMP 3333 3333 none
+		cat "$CONFIG_FILE_TMP" | jq --tab . > $CONFIG_FILE
 		if [ "$ss_basic_netflix_enable" == "1" ]; then
-			/jffs/softcenter/bin/gen_conf 0 $CONFIG_NETFLIX_FILE 4321 0 none
-			/jffs/softcenter/bin/gen_conf 0 $CONFIG_SOCK5_FILE 1088 0 none
+			/jffs/softcenter/bin/gen_conf 0 $CONFIG_FILE_TMP 4321 3333 none
+			cat "$CONFIG_FILE_TMP" | jq --tab . > $CONFIG_NETFLIX_FILE
+			/jffs/softcenter/bin/gen_conf 0 $CONFIG_FILE_TMP 1088 3333 none
+			cat "$CONFIG_FILE_TMP" | jq --tab . > $CONFIG_SOCK5_FILE
 		fi
 	elif [ "$ss_basic_type" == "1" ]; then
-		/jffs/softcenter/bin/gen_conf 0 $CONFIG_FILE 3333 0 none
+		/jffs/softcenter/bin/gen_conf 0 $CONFIG_FILE_TMP 3333 3333 none
+		cat "$CONFIG_FILE_TMP" | jq --tab . > $CONFIG_FILE
 		if [ "$ss_basic_netflix_enable" == "1" ]; then
-			/jffs/softcenter/bin/gen_conf 0 $CONFIG_NETFLIX_FILE 4321 0 none
-			/jffs/softcenter/bin/gen_conf 0 $CONFIG_SOCK5_FILE 1088 0 none
+			/jffs/softcenter/bin/gen_conf 0 $CONFIG_FILE_TMP 4321 3333 none
+			cat "$CONFIG_FILE_TMP" | jq --tab . > $CONFIG_NETFLIX_FILE
+			/jffs/softcenter/bin/gen_conf 0 $CONFIG_FILE_TMP 1088 3333 none
+			cat "$CONFIG_FILE_TMP" | jq --tab . > $CONFIG_SOCK5_FILE
 		fi
 	fi
-
+	rm -rf $CONFIG_FILE_TMP
 }
 
 get_dns_name() {
@@ -750,37 +756,17 @@ start_ss_redir() {
 		echo_date 开启ss-redir进程，用于透明代理.
 		BIN=ss-redir
 	fi
-	if [ "$ss_basic_use_kcp" == "1" ] && [ "$ss_basic_kcp_server" == "127.0.0.1" ] && [ "$ss_basic_kcp_port" == "1092" ]; then
-		SPEED_KCP=1
-	fi
-
-	if [ "$ss_basic_use_kcp" == "1" ] && [ "$ss_basic_kcp_server" == "127.0.0.1" ] && [ "$ss_basic_kcp_port" == "1093" ]; then
-		SPEED_KCP=2
-	fi
 	# Start ss-redir
 	if [ "$ss_basic_use_kcp" == "1" ]; then
 		if [ "$mangle" == "1" ]; then
 			# tcp go kcp
-			if [ "$SPEED_KCP" == "1" ]; then
-				echo_date $BIN的 tcp 走kcptun, kcptun的 udp 走 udpspeeder
-			elif [ "$SPEED_KCP" == "2" ]; then
-				echo_date $BIN的 tcp 走kcptun, kcptun的 udp 走 udpraw
-			else
-				echo_date $BIN的 tcp 走kcptun.
-			fi
+			echo_date $BIN的 tcp 走kcptun.
 			$BIN -s 127.0.0.1 -p 1091 -c $CONFIG_FILE -f /var/run/shadowsocks.pid >/dev/null 2>&1
 			# udp go ss
 			echo_date $BIN的 udp 走$BIN.
 			$BIN -c $CONFIG_FILE -U -f /var/run/shadowsocks.pid >/dev/null 2>&1
 		else
-			# tcp only go kcp
-			if [ "$SPEED_KCP" == "1" ]; then
-				echo_date $BIN的 tcp 走kcptun, kcptun的 udp 走 udpspeeder
-			elif [ "$SPEED_KCP" == "2" ]; then
-				echo_date $BIN的 tcp 走kcptun, kcptun的 udp 走 udpraw
-			else
-				echo_date $BIN的 tcp 走kcptun.
-			fi
+			echo_date $BIN的 tcp 走kcptun.
 			echo_date $BIN的 udp 未开启.
 			$BIN -s 127.0.0.1 -p 1091 -c $CONFIG_FILE -f /var/run/shadowsocks.pid >/dev/null 2>&1
 		fi
