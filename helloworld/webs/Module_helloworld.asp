@@ -3089,7 +3089,7 @@ function save_failover() {
 															</a>
 														</div>
 														<div style="display:table-cell;float: left;margin-left:270px;position: absolute;padding: 5.5px 0px;">
-															<a type="button" class="ss_btn" target="_blank" href="https://github.com/hq450/fancyss/blob/master/fancyss_hnd/Changelog.txt">更新日志</a>
+															<a type="button" class="ss_btn" target="_blank" href="https://github.com/zusterben/plan_b">更新日志</a>
 														</div>
 														<div style="display:table-cell;float: left;margin-left:350px;position: absolute;padding: 5.5px 0px;">
 															<a type="button" class="ss_btn" href="javascript:void(0);" onclick="pop_help()">插件帮助</a>

@@ -2,7 +2,7 @@
 CurrentDate=$(date +%Y-%m-%d)
 # ======================================
 # get gfwlist for shadowsocks ipset mode
-curl https://cdn.jsdelivr.net/gh/gfwlist/gfwlist/gfwlist.txt > gfwlist_download.conf
+curl https://raw.githubusercontent.com/gfwlist/gfwlist/master/gfwlist.txt > gfwlist_download.conf
 generate_china_banned() {
 cat $1 | base64 -d > gfwlist_tmp.txt
 sed -i '/^@@|/d' gfwlist_tmp.txt
