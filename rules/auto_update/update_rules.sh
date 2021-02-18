@@ -24,6 +24,7 @@ rm gfwlist_tmp.txt
 echo "dmhy.org" >> gfwlist_tmp.conf
 echo "gab.com" >> gfwlist_tmp.conf
 echo "safechat.com" >> gfwlist_tmp.conf
+echo "clubhouseapi.com" >> gfwlist_tmp.conf
 generate_china_banned gfwlist_download.conf > gfwlist_download_tmp.conf
 
 sed '/.*/s/.*/server=\/&\/127.0.0.1#7913\nipset=\/&\/gfwlist/' gfwlist_download_tmp.conf > gfwlist1.conf
