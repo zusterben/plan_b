@@ -555,6 +555,7 @@ add_v2ray_servers(){
 	dbus set ssconf_basic_v2ray_network_security_$NODE_INDEX=$v2ray_tls
 	dbus set ssconf_basic_v2ray_network_$NODE_INDEX=$v2ray_net
 	dbus set ssconf_basic_v2ray_vmessvless_$NODE_INDEX="vmess"
+	dbus set ssconf_basic_v2ray_fingerprint_$NODE_INDEX="disable"
 	case $v2ray_net in
 	tcp)
 		# tcp协议设置【 tcp伪装类型 (type)】和【伪装域名 (host)】
@@ -620,6 +621,7 @@ update_v2ray_config(){
 			;;
 		esac
 		dbus set ssconf_basic_v2ray_vmessvless_$index="vmess"
+		dbus set ssconf_basic_v2ray_fingerprint_$index="disable"
 		if [ "$i" -gt "0" ]; then
 			echo_date "修改v2ray节点：【$v2ray_ps】" && let updatenum+=1
 		else
