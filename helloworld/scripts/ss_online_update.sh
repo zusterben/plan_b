@@ -216,7 +216,7 @@ prepare(){
 			#------------------------
 		EOF
 		
-		local KEY="$(echo ${PREFIX} | sed 's/\s/|/g')"
+		local KEY="$(echo ${PREFIX} | sed 's/[[:space:]]/|/g')"
 		export -p | \
 		grep "ssconf_basic" | \
 		awk -F"=" '{print $0"|"$1}' | \
@@ -633,13 +633,13 @@ update_v2ray_config(){
 get_ssr_node_info(){
 	decode_link="$1"
 	action="$2"
-	server=$(echo "$decode_link" | awk -F':' '{print $1}' | sed 's/\s//g')
+	server=$(echo "$decode_link" | awk -F':' '{print $1}' | sed 's/[[:space:]]//g')
 	server_port=$(echo "$decode_link" | awk -F':' '{print $2}')
 	protocol=$(echo "$decode_link" | awk -F':' '{print $3}')
 	encrypt_method=$(echo "$decode_link" |awk -F':' '{print $4}')
 	obfs=$(echo "$decode_link" | awk -F':' '{print $5}' | sed 's/_compatible//g')
 	password=$(decode_url_link $(echo "$decode_link" | awk -F':' '{print $6}' | awk -F'/' '{print $1}'))
-	password=$(echo $password | base64_encode | sed 's/\s//g')
+	password=$(echo $password | base64_encode | sed 's/[[:space:]]//g')
 	
 	obfsparam_temp=$(echo "$decode_link" | awk -F':' '{print $6}' | grep -Eo "obfsparam.+" | sed 's/obfsparam=//g' | awk -F'&' '{print $1}')
 	[ -n "$obfsparam_temp" ] && obfsparam=$(decode_url_link $obfsparam_temp) || obfsparam=''
@@ -912,7 +912,7 @@ del_none_exist(){
 	# 通过本地节点和订阅节点对比，找出本地独有的节点[名称]对应的节点索引
 	local DIFF_REMARKS=$(awk 'NR==FNR{a[$3]=$3} NR>FNR{if(a[$3] == ""){print $4}}' /tmp/all_subscservers.txt /tmp/all_localservers.txt | sed '/^$/d')
 	# 获取两者都有的节点索引，即为需要删除的节点
-	local DEL_INDEXS=$(echo $DIFF_SERVERS $DIFF_REMARKS | sed 's/\s/\n/g' | sort | uniq -d)
+	local DEL_INDEXS=$(echo $DIFF_SERVERS $DIFF_REMARKS | sed 's/[[:space:]]/\n/g' | sort | uniq -d)
 	# 删除操作
 	[ -n "$DEL_INDEXS" ] && echo_date "==================================================================="
 	for DEL_INDEX in $DEL_INDEXS; do
@@ -1197,7 +1197,7 @@ get_oneline_rule_now(){
 				update_ssr_nodes $?
 			done
 			# 储存对应订阅链接的group信息
-			group=$(cat /tmp/sub_group_info.txt | sort -u | sed 's/$/ + /g' | sed ':a;N;$!ba;s#\n##g' | sed 's/\s+\s$//g')
+			group=$(cat /tmp/sub_group_info.txt | sort -u | sed 's/$/ + /g' | sed ':a;N;$!ba;s#\n##g' | sed 's/[[:space:]]+[[:space:]]$//g')
 			if [ -n "$group" ]; then
 				dbus set ss_online_group_$z=$group
 				echo $group >> /tmp/group_info.txt
