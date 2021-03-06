@@ -41,6 +41,7 @@ sed -i 's/\tdetect_package/\t# detect_package/g' /jffs/softcenter/scripts/ks_tar
 * 华硕系列：[`RT-AC68U` `RT-AC66U-B1` `RT-AC1900P` `RT-AC88U` `RT-AC3100` `RT-AC3200` `RT-AC5300`](https://github.com/zusterben/plan_b/tree/master/bin/arm)
 * 斐讯系列：[`K3`](https://github.com/zusterben/plan_b/tree/master/bin/arm)
 * 网件系列：[`R6900P` `R7000P` `R7000`](https://github.com/zusterben/plan_b/tree/master/bin/arm)
+* DLINK系列：[`DIR868L`](https://github.com/zusterben/plan_b/tree/master/bin/arm)
 * 领势系列：[`EA6700`](https://github.com/zusterben/plan_b/tree/master/bin/arm)
 * ARRIS系列：[`SBRAC1900P` `SBRAC3200P`](https://github.com/zusterben/plan_b/tree/master/bin/arm)
 * 其他：[`XWR3100` `XWR3150`](https://github.com/zusterben/plan_b/tree/master/bin/arm)

@@ -98,9 +98,15 @@ use_for_plan(){
 
 		pc_replace "cache-size=1500" "cache-size=9999" $CONFIG
 		echo "server=$ss_direct_user" > /tmp/resolv.dnsmasq
+		#pc_replace "servers-file=/tmp/resolv.smartdns" "servers-file=/tmp/resolv.dnsmasq" $CONFIG
+	elif [ "$ss_basic_mode" == "5" ];then
+		pc_replace "cache-size=1500" "cache-size=9999" $CONFIG
+		echo "server=127.0.0.1#7913" > /tmp/resolv.dnsmasq
+		pc_replace "servers-file=/tmp/resolv.smartdns" "servers-file=/tmp/resolv.dnsmasq" $CONFIG
 	else
 		pc_replace "cache-size=1500" "cache-size=9999" $CONFIG
 		echo "server=127.0.0.1#7913" > /tmp/resolv.dnsmasq
+		#pc_replace "servers-file=/tmp/resolv.smartdns" "servers-file=/tmp/resolv.dnsmasq" $CONFIG
 	fi
 }
 

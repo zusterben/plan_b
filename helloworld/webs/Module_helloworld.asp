@@ -2912,24 +2912,6 @@ function save_online_nodes(action) {
 	dbus_post["ss_base64_links"] = E("ss_base64_links").value;
 	push_data("ss_online_update.sh", action,  dbus_post);
 }
-function v2ray_binary_update(){
-	var dbus_post = {};
-	db_ss["ss_basic_action"] = "15";
-	require(['/res/layer/layer.js'], function(layer) {
-		layer.confirm('<li>为了避免不必要的问题，请保证路由器和服务器上的v2ray版本一致！</li><br /><li>你确定要更新v2ray二进制吗？</li>', {
-			shade: 0.8,
-		}, function(index) {
-			$("#log_content3").attr("rows", "20");
-			push_data("ss_v2ray.sh", 1, dbus_post);
-			layer.close(index);
-			return true;
-			//save_online_nodes(action);
-		}, function(index) {
-			layer.close(index);
-			return false;
-		});
-	});
-}
 function set_cron(action) {
 	var dbus_post = {};
 	if(action == 1){
@@ -3246,8 +3228,7 @@ function save_failover() {
 														{ title: '* tls/xtls域名 (host)', id:'ss_basic_v2ray_network_tlshost', type:'text', hint:'31', maxlen:'300', ph:'没有请留空'},
 														{ title: '多路复用 (Mux)', id:'ss_basic_v2ray_mux_enable', type:'checkbox', func:'v', hint:'32'},
 														{ title: 'Mux并发连接数', id:'ss_basic_v2ray_mux_concurrency', type:'text', hint:'33', maxlen:'300'},
-														{ title: 'v2ray json', id:'ss_basic_v2ray_json', type:'textarea', rows:'36', ph:ph_v2ray},
-														{ title: '其它', rid:'v2ray_binary_update_tr', prefix: '<a type="button" class="ss_btn" style="cursor:pointer" onclick="v2ray_binary_update(2)">更新V2Ray程序</a>'}
+														{ title: 'v2ray json', id:'ss_basic_v2ray_json', type:'textarea', rows:'36', ph:ph_v2ray}
 													]);
 												</script>
 											</table>
@@ -3439,17 +3420,17 @@ function save_failover() {
 													$('#table_rules').forms([
 														{ title: 'gfwlist域名数量', multi: [
 															{ suffix: '<em>'+ gfwl +'</em>&nbsp;条，版本：' },
-															{ suffix: '<a href="https://github.com/hq450/fancyss/blob/master/rules/gfwlist.conf" target="_blank">' },
+															{ suffix: '<a href="https://github.com/zusterben/plan_b/blob/master/rules/gfwlist.conf" target="_blank">' },
 															{ suffix: '<i><% nvram_get("update_ipset"); %></i></a>' },
 														]},
 														{ title: '大陆白名单IP段数量', multi: [
 															{ suffix: '<em>'+ chnl +'</em>&nbsp;行，包含 <em>' + chnn + '</em>&nbsp;个ip地址，版本：' },
-															{ suffix: '<a href="https://github.com/hq450/fancyss/blob/master/rules/chnroute.txt" target="_blank">' },
+															{ suffix: '<a href="https://github.com/zusterben/plan_b/blob/master/rules/chnroute.txt" target="_blank">' },
 															{ suffix: '<i><% nvram_get("update_chnroute"); %></i></a>' },
 														]},
 														{ title: '国内域名数量（cdn名单）', multi: [
 															{ suffix: '<em>'+ cdnn +'</em>&nbsp;条，版本：' },
-															{ suffix: '<a href="https://github.com/hq450/fancyss/blob/master/rules/cdn.txt" target="_blank">' },
+															{ suffix: '<a href="https://github.com/zusterben/plan_b/blob/master/rules/cdn.txt" target="_blank">' },
 															{ suffix: '<i><% nvram_get("update_cdn"); %></i></a>' },
 														]},
 														{ title: '规则定时更新任务', hint:'44', multi: [
@@ -3461,8 +3442,7 @@ function save_failover() {
 															{ suffix: '<input type="checkbox" id="ss_basic_cdn_update">CDN</a>' },
 															{ suffix: '&nbsp;<a type="button" class="ss_btn" style="cursor:pointer" onclick="updatelist(1)">保存设置</a>' },
 															{ suffix: '&nbsp;<a type="button" class="ss_btn" style="cursor:pointer" onclick="updatelist(2)">立即更新</a>' },
-														]},
-														{ title: 'V2ray二进制更新', prefix: '<a type="button" class="ss_btn" style="cursor:pointer" onclick="v2ray_binary_update(2)">更新V2Ray程序</a>'}
+														]}
 													]);
 												</script>
 											</table>
@@ -3614,7 +3594,7 @@ function save_failover() {
 														{ td: '<tr><td class="smth" style="font-weight: bold;" colspan="2">性能优化</td></tr>'},
 														{ title: '&nbsp;&nbsp;&nbsp;&nbsp;ss/ssr/trojan 开启多核心支持', id:'ss_basic_mcore', help:'108', type:'checkbox', value:true},
 														{ title: '&nbsp;&nbsp;&nbsp;&nbsp;ss-libev / v2ray 开启tcp fast open', id:'ss_basic_tfo', type:'checkbox', value:false},
-														{ title: '&nbsp;&nbsp;&nbsp;&nbsp;用xray替代v2ray', id:'ss_basic_xray_enable', type:'checkbox', value:true},
+														{ title: '&nbsp;&nbsp;&nbsp;&nbsp;用xray替代v2ray', id:'ss_basic_xray_enable', type:'checkbox', value:true}
 													]);
 												</script> 
 											</table>

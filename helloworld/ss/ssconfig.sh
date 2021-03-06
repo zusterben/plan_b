@@ -661,7 +661,35 @@ create_dnsmasq_conf() {
 			fi
 		done
 	fi
-
+	# 此处决定何时使用cdn.txt
+	if [ "$ss_basic_mode" == "6" ]; then
+		# 回国模式中，因为国外DNS无论如何都不会污染的，所以采取的策略是直连就行，默认国内优先即可
+		echo_date 自动判断在回国模式中使用国内优先模式，不加载cdn.conf
+	else
+		if [ "$ss_basic_mode" == "1" -a -z "$chn_on" -a -z "$all_on" ] || [ "$ss_basic_mode" == "6" ]; then
+			# gfwlist模式的时候，且访问控制主机中不存在 大陆白名单模式 游戏模式 全局模式，则使用国内优先模式
+			# 回国模式下自动判断使用国内优先
+			echo_date 自动判断使用国内优先模式，不加载cdn.conf
+		elif [ "$ss_basic_mode" == "5" ];then
+				echo_date 国外解析方案【$(get_dns_name $ss_foreign_dns)】，需要加载cdn.conf提供国内cdn...
+				echo_date 生成cdn加速列表到/tmp/sscdn.conf，加速用的dns：$CDN
+				echo "#for china site CDN acclerate" >>/tmp/sscdn.conf
+				cat /jffs/softcenter/ss/rules/cdn.txt | sed "s/^/server=&\/./g" | sed "s/$/\/&127.0.0.1#9053/g" | sort | awk '{if ($0!=line) print;line=$0}' >>/tmp/sscdn.conf
+		else
+			# 其它情况，均使用国外优先模式，以下区分是否加载cdn.conf
+			if [ "$ss_foreign_dns" == "2" ]; then
+				# 因为chinadns1 chinadns2自带国内cdn，所以也不需要cdn.conf
+				echo_date 自动判断dns解析使用国外优先模式...
+				echo_date 国外解析方案【$(get_dns_name $ss_foreign_dns)】自带国内cdn，无需加载cdn.conf，路由器开销小...
+			#else
+				#echo_date 自动判断dns解析使用国外优先模式...
+				#echo_date 国外解析方案【$(get_dns_name $ss_foreign_dns)】，需要加载cdn.conf提供国内cdn...
+				#echo_date 生成cdn加速列表到/tmp/sscdn.conf，加速用的dns：$CDN
+				#echo "#for china site CDN acclerate" >>/tmp/sscdn.conf
+				#cat /jffs/softcenter/ss/rules/cdn.txt | sed "s/^/server=&\/./g" | sed "s/$/\/&127.0.0.1#9053/g" | sort | awk '{if ($0!=line) print;line=$0}' >>/tmp/sscdn.conf
+			fi
+		fi
+	fi
 	#ln_conf
 	if [ -f /tmp/custom.conf ]; then
 		#echo_date 创建域自定义dnsmasq配置文件软链接到/etc/dnsmasq.user/custom.conf
