@@ -78,6 +78,7 @@ sed -i 's/\tdetect_package/\t# detect_package/g' /jffs/softcenter/scripts/ks_tar
 * 华硕系列：[`RT-AX55` `RT-AX56U` `RT-AX58U` `TUF-AX3000` `RT-AX82U` `RT-ACRH17` `RT-AC2200` `RT-AX89X` `RT-ACRH18`](https://github.com/zusterben/plan_b/tree/master/bin/armng)
 * 网件系列：[`RAX20` `RAX50` `RAX120`](https://github.com/zusterben/plan_b/tree/master/bin/armng)
 * 天邑系列：[`TY6201`](https://github.com/zusterben/plan_b/tree/master/bin/armng)
+* 小米系列：[`AX3600`](https://github.com/zusterben/plan_b/tree/master/bin/armng)
 
 #### 注意：
 
