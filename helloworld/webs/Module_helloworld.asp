@@ -318,7 +318,7 @@ function save() {
 		dbus["ssconf_basic_v2ray_network_path_" + node_sel] = vmess_node.path;
 		if(vmess_node.tls == "tls"){
 			dbus["ssconf_basic_v2ray_network_security_" + node_sel] = "tls";
-			dbus["ssconf_basic_v2ray_fingerprint_" + node_sel] = "firefox";
+			dbus["ssconf_basic_v2ray_fingerprint_" + node_sel] = "disable";
 		}else{
 			dbus["ssconf_basic_v2ray_network_security_" + node_sel] = "none";
 		}
@@ -979,7 +979,7 @@ function add_ss_node_conf(flag) {
 				ns[p + "_v2ray_network_path_" + node_max] = vmess_node.path;
 				if(vmess_node.tls == "tls"){
 					ns[p + "_v2ray_network_security_" + node_max] = "tls";
-					ns[p + "_v2ray_fingerprint_" + node_max] = "firefox";
+					ns[p + "_v2ray_fingerprint_" + node_max] = "disable";
 				}else{
 					ns[p + "_v2ray_network_security_" + node_max] = "none";
 				}	
@@ -1223,7 +1223,7 @@ function edit_ss_node_conf(flag) {
 				ns["ssconf_basic_v2ray_network_path_" + edit_id] = vmess_node.path;
 				if(vmess_node.tls == "tls"){
 					ns["ssconf_basic_v2ray_network_security_" + edit_id] = "tls";
-					ns["ssconf_basic_v2ray_fingerprint_" + edit_id] = "firefox";
+					ns["ssconf_basic_v2ray_fingerprint_" + edit_id] = "disable";
 				}else{
 					ns["ssconf_basic_v2ray_network_security_" + edit_id] = "none";
 				}
@@ -3169,7 +3169,7 @@ function save_failover() {
 																	{ title: '伪装域名 (host)', rid:'v2ray_network_host_tr', id:'ss_node_table_v2ray_network_host', type:'text', maxlen:'300', style:'width:338px'},
 																	{ title: '路径 (path)', rid:'v2ray_network_path_tr', id:'ss_node_table_v2ray_network_path', type:'text', maxlen:'300', style:'width:338px', ph:'没有请留空'},
 																	{ title: '底层传输安全', rid:'v2ray_network_security_tr', id:'ss_node_table_v2ray_network_security', func:'v',type:'select', options:[["none", "关闭"], ["tls", "tls"], ["xtls", "xtls"]], style:'width:350px', value: "none"},
-																	{ title: '指纹伪造', rid:'v2ray_fingerprint_tr', id:'ss_node_table_v2ray_fingerprint', type:'select', func:'v', options:[["disable", "关闭"], ["firefox", "firefox"], ["chrome", "chrome"]],value: "firefox"},
+																	{ title: '指纹伪造', rid:'v2ray_fingerprint_tr', id:'ss_node_table_v2ray_fingerprint', type:'select', func:'v', options:[["disable", "关闭"], ["firefox", "firefox"], ["chrome", "chrome"]],value: "disable"},
 																	{ title: '流控', rid:'v2ray_network_flow_basic_tr', id:'ss_node_table_v2ray_network_flow', func:'v',type:'select', options:[["xtls-rprx-origin", "xtls-rprx-origin"], ["xtls-rprx-direct", "xtls-rprx-direct"], ["xtls-rprx-direct-udp443", "xtls-rprx-direct-udp443"], ["xtls-rprx-splice", "xtls-rprx-splice"], ["xtls-rprx-splice-udp443", "xtls-rprx-splice-udp443"]], style:'width:350px', value: "xtls-rprx-origin"},
 																	{ title: 'tls/xtls域名 (host)', rid:'v2ray_network_tlshost_tr', id:'ss_node_table_v2ray_network_tlshost', type:'text', maxlen:'300', style:'width:338px'},
 																	{ title: '多路复用 (Mux)', rid:'v2ray_mux_enable_tr', id:'ss_node_table_v2ray_mux_enable', type:'checkbox', func:'v', value:false},
@@ -3223,7 +3223,7 @@ function save_failover() {
 														{ title: '* 伪装域名 (host)', id:'ss_basic_v2ray_network_host', type:'text', hint:'28', maxlen:'300', ph:'没有请留空'},
 														{ title: '* 路径 (path)', id:'ss_basic_v2ray_network_path', type:'text', hint:'29', maxlen:'300', ph:'没有请留空'},
 														{ title: '底层传输安全', id:'ss_basic_v2ray_network_security', type:'select', func:'v',hint:'30', options:[["none", "关闭"], ["tls", "tls"], ["xtls", "xtls"]],value: "none"},
-														{ title: '指纹伪造', id:'ss_basic_v2ray_fingerprint', type:'select', func:'v',hint:'30', options:[["disable", "关闭"], ["firefox", "firefox"], ["chrome", "chrome"]],value: "firefox"},
+														{ title: '指纹伪造', id:'ss_basic_v2ray_fingerprint', type:'select', func:'v',hint:'30', options:[["disable", "关闭"], ["firefox", "firefox"], ["chrome", "chrome"]],value: "disable"},
 														{ title: '流控', id:'ss_basic_v2ray_network_flow', type:'select', func:'v',hint:'30', options:[["xtls-rprx-origin", "xtls-rprx-origin"], ["xtls-rprx-direct", "xtls-rprx-direct"], ["xtls-rprx-direct-udp443", "xtls-rprx-direct-udp443"], ["xtls-rprx-splice", "xtls-rprx-splice"], ["xtls-rprx-splice-udp443", "xtls-rprx-splice-udp443"]],value: "xtls-rprx-origin"},
 														{ title: '* tls/xtls域名 (host)', id:'ss_basic_v2ray_network_tlshost', type:'text', hint:'31', maxlen:'300', ph:'没有请留空'},
 														{ title: '多路复用 (Mux)', id:'ss_basic_v2ray_mux_enable', type:'checkbox', func:'v', hint:'32'},
