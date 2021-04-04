@@ -12,7 +12,8 @@ KEY_WORDS_2=$(echo $ss_basic_include | sed 's/,$//g' | sed 's/,/|/g')
 DEL_SUBSCRIBE=0
 SOCKS_FLAG=0
 NODES_SEQ=$(export -p | grep ssconf_basic_ | grep _name_ | cut -d "=" -f1 | cut -d "_" -f4 | sort -n)
-NODE_INDEX=${NODES_SEQ##*[[:space:]]}
+NODES_SEQ=$(echo $NODES_SEQ | sed 's/[[:space:]]/|/g')
+NODE_INDEX=${NODES_SEQ##*|}
 
 # 一个节点里可能有的所有信息
 readonly PREFIX="ssconf_basic_name_
@@ -46,6 +47,8 @@ readonly PREFIX="ssconf_basic_name_
 				ssconf_basic_v2ray_mux_enable_
 				ssconf_basic_v2ray_mux_concurrency_
 				ssconf_basic_v2ray_json_
+				ssconf_basic_v2ray_vmessvless_
+				ssconf_basic_v2ray_fingerprint_
 				ssconf_basic_ss_v2ray_
 				ssconf_basic_ss_v2ray_opts_
 				ssconf_basic_type_
@@ -196,9 +199,6 @@ prepare(){
 		awk -F"|" '{print $2}' | \
 		sed 's/export/dbus set/g' | \
 		sed '1 i\#------------------------' \
-		#sed '1 isource /jffs/softcenter/scripts/base.sh' | \
-		#sed '1 i#!/bin/sh' | \
-		#sed '$a #------------------------' \
 		>> $BACKUP_FILE
 		
 		echo_date "备份完毕，开始调整..."

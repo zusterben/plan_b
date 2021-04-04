@@ -15,3 +15,4 @@ b1eceefea6bf9b2266f6d90dbb179b86 helloworld_0.3.7.tar.gz
 f6d4bd8becfcb1b05b68d61449b3e5c1 helloworld_0.4.1.tar.gz
 a8b1ebb24f7cf3bf20b8fd984f49b2c4 helloworld_0.4.2.tar.gz
 9cd38c666ca05150a59d16952a649f7e helloworld_0.4.3.tar.gz
+79bdeceabcbee9b9cb5e1dbaea8cf76a helloworld_0.4.4.tar.gz

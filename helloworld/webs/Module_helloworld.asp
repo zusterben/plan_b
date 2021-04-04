@@ -1236,7 +1236,7 @@ function edit_ss_node_conf(flag) {
 				ns["ssconf_basic_v2ray_json_" + edit_id] = Base64.encode(pack_js(E('ss_node_table_v2ray_json').value));
 			}
 		}
-		ns[p + "_type_" + edit_id] = "3";
+		ns[p + "_type_" + edit_id] = "2";
 	} 
 	var id = parseInt(Math.random() * 100000000);
 	var postData = {"id": id, "method": "dummy_script.sh", "params":[], "fields": ns };
