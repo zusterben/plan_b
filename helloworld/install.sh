@@ -4,6 +4,10 @@ source /jffs/softcenter/scripts/base.sh
 eval $(dbus export ss)
 alias echo_date='echo 【$(TZ=UTC-8 date -R +%Y年%m月%d日\ %X)】:'
 MODEL=$(nvram get productid)
+ODMPID=$(nvram get odmpid)
+if [ -n "${ODMPID}" ];then
+	MODEL="${ODMPID}"
+fi
 mkdir -p /jffs/softcenter/ss
 mkdir -p /tmp/upload
 
@@ -20,7 +24,7 @@ fi
 echo_date 检测jffs分区剩余空间...
 if [ "$(nvram get sc_mount)" == 0 ];then
 	SPACE_AVAL=$(df|grep jffs | awk '{print $4}')
-	SPACE_NEED=$(du -s /tmp/helloworld.tar.gz | awk '{print $1}')
+	SPACE_NEED=$(du -s /tmp/helloworld*.tar.gz | awk '{print $1}')
 	if [ "$SPACE_AVAL" -gt "$SPACE_NEED" ];then
 		echo_date 当前jffs分区剩余"$SPACE_AVAL" KB, 插件安装需要"$SPACE_NEED" KB，空间满足，继续安装！
 	elif [ -n "$ss_basic_version_local" ];then
@@ -42,7 +46,7 @@ fi
 
 # 先关闭ss
 if [ "$ss_basic_enable" == "1" ];then
-	echo_date 先关闭科学上网插件，保证文件更新成功!
+	echo_date 先关闭helloworld插件，保证文件更新成功!
 	sh /jffs/softcenter/ss/ssconfig.sh stop
 fi
 
@@ -84,7 +88,7 @@ echo_date 复制相关二进制文件！此步时间可能较长！
 cp -rf /tmp/helloworld/bin/* /jffs/softcenter/bin/
 
 echo_date 复制相关的脚本文件！
-cp -rf /tmp/helloworld/ss/* /jffs/softcenter/ss/
+cp -rf /tmp/helloworld/ss /jffs/softcenter/
 cp -rf /tmp/helloworld/scripts/* /jffs/softcenter/scripts/
 cp -rf /tmp/helloworld/install.sh /jffs/softcenter/scripts/ss_install.sh
 cp -rf /tmp/helloworld/uninstall.sh /jffs/softcenter/scripts/uninstall_helloworld.sh
@@ -93,10 +97,14 @@ echo_date 复制相关的网页文件！
 cp -rf /tmp/helloworld/webs/* /jffs/softcenter/webs/
 cp -rf /tmp/helloworld/res/* /jffs/softcenter/res/
 if [ "$ROG" == "1" ];then
+	echo_date "为插件安装ROG UI..."
 	cp -rf /tmp/helloworld/rog/res/helloworld.css /jffs/softcenter/res/
 elif [ "$TUF" == "1" ];then
+	echo_date "为插件安装TUF UI..."
 	sed -i 's/3e030d/3e2902/g;s/91071f/92650F/g;s/680516/D0982C/g;s/cf0a2c/c58813/g;s/700618/74500b/g;s/530412/92650F/g' /tmp/helloworld/rog/res/helloworld.css >/dev/null 2>&1
 	cp -rf /tmp/helloworld/rog/res/helloworld.css /jffs/softcenter/res/
+else
+	echo_date "为插件安装ASUSWRT UI..."
 fi
 echo_date 为新安装文件赋予执行权限...
 chmod 755 /jffs/softcenter/ss/rules/*
@@ -137,10 +145,10 @@ dbus set ss_basic_v2ray_version="v4.32.1"
 echo_date 一点点清理工作...
 rm -rf /tmp/helloworld* >/dev/null 2>&1
 
-echo_date 科学上网插件安装成功！
+echo_date helloworld插件安装成功！
 
 if [ "$ss_basic_enable" == "1" ];then
-	echo_date 重启科学上网插件！
+	echo_date 重启helloworld插件！
 	sh /jffs/softcenter/ss/ssconfig.sh restart
 fi
 

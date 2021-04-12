@@ -595,8 +595,8 @@ create_dnsmasq_conf() {
 		#echo "ipset=/.github.com/router" >>/tmp/wblist.conf
 		#echo "server=/.github.io/127.0.0.1#$DNSF_PORT" >>/tmp/wblist.conf
 		#echo "ipset=/.github.io/router" >>/tmp/wblist.conf
-		#echo "server=/.raw.githubusercontent.com/127.0.0.1#$DNSF_PORT" >>/tmp/wblist.conf
-		#echo "ipset=/.raw.githubusercontent.com/router" >>/tmp/wblist.conf
+		echo "server=/.raw.githubusercontent.com/127.0.0.1#$DNSF_PORT" >>/tmp/wblist.conf
+		echo "ipset=/.raw.githubusercontent.com/router" >>/tmp/wblist.conf
 		#echo "server=/.adblockplus.org/127.0.0.1#$DNSF_PORT" >>/tmp/wblist.conf
 		#echo "ipset=/.adblockplus.org/router" >>/tmp/wblist.conf
 		#echo "server=/.entware.net/127.0.0.1#$DNSF_PORT" >>/tmp/wblist.conf
@@ -2078,6 +2078,10 @@ create_ipset(){
 	fi
 	#for router
 	ipset add router 172.217.4.131
+	ipset add router 185.199.108.133
+	ipset add router 185.199.109.133
+	ipset add router 185.199.110.133
+	ipset add router 185.199.111.133
 	ipset add router 8.8.8.8
 	ipset add router 151.101.0.133
 	ipset add router 151.101.64.133

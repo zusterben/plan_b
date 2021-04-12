@@ -307,7 +307,7 @@ function save() {
 		dbus["ssconf_basic_v2ray_uuid_" + node_sel] = vmess_node.id;
 		dbus["ssconf_basic_v2ray_security_" + node_sel] = "auto";
 		dbus["ssconf_basic_v2ray_alterid_" + node_sel] = vmess_node.aid;
-		dbus["ssconf_basic_v2ray_vmessvless_" + node_sel] = vmess_node.ml;
+		dbus["ssconf_basic_v2ray_vmessvless_" + node_sel] = "vmess";
 		dbus["ssconf_basic_v2ray_network_" + node_sel] = vmess_node.net;
 		if(vmess_node.net == "tcp"){
 			dbus["ssconf_basic_v2ray_headtype_tcp_" + node_sel] = vmess_node.type;
