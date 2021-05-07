@@ -8,6 +8,7 @@ sleep 1
 
 rm -rf /jffs/softcenter/ss/*
 rm -rf /jffs/softcenter/scripts/ss_*
+rm -rf /jffs/softcenter/scripts/ss-rules
 rm -rf /jffs/softcenter/webs/Module_helloworld*
 rm -rf /jffs/softcenter/bin/ss-redir
 rm -rf /jffs/softcenter/bin/ss-local
@@ -41,3 +42,4 @@ dbus remove ss_basic_enable
 dbus remove ss_basic_version_local
 dbus remove ss_basic_version_web
 dbus remove ss_basic_v2ray_version
+rm -rf /jffs/softcenter/scripts/uninstall_helloworld.sh

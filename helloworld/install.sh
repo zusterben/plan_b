@@ -134,7 +134,7 @@ echo_date 设置一些默认值
 # 离线安装时设置软件中心内储存的版本号和连接
 CUR_VERSION=$(cat /jffs/softcenter/ss/version)
 dbus set ss_basic_version_local="$CUR_VERSION"
-dbus set softcenter_module_helloworld_install="4"
+dbus set softcenter_module_helloworld_install="1"
 dbus set softcenter_module_helloworld_version="$CUR_VERSION"
 dbus set softcenter_module_helloworld_title="helloworld"
 dbus set softcenter_module_helloworld_description="helloworld"

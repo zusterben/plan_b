@@ -21,6 +21,7 @@ start_update(){
 	else
 		echo_date 没有检测到在线版本，可能是访问github有问题，去大陆白名单模式试试吧！
 		rm -rf /tmp/ss_version
+		echo XU6J03M6
 		exit
 	fi
 	

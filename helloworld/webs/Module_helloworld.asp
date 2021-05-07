@@ -681,7 +681,7 @@ function Add_profile() { //点击节点页面内添加节点动作
 	E("ss_node_table_ssr_obfs_param").value = "";
 	E("ss_node_table_v2ray_uuid").value = "";
 	E("ss_node_table_v2ray_alterid").value = "";
-	E("ss_node_table_v2ray_vmessvless").value = "";
+	E("ss_node_table_v2ray_vmessvless").value = "vmess";
 	E("ss_node_table_v2ray_json").value = "";
 	E("ssTitle").style.display = "";
 	E("ssrTitle").style.display = "";
@@ -968,7 +968,7 @@ function add_ss_node_conf(flag) {
 				ns[p + "_v2ray_uuid_" + node_max] = vmess_node.id;
 				ns[p + "_v2ray_security_" + node_max] = "auto";
 				ns[p + "_v2ray_alterid_" + node_max] = vmess_node.aid;
-				ns[p + "_v2ray_vmessvless_" + node_max] = vmess_node.ml;
+				ns[p + "_v2ray_vmessvless_" + node_max] = "vmess";
 				ns[p + "_v2ray_network_" + node_max] = vmess_node.net;
 				if(vmess_node.net == "tcp"){
 					ns[p + "_v2ray_headtype_tcp_" + node_max] = vmess_node.type;
@@ -1212,7 +1212,7 @@ function edit_ss_node_conf(flag) {
 				ns["ssconf_basic_v2ray_uuid_" + edit_id] = vmess_node.id;
 				ns["ssconf_basic_v2ray_security_" + edit_id] = "auto";
 				ns["ssconf_basic_v2ray_alterid_" + edit_id] = vmess_node.aid;
-				ns["ssconf_basic_v2ray_vmessvless_" + edit_id] = vmess_node.ml;
+				ns["ssconf_basic_v2ray_vmessvless_" + edit_id] = "vmess";
 				ns["ssconf_basic_v2ray_network_" + edit_id] = vmess_node.net;
 				if(vmess_node.net == "tcp"){
 					ns["ssconf_basic_v2ray_headtype_tcp_" + edit_id] = vmess_node.type;
