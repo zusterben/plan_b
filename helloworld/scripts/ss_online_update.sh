@@ -173,9 +173,6 @@ prepare(){
 			if [ "$nu" == "$ssconf_basic_node" ]; then
 				echo "export ssconf_basic_node=\"$i\"" >> $BACKUP_FILE_TMP
 			fi
-			if [ -n "$ss_basic_udp_node" -a "$nu" == "$ss_basic_udp_node" ]; then
-				echo "export ss_basic_udp_node=\"$i\"" >> $BACKUP_FILE_TMP
-			fi
 			let i+=1
 		done
 
@@ -237,7 +234,6 @@ prepare(){
 		sed '/=""$/d' \
 		>> $BACKUP_FILE
 
-		echo dbus set ss_basic_udp_node=\"${ss_basic_udp_node}\" >> $BACKUP_FILE
 		echo dbus set ssconf_basic_node=\"${ssconf_basic_node}\" >> $BACKUP_FILE
 
 		echo_date "备份完毕"
@@ -960,9 +956,6 @@ remove_node_gap(){
 				if [ "$nu" == "$ssconf_basic_node" ]; then
 					dbus set ssconf_basic_node=${y}
 				fi
-				if [ -n "$ss_basic_udp_node" -a "$nu" == "$ss_basic_udp_node" ]; then
-					dbus set ss_basic_udp_node=${y}
-				fi				
 			fi
 			let y+=1
 		done

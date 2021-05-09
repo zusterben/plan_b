@@ -843,40 +843,6 @@ function openssHint(itemNum) {
 		width = "600px";
 		statusmenu = "&nbsp;&nbsp;&nbsp;&nbsp;1. <b>单独加速：</b>此处配置为服务器ip+服务器端口(或者留空+服务器端口)，KCPTUN的UDP流量会转发给服务器；<br />&nbsp;&nbsp;&nbsp;&nbsp;2.  <b>串联1：</b>此处配置为127.0.0.1:1092（即UDPspeeder监听端口）时，可配置kcptun和UDPspeeder串联，KCPTUN的UDP流量会转发给UDPspeeder，然后转为tcp，并转发给服务器的UDP2raw。同时你需要在服务器端配置KCPTUN和UDP2raw的串联。<br />&nbsp;&nbsp;&nbsp;&nbsp;2.  <b>串联3：</b>此处配置为127.0.0.1:1093（即UDP2raw监听端口）时，可配置kcptun和udp2raw串联，KCPTUN的UDP流量会转发给UDP2raw，然后转为tcp，并转发给服务器的UDP2raw。同时你需要在服务器端配置KCPTUN和UDP2raw的串联。"
 		_caption = "说明：";
-	} else if (itemNum == 97) {
-		width = "600px";
-		statusmenu = "&nbsp;&nbsp;&nbsp;&nbsp;UDPspeeder(V1/V2)针对udp传输进行优化，能加速udp，降低udp的丢包，特别适合游戏。<br />&nbsp;&nbsp;&nbsp;&nbsp;UDP2raw可以将udp协议转为tcp，这对一些对udp有限制或者qos的情况特别好用，UDP2raw不是一个udp加速工具，如果需要udp加速，还需要配合UDPspeeder(V1/V2)串联使用。<br />&nbsp;&nbsp;&nbsp;&nbsp;正确开启的姿势是需要在服务器端配置UDPspeeder(V1/V2)/UDP2raw的服务器端程序，然后在路由器下，需要以下条件才能正常开启：<b><br />1. 当前正在使用游戏模式或者访问控制主机中有游戏模式主机；<br />2. 此处加速的节点和正在使用的节点一致；<br />3. 正确配置并开启UDPspeeder(V1/V2)或UDP2raw，或者两者都开启（串联模式）。</b>	 "
-		_caption = "说明：";
-	} else if (itemNum == 98) {
-		statusmenu = "&nbsp;&nbsp;&nbsp;&nbsp;此处设定的MTU值将用于ss-redir/ssr-redir。<br />&nbsp;&nbsp;&nbsp;&nbsp;因为UDPspeeder(V1/V2)和UDP2raw对上游软件的MTU有要求，此处方便高级用户对其进行设定，以达到更好的UDP加速效果。不知道如何设定的请选择不设定，以免造成不必要的问题<br />&nbsp;&nbsp;&nbsp;&nbsp;此处的设定只有在UDPspeeder(V1/V2)/UDP2raw开启或者两者都开启的情况下才会生效。"
-		_caption = "说明：";
-	} else if (itemNum == 99) {
-		statusmenu = "此处设定为预设不可更改。<br />&nbsp;&nbsp;&nbsp;&nbsp;1. 单开UDPspeeder(V1/V2)模式或者UDPspeeder(V1/V2)和UDP2raw双开（串联模式下），ss-redir的UDP流量都会转发到此；<br />&nbsp;&nbsp;&nbsp;&nbsp;2. 只有UDPepeeder未开启且UDP2raw开启的情况下，ss-redir的UDP流量才会转发到UDP2raw；"
-		_caption = "说明：";
-	} else if (itemNum == 100) {
-		width = "600px";
-		statusmenu = "&nbsp;&nbsp;&nbsp;&nbsp;1.单开UDPspeeder(V1/V2)模式下，ss-redir的udp流量经过UDPspeeder(V1/V2)加速后的UDP流量会转发到服务器，此处应按填写服务器的ip和服务器端UDPspeeder(V1/V2)的监听端口；<br />&nbsp;&nbsp;&nbsp;&nbsp;2.UDPspeeder(V1/V2)和UDP2raw双开（串联模式下），ss-redir的udp流量经过UDPspeeder(V1/V2)加速后的UDP流量会先转发给本地的UDP2raw程序，然后由UDP2raw和服务器的UDP2raw之间利用TCP（faketcp模式）协议进行通讯，然后服务器的UDP2raw收到TCP（faketcp模式）后还原为UDPspeeder(V1/V2)加速后的流量转发给服务器的UDPspeeder(V1/V2)，然后服务器的UDPspeeder(V1/V2)将此流量继续还原为ss-redir的UDP流量，转发给服务器的ss服务器程序。 所以路由器下UDPspeeder(V1/V2)和UDP2raw的串联也需要服务器端UDPspeeder(V1/V2)和UDP2raw的串联。"
-		_caption = "说明：";
-	} else if (itemNum == 101) {
-		width = "600px";
-		statusmenu = "此处设定为预设不可更改。<br />&nbsp;&nbsp;&nbsp;&nbsp;1.单开UDP2raw模式下，ss-redir的UDP流量会转发到此；<br />&nbsp;&nbsp;&nbsp;&nbsp;2.UDPspeeder(V1/V2)和UDP2raw双开（串联模式下），ss-redir的UDP流量会转发到UDPspeeder(V1/V2)，经过UDPspeeder(V1/V2)加速后的udp流量流量会转发到此（即转发到UDP2raw），形成UDPspeeder(V1/V2)和UDP2raw的串联。"
-		_caption = "说明";
-	} else if (itemNum == 102) {
-		width = "600px";
-		statusmenu = "&nbsp;&nbsp;&nbsp;&nbsp;1.单开udp2raw模式下，ss-redir的udp流量经过udp2raw转换为tcp后的流量会转发此处设置的到服务器端口，此处应按填写服务器的ip和服务器端UDPspeeder(V1/V2)的监听端口；<br />&nbsp;&nbsp;&nbsp;&nbsp;2.在UDPspeeder(V1/V2)和UDP2raw双开（串联模式下），ss-redir的udp流量经过UDPspeeder(V1/V2)加速后的UDP流量，经过udp2raw转换为tcp后的流量会转发此处设置的到服务器端口，此处应按填写服务器的ip和服务器端UDPspeeder(V1/V2)的监听端口；"
-		_caption = "说明：";
-	} else if (itemNum == 103) {
-		width = "600px";
-		statusmenu = "梅林固件推荐使用auto.<br />&nbsp;&nbsp;&nbsp;&nbsp;大部分udp2raw不能连通的情况都是设置了不兼容的iptables造成的。--lower-level选项允许绕过本地iptables。<br />&nbsp;&nbsp;&nbsp;&nbsp;虽然作者推荐merlin固件使用auto，但是merlin固件在某些拨号网络下可能无法通过--lower-level auto自动获取参数，而导致udp2raw启动失败，此时可以手动填写此处或者留空（实测留空也是可以工作的）"
-		_caption = "说明：";
-	} else if (itemNum == 104) {
-		width = "600px";
-		statusmenu = "<br />&nbsp;&nbsp;&nbsp;&nbsp;UDPspeeder有两个版本，V2是V1的升级版本，只有V2版才支持FEC；V1和V2版都支持多倍发包，V2通过配置FEC比例就能达到V1的多倍发包效果。<br />如果你只需要多倍发包，可以直接用V1版，V1版配置更简单，占用内存更小，而且经过了几个月的考验，很稳定。V2版在梅林固件下的消耗更高一些。"
-		_caption = "说明：";
-	} else if (itemNum == 105) {
-		width = "600px";
-		statusmenu = "<b>帮助信息：</b><br />dnsmasq配置文件里的ipset,address,server规则一多，路由器CPU使用率就上去了。<br />而现在gfwlist 5000+条server规则，5000+多条ipset规则！<br />而为了更好的国内解析效果，还引入了40000+条的server规则！<br />一旦访问网页，每次域名解析的时候，dnsmasq都会遍历这些名单，造成大量的cpu消耗！！<br />而改进版的dnsmasq，这里称dnsmasq-fastlookup，见原作者infinet帖<a href='https://www.v2ex.com/t/172010' target='_blank'><u><font color='#00F'>作者原帖</font></u></a><br />大概的意思就是原版的dnsmasq很慢（因为遍历查询方式）<br />而原作者infinet改的dnsmasq很快（因为hash查询方式）<br />可以大大的解放路由器cpu因dns查询带来的消耗！加快dns查询速度！<br />相关链接：<a href='https://github.com/infinet/dnsmasq' target='_blank'><u><font color='#00F'>dnsmasq-fastlookup源码</font></u></a>，<a href='http://koolshare.cn/thread-65484-1-1.html' target='_blank'><u><font color='#00F'>dnsmasq-fastlookup性能测试</font></u></a><br />-----------------------------------------------------------------------------------------<br />原先dnsmasq-fastlookup有问题可能会导致进程死掉，造成无法上网，而现在经过作者更新，已经相当稳定，故而添加此功能。<br />请根据自己实际需要选择替换方案~"
-		_caption = "说明：";
 	} else if (itemNum == 106) {
 		width = "600px";
 		statusmenu = "DNS劫持（原chromecast功能）.<br />&nbsp;&nbsp;&nbsp;&nbsp;开启该功能后，局域网内所有客户端的DNS解析请求将会被强制劫持到使用路由器提供的DNS进行解析，以避免DNS污染。<br />&nbsp;&nbsp;&nbsp;&nbsp;例如当局域网内有用户在电脑上自定义DNS解析服务器为8.8.8.8时候，该电脑向8.8.8.8的DNS请求，将会被强制劫持到路由器的dns服务器如：192.168.50.1，例如访问谷歌网站，虽然路由器本身已经具备访问能力，但是如果设备请求道了污染的DNS，会导致该设备无法访问谷歌，所以当你无法控制局域网内一些设备自定义DNS行为的情况下，启用该功能可以保证局域网内所有客户端不会受到DNS污染。"

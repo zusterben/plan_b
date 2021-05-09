@@ -38,8 +38,7 @@ backup_tar(){
 	cp /jffs/softcenter/bin/chinadns-ng $TARGET_FOLDER/bin/
 	cp /jffs/softcenter/bin/client_linux $TARGET_FOLDER/bin/
 	cp /jffs/softcenter/bin/jq $TARGET_FOLDER/bin/
-	cp /jffs/softcenter/bin/v2ray $TARGET_FOLDER/bin/
-	cp /jffs/softcenter/bin/v2ctl $TARGET_FOLDER/bin/
+	cp /jffs/softcenter/bin/xray $TARGET_FOLDER/bin/
 	cp /jffs/softcenter/bin/v2ray-plugin $TARGET_FOLDER/bin/
 	cp /jffs/softcenter/bin/httping $TARGET_FOLDER/bin/
 	cp /jffs/softcenter/webs/Module_helloworld*.asp $TARGET_FOLDER/webs/
@@ -49,7 +48,6 @@ backup_tar(){
 	cp /jffs/softcenter/res/icon-helloworld.png $TARGET_FOLDER/res/
 	cp /jffs/softcenter/res/ss-menu.js $TARGET_FOLDER/res/
 	cp /jffs/softcenter/res/tablednd.js $TARGET_FOLDER/res/
-	cp /jffs/softcenter/res/qrcode.js $TARGET_FOLDER/res/
 	cp /jffs/softcenter/res/helloworld.css $TARGET_FOLDER/res/
 	cp -r /jffs/softcenter/ss $TARGET_FOLDER/
 	rm -rf $TARGET_FOLDER/ss/*.json

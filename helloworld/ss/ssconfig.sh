@@ -1232,6 +1232,8 @@ create_v2ray_json(){
 		local tls="null"
 		local xtls="null"
 		local vless_flow=""
+		local quic="null"
+		local grpc="null"
 
 		# tcp和kcp下tlsSettings为null，ws和h2下tlsSettings
 		[ -z "$ss_basic_v2ray_mux_concurrency" ] && local ss_basic_v2ray_mux_concurrency=8
@@ -1329,6 +1331,20 @@ create_v2ray_json(){
 				\"host\": $(get_h2_host $ss_basic_v2ray_network_host)
 				}"
 			;;
+		quic)
+			local quic="{
+				\"security\": \"$ss_basic_v2ray_quic_security\",
+				\"key\": \"$ss_basic_v2ray_quic_key\",
+				\"header\": { \"type\": \"$ss_basic_v2ray_quic_guise\" }
+				}"
+			;;
+		grpc)
+			local grpc="{
+				\"serviceName\": \"$ss_basic_v2ray_grpc_serviceName\",
+				\"multiMode\": $(get_function_switch $ss_basic_v2ray_mux_enable)
+				}"
+			ss_basic_v2ray_mux_enable=0
+			;;
 		esac
 		# log area
 		cat >"$V2RAY_CONFIG_FILE_TMP" <<-EOF
@@ -1398,6 +1414,8 @@ create_v2ray_json(){
 						"kcpSettings": $kcp,
 						"wsSettings": $ws,
 						"httpSettings": $h2
+						"quicSettings": $quic
+						"grpcSettings": $grpc
 					},
 					"mux": {
 						"enabled": $(get_function_switch $ss_basic_v2ray_mux_enable),
@@ -1440,6 +1458,8 @@ create_v2ray_json(){
 					  "kcpSettings": $kcp,
 					  "wsSettings": $ws,
 					  "httpSettings": $h2
+						"quicSettings": $quic
+						"grpcSettings": $grpc
 					},
 					"mux": {
 						"enabled": $(get_function_switch $ss_basic_v2ray_mux_enable),
@@ -1595,6 +1615,8 @@ create_v2ray_netflix(){
 		local tls="null"
 		local xtls="null"
 		local vless_flow=""
+		local quic="null"
+		local grpc="null"
 
 		# tcp和kcp下tlsSettings为null，ws和h2下tlsSettings
 		[ -z "$ss_basic_v2ray_mux_concurrency" ] && local ss_basic_v2ray_mux_concurrency=8
@@ -1692,6 +1714,20 @@ create_v2ray_netflix(){
 				\"host\": $(get_h2_host $ss_basic_v2ray_network_host)
 				}"
 			;;
+		quic)
+			local quic="{
+				\"security\": \"$ss_basic_v2ray_quic_security\",
+				\"key\": \"$ss_basic_v2ray_quic_key\",
+				\"header\": { \"type\": \"$ss_basic_v2ray_quic_guise\" }
+				}"
+			;;
+		grpc)
+			local grpc="{
+				\"serviceName\": \"$ss_basic_v2ray_grpc_serviceName\",
+				\"multiMode\": $(get_function_switch $ss_basic_v2ray_mux_enable)
+				}"
+				ss_basic_v2ray_mux_enable=0
+			;;
 		esac
 		# log area
 		cat >"$V2RAY_CONFIG_FILE_TMP" <<-EOF
@@ -1755,6 +1791,8 @@ create_v2ray_netflix(){
 						"kcpSettings": $kcp,
 						"wsSettings": $ws,
 						"httpSettings": $h2
+						"quicSettings": $quic
+						"grpcSettings": $grpc
 					},
 					"mux": {
 						"enabled": $(get_function_switch $ss_basic_v2ray_mux_enable),
@@ -1797,6 +1835,8 @@ create_v2ray_netflix(){
 					  "kcpSettings": $kcp,
 					  "wsSettings": $ws,
 					  "httpSettings": $h2
+						"quicSettings": $quic
+						"grpcSettings": $grpc
 					},
 					"mux": {
 						"enabled": $(get_function_switch $ss_basic_v2ray_mux_enable),

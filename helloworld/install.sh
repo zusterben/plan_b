@@ -75,7 +75,6 @@ rm -rf /jffs/softcenter/bin/xray
 rm -rf /jffs/softcenter/bin/httping
 rm -rf /jffs/softcenter/res/icon-helloworld.png
 rm -rf /jffs/softcenter/res/ss-menu.js
-rm -rf /jffs/softcenter/res/qrcode.js
 rm -rf /jffs/softcenter/res/tablednd.js
 rm -rf /jffs/softcenter/res/helloworld.css
 find /jffs/softcenter/init.d/ -name "*helloworld.sh" | xargs rm -rf
