@@ -1384,7 +1384,7 @@ create_v2ray_json(){
 		EOF
 
 		# outbounds area
-		if [ "$ss_basic_v2ray_vmessvless" != "vless" ]; then
+		if [ "$ss_basic_v2ray_protocol" != "vless" ]; then
 		cat >>"$V2RAY_CONFIG_FILE_TMP" <<-EOF
 			"outbounds": [
 				{
@@ -1761,7 +1761,7 @@ create_v2ray_netflix(){
 				],
 			EOF
 		# outbounds area
-		if [ "$ss_basic_v2ray_vmessvless" != "vless" ]; then
+		if [ "$ss_basic_v2ray_protocol" != "vless" ]; then
 		cat >>"$V2RAY_CONFIG_FILE_TMP" <<-EOF
 			"outbounds": [
 				{

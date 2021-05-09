@@ -47,7 +47,7 @@ readonly PREFIX="ssconf_basic_name_
 				ssconf_basic_v2ray_mux_enable_
 				ssconf_basic_v2ray_mux_concurrency_
 				ssconf_basic_v2ray_json_
-				ssconf_basic_v2ray_vmessvless_
+				ssconf_basic_v2ray_protocol_
 				ssconf_basic_v2ray_fingerprint_
 				ssconf_basic_ss_v2ray_
 				ssconf_basic_ss_v2ray_opts_
@@ -556,7 +556,7 @@ add_v2ray_servers(){
 	dbus set ssconf_basic_v2ray_alterid_$NODE_INDEX=$v2ray_aid
 	dbus set ssconf_basic_v2ray_network_security_$NODE_INDEX=$v2ray_tls
 	dbus set ssconf_basic_v2ray_network_$NODE_INDEX=$v2ray_net
-	dbus set ssconf_basic_v2ray_vmessvless_$NODE_INDEX="vmess"
+	dbus set ssconf_basic_v2ray_protocol_$NODE_INDEX="vmess"
 	dbus set ssconf_basic_v2ray_fingerprint_$NODE_INDEX="disable"
 	case $v2ray_net in
 	tcp)
@@ -622,7 +622,7 @@ update_v2ray_config(){
 			[ "$local_v2ray_path" != "$v2ray_path" ] && dbus set ssconf_basic_v2ray_network_path_$index=$v2ray_path && let i+=1
 			;;
 		esac
-		dbus set ssconf_basic_v2ray_vmessvless_$index="vmess"
+		dbus set ssconf_basic_v2ray_protocol_$index="vmess"
 		dbus set ssconf_basic_v2ray_fingerprint_$index="disable"
 		if [ "$i" -gt "0" ]; then
 			echo_date "修改v2ray节点：【$v2ray_ps】" && let updatenum+=1
