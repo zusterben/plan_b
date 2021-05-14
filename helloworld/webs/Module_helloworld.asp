@@ -178,7 +178,7 @@ function conf2obj(obj, action) {
 function ssconf_node2obj(node_sel) {
 	var p = "ssconf_basic";
 	var obj = {};
-	var params2 = ["password", "v2ray_json", "server", "mode", "port", "password", "method", "ss_obfs", "ss_obfs_host", "ss_v2ray", "ss_v2ray_opts", "ssr_protocol", "ssr_protocol_param", "ssr_obfs", "ssr_obfs_param", "use_kcp", "v2ray_uuid", "v2ray_alterid", "v2ray_protocol", "v2ray_security", "v2ray_network", "v2ray_headtype_tcp", "v2ray_headtype_kcp", "v2ray_network_path", "v2ray_network_host", "v2ray_mux_enable", "v2ray_network_security", "v2ray_fingerprint", "v2ray_network_tlshost", "v2ray_network_flow", "v2ray_quic_security", "v2ray_quic_key", "v2ray_ss_method", "v2ray_quic_guise", "v2ray_grpc_serviceName", "v2ray_mux_concurrency", "v2ray_use_json", "trojan_sni", "ssl_verify_enable", "trojan_mp_enable","trojan_mulprocess"];
+	var params2 = ["password", "v2ray_json", "server", "mode", "port", "password", "method", "ss_obfs", "ss_obfs_host", "ssr_protocol", "ssr_protocol_param", "ssr_obfs", "ssr_obfs_param", "use_kcp", "v2ray_uuid", "v2ray_alterid", "v2ray_protocol", "v2ray_security", "v2ray_network", "v2ray_headtype_tcp", "v2ray_headtype_kcp", "v2ray_network_path", "v2ray_network_host", "v2ray_mux_enable", "v2ray_network_security", "v2ray_fingerprint", "v2ray_network_tlshost", "v2ray_network_flow", "v2ray_quic_security", "v2ray_quic_key", "v2ray_ss_method", "v2ray_quic_guise", "v2ray_grpc_serviceName", "v2ray_mux_concurrency", "v2ray_use_json", "trojan_sni", "ssl_verify_enable", "trojan_mp_enable","trojan_mulprocess"];
 	for (var i = 0; i < params2.length; i++) {
 		obj["ss_basic_" + params2[i]] = db_ss[p + "_" + params2[i] + "_" + node_sel] || "";
 	}
@@ -350,7 +350,7 @@ function save() {
 	}
 
 	if(node_type == 0){
-		var params = ["server", "mode", "port", "method", "ss_obfs", "ss_obfs_host", "ss_v2ray", "ss_v2ray_opts"];
+		var params = ["server", "mode", "port", "method", "ss_obfs", "ss_obfs_host"];
 		for (var i = 0; i < params.length; i++) {
 			dbus["ssconf_basic_" + params[i] + "_" + node_sel] = E("ss_basic_" + params[i]).value;
 		}
@@ -443,9 +443,7 @@ function verifyFields(r) {
 	}
 	//ss-libev
 	elem.display(elem.parentElem('ss_basic_ss_obfs', 'tr'), ss_on);
-	elem.display(elem.parentElem('ss_basic_ss_obfs_host', 'tr'), (ss_on && E("ss_basic_ss_obfs").value != "0"));
-	elem.display(elem.parentElem('ss_basic_ss_v2ray', 'tr'), ss_on);
-	elem.display(elem.parentElem('ss_basic_ss_v2ray_opts', 'tr'), (ss_on && E("ss_basic_ss_v2ray").value != "0"));
+	elem.display(elem.parentElem('ss_basic_ss_obfs_host', 'tr'), (ss_on && E("ss_basic_ss_obfs").value != "none"));
 	//ssr-libev
 	elem.display(elem.parentElem('ss_basic_ssr_protocol_param', 'tr'), ssr_on);
 	elem.display(elem.parentElem('ss_basic_ssr_protocol', 'tr'), ssr_on);
@@ -507,9 +505,7 @@ function verifyFields(r) {
 	//node add/edit pannel
 	if (save_flag == "shadowsocks") {
 		showhide("ss_obfs_support", ($("#ss_node_table_mode").val() != "3"));
-		showhide("ss_obfs_host_support", ($("#ss_node_table_mode").val() != "3" && $("#ss_node_table_ss_obfs").val() != "0"));
-		showhide("ss_v2ray_support", ($("#ss_node_table_mode").val() != "3"));
-		showhide("ss_v2ray_opts_support", ($("#ss_node_table_mode").val() != "3" && $("#ss_node_table_ss_v2ray").val() != "0"));
+		showhide("ss_obfs_host_support", ($("#ss_node_table_mode").val() != "3" && $("#ss_node_table_ss_obfs").val() != "none"));
 	}
 	if (save_flag == "trojan") {	
 		showhide("trojan_mulprocess_tr", (E("ss_node_table_trojan_mp_enable").checked));		
@@ -660,10 +656,8 @@ function Add_profile() { //点击节点页面内添加节点动作
 	E("ss_node_table_trojan_mulprocess").value = "";
 	E("ss_node_table_trojan_mp_enable").checked == false;
 	E("ss_node_table_mode").value = "1";
-	E("ss_node_table_ss_obfs").value = "0"
+	E("ss_node_table_ss_obfs").value = "none"
 	E("ss_node_table_ss_obfs_host").value = "";
-	E("ss_node_table_ss_v2ray").value = "0"
-	E("ss_node_table_ss_v2ray_opts").value = "";
 	E("ss_node_table_ssr_protocol").value = "origin";
 	E("ss_node_table_ssr_protocol_param").value = "";
 	E("ss_node_table_ssr_obfs").value = "plain";
@@ -732,9 +726,7 @@ function tabclickhandler(_type) {
 		E('v2ray_mux_concurrency_tr').style.display = "none";
 		E('v2ray_json_tr').style.display = "none";
 		showhide("ss_obfs_support", ($("#ss_node_table_mode").val() != "3"));
-		showhide("ss_obfs_host_support", ($("#ss_node_table_mode").val() != "3" && $("#ss_node_table_ss_obfs").val() != "0"));
-		showhide("ss_v2ray_support", ($("#ss_node_table_mode").val() != "3"));
-		showhide("ss_v2ray_opts_support", ($("#ss_node_table_mode").val() != "3" && $("#ss_node_table_ss_v2ray").val() != "0"));
+		showhide("ss_obfs_host_support", ($("#ss_node_table_mode").val() != "3" && $("#ss_node_table_ss_obfs").val() != "none"));
 	} else if (_type == 1) {
 		save_flag = "shadowsocksR";
 		E('ssrTitle').className = "vpnClientTitle_td_click";
@@ -754,8 +746,6 @@ function tabclickhandler(_type) {
 		E("ss_node_table_trojan_mulprocess").value = "";
 		E('ss_obfs_support').style.display = "none";
 		E('ss_obfs_host_support').style.display = "none";
-		E('ss_v2ray_support').style.display = "none";
-		E('ss_v2ray_opts_support').style.display = "none";
 		E('ssr_protocol_tr').style.display = "";
 		E('ssr_protocol_param_tr').style.display = "";
 		E('ssr_obfs_tr').style.display = "";
@@ -796,8 +786,6 @@ function tabclickhandler(_type) {
 		E('trojan_mulprocess_tr').style.display ="none";
 		E('ss_obfs_support').style.display = "none";
 		E('ss_obfs_host_support').style.display = "none";
-		E('ss_v2ray_support').style.display = "none";
-		E('ss_v2ray_opts_support').style.display = "none";
 		E('ssr_protocol_tr').style.display = "none";
 		E('ssr_protocol_param_tr').style.display = "none";
 		E('ssr_obfs_tr').style.display = "none";
@@ -896,8 +884,6 @@ function tabclickhandler(_type) {
 		E('trojan_mulprocess_tr').style.display ="";
 		E('ss_obfs_support').style.display = "none";
 		E('ss_obfs_host_support').style.display = "none";
-		E('ss_v2ray_support').style.display = "none";
-		E('ss_v2ray_opts_support').style.display = "none";
 		E('ssr_protocol_tr').style.display = "none";
 		E('ssr_protocol_param_tr').style.display = "none";
 		E('ssr_obfs_tr').style.display = "none";
@@ -931,7 +917,7 @@ function add_ss_node_conf(flag) {
 	var ns = {};
 	var p = "ssconf_basic";
 	node_max += 1;
-	var params1 = ["mode", "name", "server", "port", "method", "ss_obfs", "ss_obfs_host", "ss_v2ray", "ss_v2ray_opts"];
+	var params1 = ["mode", "name", "server", "port", "method", "ss_obfs", "ss_obfs_host"];
 	var params2 = ["mode", "name", "server", "port", "method", "ssr_protocol", "ssr_protocol_param", "ssr_obfs", "ssr_obfs_param"];
 	var params4_1 = ["mode", "name", "server", "port", "v2ray_uuid", "v2ray_alterid", "v2ray_protocol", "v2ray_security", "v2ray_network", "v2ray_headtype_tcp", "v2ray_headtype_kcp", "v2ray_network_path", "v2ray_network_host", "v2ray_network_security", "v2ray_fingerprint", "v2ray_network_tlshost", "v2ray_network_flow", "v2ray_quic_security", "v2ray_quic_key", "v2ray_quic_guise", "v2ray_grpc_serviceName", "v2ray_ss_method", "v2ray_mux_concurrency"]; //for v2ray
 	var params4_2 = ["v2ray_use_json", "v2ray_mux_enable"];
@@ -1037,10 +1023,8 @@ function add_ss_node_conf(flag) {
 				E("ss_node_table_trojan_mp_enable").checked = false;
 				E("ss_node_table_trojan_mulprocess").value = "";
 				E("ss_node_table_mode").value = "1";
-				E("ss_node_table_ss_obfs").value = "0"
+				E("ss_node_table_ss_obfs").value = "none"
 				E("ss_node_table_ss_obfs_host").value = "";
-				E("ss_node_table_ss_v2ray").value = "0"
-				E("ss_node_table_ss_v2ray_opts").value = "";
 				E("ss_node_table_ssr_protocol").value = "origin";
 				E("ss_node_table_ssr_protocol_param").value = "";
 				E("ss_node_table_ssr_obfs").value = "plain";
@@ -1067,7 +1051,7 @@ function remove_conf_table(o) {
 
 	var dbus_tmp = {};
 	var perf = "ssconf_basic_"
-	var temp = ["name", "server", "server_ip", "mode", "port", "password", "method", "ssr_protocol", "ssr_protocol_param", "ssr_obfs", "ssr_obfs_param", "use_kcp", "ss_obfs", "ss_obfs_host", "ss_v2ray", "ss_v2ray_opts", "use_lb", "ping", "lbmode", "weight", "use_kcp", "group", "v2ray_uuid", "v2ray_alterid", "v2ray_protocol", "v2ray_security", "v2ray_network", "v2ray_headtype_tcp", "v2ray_headtype_kcp", "v2ray_network_path", "v2ray_network_host", "v2ray_network_security", "v2ray_fingerprint", "v2ray_network_tlshost", "v2ray_network_flow", "v2ray_quic_security", "v2ray_quic_key", "v2ray_quic_guise", "v2ray_grpc_serviceName", "v2ray_ss_method", "v2ray_mux_concurrency", "v2ray_json", "v2ray_use_json", "v2ray_mux_enable", "type", "trojan_sni", "ssl_verify_enable", "trojan_mp_enable","trojan_mulprocess"];
+	var temp = ["name", "server", "server_ip", "mode", "port", "password", "method", "ssr_protocol", "ssr_protocol_param", "ssr_obfs", "ssr_obfs_param", "use_kcp", "ss_obfs", "ss_obfs_host", "use_lb", "ping", "lbmode", "weight", "use_kcp", "group", "v2ray_uuid", "v2ray_alterid", "v2ray_protocol", "v2ray_security", "v2ray_network", "v2ray_headtype_tcp", "v2ray_headtype_kcp", "v2ray_network_path", "v2ray_network_host", "v2ray_network_security", "v2ray_fingerprint", "v2ray_network_tlshost", "v2ray_network_flow", "v2ray_quic_security", "v2ray_quic_key", "v2ray_quic_guise", "v2ray_grpc_serviceName", "v2ray_ss_method", "v2ray_mux_concurrency", "v2ray_json", "v2ray_use_json", "v2ray_mux_enable", "type", "trojan_sni", "ssl_verify_enable", "trojan_mp_enable","trojan_mulprocess"];
 	var new_nodes = ss_nodes.concat()
 	new_nodes.splice(new_nodes.indexOf(id), 1);
 	//first: mark all node from ss_nodes data as empty
@@ -1118,7 +1102,7 @@ function edit_conf_table(o) {
 	var c = confs[id];
 	var params1_base64 = ["password"];
 	var params1_check = ["v2ray_use_json", "v2ray_mux_enable", "ssl_verify_enable", "trojan_mp_enable"];
-	var params1_input = ["name", "server", "mode", "port", "method", "ss_obfs", "ss_obfs_host", "ss_v2ray", "ss_v2ray_opts", "ssr_protocol", "ssr_protocol_param", "ssr_obfs", "ssr_obfs_param", "v2ray_uuid", "v2ray_alterid", "v2ray_protocol", "v2ray_security", "v2ray_network", "v2ray_headtype_tcp", "v2ray_headtype_kcp", "v2ray_network_path", "v2ray_network_host", "v2ray_network_security", "v2ray_fingerprint", "v2ray_network_tlshost", "v2ray_network_flow", "v2ray_quic_security", "v2ray_quic_key", "v2ray_quic_guise", "v2ray_grpc_serviceName", "v2ray_ss_method", "v2ray_mux_concurrency", "trojan_sni","trojan_mulprocess"];
+	var params1_input = ["name", "server", "mode", "port", "method", "ss_obfs", "ss_obfs_host", "ssr_protocol", "ssr_protocol_param", "ssr_obfs", "ssr_obfs_param", "v2ray_uuid", "v2ray_alterid", "v2ray_protocol", "v2ray_security", "v2ray_network", "v2ray_headtype_tcp", "v2ray_headtype_kcp", "v2ray_network_path", "v2ray_network_host", "v2ray_network_security", "v2ray_fingerprint", "v2ray_network_tlshost", "v2ray_network_flow", "v2ray_quic_security", "v2ray_quic_key", "v2ray_quic_guise", "v2ray_grpc_serviceName", "v2ray_ss_method", "v2ray_mux_concurrency", "trojan_sni","trojan_mulprocess"];
 	if(c["v2ray_json"]){
 		E("ss_node_table_v2ray_json").value = do_js_beautify(Base64.decode(c["v2ray_json"]));
 	}
@@ -1180,7 +1164,7 @@ function edit_conf_table(o) {
 function edit_ss_node_conf(flag) {
 	var ns = {};
 	var p = "ssconf_basic";
-	var params1 = ["name", "server", "mode", "port", "method", "ss_obfs", "ss_obfs_host", "ss_v2ray", "ss_v2ray_opts"];
+	var params1 = ["name", "server", "mode", "port", "method", "ss_obfs", "ss_obfs_host"];
 	var params2 = ["name", "server", "mode", "port", "method", "ssr_protocol", "ssr_protocol_param", "ssr_obfs", "ssr_obfs_param"];
 	var params4_1 = ["mode", "name", "server", "port", "v2ray_uuid", "v2ray_alterid", "v2ray_protocol", "v2ray_security", "v2ray_network", "v2ray_headtype_tcp", "v2ray_headtype_kcp", "v2ray_network_path", "v2ray_network_host", "v2ray_network_security", "v2ray_fingerprint", "v2ray_network_tlshost", "v2ray_quic_security", "v2ray_quic_key", "v2ray_quic_guise", "v2ray_grpc_serviceName", "v2ray_ss_method", "v2ray_mux_concurrency"]; //for v2ray
 	var params4_2 = ["v2ray_use_json", "v2ray_mux_enable"];
@@ -1266,10 +1250,8 @@ function edit_ss_node_conf(flag) {
 			E("ss_node_table_method").value = "aes-256-cfb";
 			E("ss_node_table_v2ray_ss_method").value = "none";
 			E("ss_node_table_mode").value = "1";
-			E("ss_node_table_ss_obfs").value = "0"
+			E("ss_node_table_ss_obfs").value = "none"
 			E("ss_node_table_ss_obfs_host").value = "";
-			E("ss_node_table_ss_v2ray").value = "0"
-			E("ss_node_table_ss_v2ray_opts").value = "";
 			E("ss_node_table_ssr_protocol").value = "origin";
 			E("ss_node_table_ssr_protocol_param").value = "";
 			E("ss_node_table_ssr_obfs").value = "plain";
@@ -1328,7 +1310,7 @@ function generate_node_info() {
 			}
 		}
 		//这些值统一处理
-		var params = ["group", "name", "port", "method", "password", "mode", "ss_obfs", "ss_obfs_host", "ss_v2ray", "ss_v2ray_opts", "ssr_protocol", "ssr_protocol_param", "ssr_obfs", "ssr_obfs_param", "weight", "lbmode", "v2ray_uuid", "v2ray_alterid", "v2ray_protocol", "v2ray_security", "v2ray_network", "v2ray_headtype_tcp", "v2ray_headtype_kcp", "v2ray_network_path", "v2ray_network_host", "v2ray_network_security", "v2ray_fingerprint", "v2ray_network_tlshost", "v2ray_network_flow", "v2ray_quic_security", "v2ray_quic_key", "v2ray_quic_guise", "v2ray_grpc_serviceName", "v2ray_ss_method", "v2ray_mux_concurrency", "v2ray_json", "v2ray_use_json", "trojan_sni","trojan_mulprocess"];
+		var params = ["group", "name", "port", "method", "password", "mode", "ss_obfs", "ss_obfs_host", "ssr_protocol", "ssr_protocol_param", "ssr_obfs", "ssr_obfs_param", "weight", "lbmode", "v2ray_uuid", "v2ray_alterid", "v2ray_protocol", "v2ray_security", "v2ray_network", "v2ray_headtype_tcp", "v2ray_headtype_kcp", "v2ray_network_path", "v2ray_network_host", "v2ray_network_security", "v2ray_fingerprint", "v2ray_network_tlshost", "v2ray_network_flow", "v2ray_quic_security", "v2ray_quic_key", "v2ray_quic_guise", "v2ray_grpc_serviceName", "v2ray_ss_method", "v2ray_mux_concurrency", "v2ray_json", "v2ray_use_json", "trojan_sni","trojan_mulprocess"];
 		for (var i = 0; i < params.length; i++) {
 			var ofield = p + "_" + params[i] + "_" + idx;
 			if (typeof db_ss[ofield] == "undefined") {
@@ -1481,7 +1463,7 @@ function refresh_html() {
 		html +='<td style="width:' + width[4] + ';">';
 		switch(c["type"]) {
 			case '0' :
-				if(c["ss_obfs"] == "http" || c["ss_obfs"] == "tls"){
+				if(c["ss_obfs"] != "none"){
 					html +='ss+obfs';
 				}else{
 					html +='ss';
@@ -1596,7 +1578,7 @@ function save_new_order(){
 	var tr = table.getElementsByTagName("tr");
 	var dbus_tmp = {};
 	var perf = "ssconf_basic_"
-	var temp = ["name", "server", "server_ip", "mode", "port", "password", "method", "ssr_protocol", "ssr_protocol_param", "ssr_obfs", "ssr_obfs_param", "use_kcp", "ss_obfs", "ss_obfs_host", "ss_v2ray", "ss_v2ray_opts", "use_lb", "ping", "lbmode", "weight", "use_kcp", "group", "v2ray_uuid", "v2ray_alterid", "v2ray_protocol", "v2ray_security", "v2ray_network", "v2ray_headtype_tcp", "v2ray_headtype_kcp", "v2ray_network_path", "v2ray_network_host", "v2ray_network_security", "v2ray_fingerprint", "v2ray_network_tlshost", "v2ray_network_flow", "v2ray_quic_security", "v2ray_quic_key", "v2ray_quic_guise", "v2ray_grpc_serviceName", "v2ray_ss_method", "v2ray_mux_concurrency", "v2ray_json", "v2ray_use_json", "v2ray_mux_enable", "type", "trojan_sni", "ssl_verify_enable", "trojan_mp_enable", "trojan_mulprocess"];
+	var temp = ["name", "server", "server_ip", "mode", "port", "password", "method", "ssr_protocol", "ssr_protocol_param", "ssr_obfs", "ssr_obfs_param", "use_kcp", "ss_obfs", "ss_obfs_host", "use_lb", "ping", "lbmode", "weight", "use_kcp", "group", "v2ray_uuid", "v2ray_alterid", "v2ray_protocol", "v2ray_security", "v2ray_network", "v2ray_headtype_tcp", "v2ray_headtype_kcp", "v2ray_network_path", "v2ray_network_host", "v2ray_network_security", "v2ray_fingerprint", "v2ray_network_tlshost", "v2ray_network_flow", "v2ray_quic_security", "v2ray_quic_key", "v2ray_quic_guise", "v2ray_grpc_serviceName", "v2ray_ss_method", "v2ray_mux_concurrency", "v2ray_json", "v2ray_use_json", "v2ray_mux_enable", "type", "trojan_sni", "ssl_verify_enable", "trojan_mp_enable", "trojan_mulprocess"];
 	//first: mark all node from ss_nodes data as empty
 	for (var i = 0; i < tr.length; i++) {
 		var rowid = tr[i].getAttribute("id").split("_")[1];
@@ -3070,10 +3052,8 @@ function save_failover() {
 																	{ title: 'sni', rid:'trojan_sni_tr', id:'ss_node_table_trojan_sni', type:'text', maxlen:'300', style:'width:338px', hidden:"yes"},
 																	{ title: 'Trojan多开', rid:'ss_trojan_mp_enable_tr', id:'ss_node_table_trojan_mp_enable', type:'checkbox', func:'v', value:false, hidden:"yes"},
 																	{ title: 'Trojan多开进程数', rid:'trojan_mulprocess_tr', id:'ss_node_table_trojan_mulprocess', type:'text', maxlen:'2', style:'width:338px', ph:'超过10无效', hidden:"yes"},
-																	{ title: 'obfs-plugin', rid:'ss_obfs_support', id:'ss_node_table_ss_obfs', type:'select', func:'v', options:[["0", "关闭"], ["tls", "tls"], ["http", "http"]], style:'width:350px', value: "0", hidden:"yes"},
+																	{ title: 'obfs-plugin', rid:'ss_obfs_support', id:'ss_node_table_ss_obfs', type:'select', func:'v', options:[["none", "关闭"], ["v2ray-plugin", "v2ray-plugin"], ["obfs-local", "obfs-local"]], style:'width:350px', value: "none", hidden:"yes"},
 																	{ title: 'obfs-plugin参数', rid:'ss_obfs_host_support', id:'ss_node_table_ss_obfs_host', type:'text', maxlen:'300', style:'width:338px', ph:'example.com', hidden:"yes"},
-																	{ title: 'v2ray-plugin', rid:'ss_v2ray_support', id:'ss_node_table_ss_v2ray', type:'select', func:'v', options:[["0", "关闭"], ["1", "开启"]], style:'width:350px', value: "0", hidden:"yes"},
-																	{ title: 'v2ray-plugin参数', rid:'ss_v2ray_opts_support', id:'ss_node_table_ss_v2ray_opts', type:'text', maxlen:'300', style:'width:338px', ph:'tls;host=example.com;path=/', hidden:"yes"},
 																	{ title: '协议 (protocol)', rid:'ssr_protocol_tr', id:'ss_node_table_ssr_protocol', type:'select', func:'v', options:option_protocals, style:'width:350px', value: "0", hidden:"yes"},
 																	{ title: '协议参数 (protocol_param)', rid:'ssr_protocol_param_tr', id:'ss_node_table_ssr_protocol_param', type:'text', maxlen:'300', style:'width:338px', ph:'id:password', hidden:"yes"},
 																	{ title: '混淆 (obfs)', rid:'ssr_obfs_tr', id:'ss_node_table_ssr_obfs', type:'select', func:'v', options:option_obfs, style:'width:350px', value: "0", hidden:"yes"},
@@ -3130,10 +3110,8 @@ function save_failover() {
 														{ title: 'sni', id:'ss_basic_trojan_sni', type:'text', maxlen:'300', hidden:"yes"},
 														{ title: 'Trojan多开',  id:'ss_basic_trojan_mp_enable', type:'checkbox', func:'v',hint:'31', hidden:"yes"},
 														{ title: 'Trojan多开进程数', id:'ss_basic_trojan_mulprocess', type:'text', hint:'32', maxlen:'2', ph:'超过10无效', hidden:"yes"},
-														{ title: '混淆 (obfs)', id:'ss_basic_ss_obfs', type:'select', func:'v', options:[["0", "关闭"], ["tls", "tls"], ["http", "http"]], value: "0", hidden:"yes"},
-														{ title: '混淆主机名 (obfs_host)', id:'ss_basic_ss_obfs_host', type:'text', maxlen:'100', ph:'bing.com', hidden:"yes"},
-														{ title: 'v2ray-plugin', id:'ss_basic_ss_v2ray', type:'select', hint: '7', func:'v', options:[["0", "关闭"], ["1", "打开"]], value: "0", hidden:"yes"},
-														{ title: 'v2ray-plugin参数', id:'ss_basic_ss_v2ray_opts', type:'text', maxlen:'300', ph:'tls;host=yourhost.com;path=/;', hidden:"yes"},
+														{ title: '混淆插件 (obfs)', id:'ss_basic_ss_obfs', type:'select', func:'v', options:[["none", "关闭"], ["v2ray-plugin", "v2ray-plugin"], ["obfs-local", "obfs-local"]], value: "none", hidden:"yes"},
+														{ title: '混淆插件参数 (obfs_host)', id:'ss_basic_ss_obfs_host', type:'text', maxlen:'100', ph:'bing.com', hidden:"yes"},
 														{ title: '协议 (protocol)', id:'ss_basic_ssr_protocol', type:'select', func:'v', options:option_protocals, hidden:"yes"},
 														{ title: '协议参数 (protocol_param)', id:'ss_basic_ssr_protocol_param', type:'password', hint:'54', maxlen:'100', ph:'id:password', peekaboo:'1', hidden:"yes"},
 														{ title: '混淆 (obfs)', id:'ss_basic_ssr_obfs', type:'select', func:'v', options:option_obfs, hidden:"yes"},

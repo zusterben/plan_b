@@ -1,16 +1,14 @@
-#!/usr/bin/lua
-
 ------------------------------------------------
 -- This file is part of the luci-app-ssr-plus subscribe.lua
 -- @author William Chan <root@williamchan.me>
+-- 2020/03/15 by chongshengB
+-- 2021/05/13 by zusterben
 ------------------------------------------------
-require "luci.model.uci"
-require "nixio"
-require "luci.util"
-require "luci.sys"
-require "luci.jsonc"
+require 'nixio'
+local cjson = require "cjson"
 -- these global functions are accessed all the time by the event handler
 -- so caching them is worth the effort
+local luci = luci
 local tinsert = table.insert
 local ssub, slen, schar, sbyte, sformat, sgsub = string.sub, string.len, string.char, string.byte, string.format, string.gsub
 local jsonParse, jsonStringify = luci.jsonc.parse, luci.jsonc.stringify
@@ -19,14 +17,47 @@ local cache = {}
 local nodeResult = setmetatable({}, {__index = cache}) -- update result
 local name = 'shadowsocksr'
 local uciType = 'servers'
-local ucic = luci.model.uci.cursor()
-local proxy = ucic:get_first(name, 'server_subscribe', 'proxy', '0')
-local switch = ucic:get_first(name, 'server_subscribe', 'switch', '1')
-local subscribe_url = ucic:get_first(name, 'server_subscribe', 'subscribe_url', {})
-local filter_words = ucic:get_first(name, 'server_subscribe', 'filter_words', '过期时间/剩余流量')
-local v2_tj = luci.sys.exec('type -t -p trojan') ~= "" and "trojan" or "v2ray"
+local subscribe_url = {}
+local i = 1
+-- base64
+local function base64Decode(text)
+	local raw = text
+	if not text then return '' end
+	text = text:gsub("%z", "")
+	text = text:gsub("_", "/")
+	text = text:gsub("-", "+")
+	local mod4 = #text % 4
+	text = text .. string.sub('====', mod4 + 1)
+	local result = b64decode(text)
+	
+	if result then
+		return result:gsub("%z", "")
+	else
+		return raw
+	end
+end
+local ssrindext = io.popen('dbus list ssconf_basic_ | grep ssconf_basic_ | grep _name_ | cut -d "=" -f1 | cut -d "_" -f4 | sort -rn|head -n1')
+local ssrindex = ssrindext:read("*all")
+if #ssrindex == 0 then
+	ssrindex = 1
+else
+	ssrindex = tonumber(ssrindex) + 1
+end
+local ssrmodet = io.popen('dbus get ssr_subscribe_mode')
+local ssrmode = ssrmodet:read("*all")
+local tfilter_words = io.popen("echo -n `dbus get ss_basic_exclude`")
+local filter_words = tfilter_words:read("*all")
+local tsubscribe_url = io.popen("echo -n `dbus get ss_online_links`")
+local subscribe_url2 = tsubscribe_url:read("*all")
+local subscribe_url3 = base64Decode(subscribe_url2)
+for line in subscribe_url3 do
+subscribe_url[i] = line
+i = i+1
+end
+
 local log = function(...)
 	print(os.date("%Y-%m-%d %H:%M:%S ") .. table.concat({...}, " "))
+	os.execute("echo '" .. table.concat({ ... }, " ") .. "' >> /tmp/upload/ss_log.txt")
 end
 local encrypt_methods_ss = {
 	-- aead
@@ -99,27 +130,10 @@ local function trim(text)
 end
 -- md5
 local function md5(content)
-	local stdout = luci.sys.exec('echo \"' .. urlEncode(content) .. '\" | md5sum | cut -d \" \" -f1')
+	local stdout = io.popen("echo -n '" .. urlEncode(content) .. "'|md5sum|cut -d ' ' -f1")
+	local stdout2 = stdout:read("*all")
 	-- assert(nixio.errno() == 0)
-	return trim(stdout)
-end
--- base64
-local function base64Decode(text)
-	local raw = text
-	if not text then
-		return ''
-	end
-	text = text:gsub("%z", "")
-	text = text:gsub("_", "/")
-	text = text:gsub("-", "+")
-	local mod4 = #text % 4
-	text = text .. string.sub('====', mod4 + 1)
-	local result = b64decode(text)
-	if result then
-		return result:gsub("%z", "")
-	else
-		return raw
-	end
+	return trim(stdout2)
 end
 -- 检查数组(table)中是否存在某个字符值
 -- https://www.04007.cn/article/135.html
@@ -132,7 +146,7 @@ local function checkTabValue(tab)
 end
 -- 处理数据
 local function processData(szType, content)
-	local result = {type = szType, local_port = 1234, kcp_param = '--nocomp'}
+	local result = {type = szType, local_port = 3333, kcp_param = '--nocomp'}
 	if szType == 'ssr' then
 		local dat = split(content, "/%?")
 		local hostInfo = split(dat[1], ':')
@@ -141,7 +155,7 @@ local function processData(szType, content)
 		result.protocol = hostInfo[3]
 		result.encrypt_method = hostInfo[4]
 		result.obfs = hostInfo[5]
-		result.password = base64Decode(hostInfo[6])
+		result.password = cjson.encode(hostInfo[6])
 		local params = {}
 		for _, v in pairs(split(dat[2], '&')) do
 			local t = split(v, '=')
@@ -155,7 +169,7 @@ local function processData(szType, content)
 		end
 		result.alias = result.alias .. base64Decode(params.remarks)
 	elseif szType == 'vmess' then
-		local info = jsonParse(content)
+		local info = cjson.decode(content)
 		result.type = 'v2ray'
 		result.v2ray_protocol = 'vmess'
 		result.server = info.add
@@ -245,7 +259,7 @@ local function processData(szType, content)
 		end
 		if checkTabValue(encrypt_methods_ss)[method] then
 			result.encrypt_method_ss = method
-			result.password = password
+			result.password = cjson.encode(password)
 		else
 			-- 1202 年了还不支持 SS AEAD 的屑机场
 			result = nil
@@ -254,7 +268,7 @@ local function processData(szType, content)
 		result.type = "ss"
 		result.server = content.server
 		result.server_port = content.port
-		result.password = content.password
+		result.password = cjson.encode(content.password)
 		result.encrypt_method_ss = content.encryption
 		result.plugin = content.plugin
 		result.plugin_opts = content.plugin_options
@@ -272,7 +286,7 @@ local function processData(szType, content)
 		local userinfo = hostInfo[1]
 		local password = userinfo
 		result.alias = UrlDecode(alias)
-		result.type = v2_tj
+		result.type = "trojan"
 		result.v2ray_protocol = "trojan"
 		result.server = host[1]
 		-- 按照官方的建议 默认验证ssl证书
@@ -293,7 +307,7 @@ local function processData(szType, content)
 		else
 			result.server_port = host[2]
 		end
-		result.password = password
+		result.password = cjson.encode(password)
 	elseif szType == "vless" then
 		local idx_sp = 0
 		local alias = ""
@@ -378,15 +392,17 @@ local function processData(szType, content)
 	result.alias = nil
 	local switch_enable = result.switch_enable
 	result.switch_enable = nil
-	result.hashkey = md5(jsonStringify(result))
+	--print(result)
+	result.hashkey = md5(cjson.encode(result))
 	result.alias = alias
 	result.switch_enable = switch_enable
 	return result
 end
 -- wget
 local function wget(url)
-	local stdout = luci.sys.exec('wget -q --user-agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.157 Safari/537.36" --no-check-certificate -O- "' .. url .. '"')
-	return trim(stdout)
+	local stdout = io.popen('curl -k -s --connect-timeout 15 --retry 5 "' .. url .. '"')
+	local sresult = stdout:read("*all")
+	return trim(sresult)
 end
 
 local function check_filer(result)
@@ -394,20 +410,17 @@ local function check_filer(result)
 		local filter_word = split(filter_words, "/")
 		for i, v in pairs(filter_word) do
 			if result.alias:find(v) then
-				-- log('订阅节点关键字过滤:“' .. v ..'” ，该节点被丢弃')
+				log('订阅节点关键字过滤:“' .. v ..'” ，该节点被丢弃')
 				return true
 			end
 		end
 	end
 end
 
-local execute = function()
+--local execute = function()
 	-- exec
+	local add, del = 0, 0
 	do
-		if proxy == '0' then -- 不使用代理更新的话先暂停
-			log('服务正在暂停')
-			luci.sys.init.stop(name)
-		end
 		for k, url in ipairs(subscribe_url) do
 			local raw = wget(url)
 			if #raw > 0 then
@@ -461,10 +474,115 @@ local execute = function()
 							if not result.server or not result.server_port or result.alias == "NULL" or check_filer(result) or result.server:match("[^0-9a-zA-Z%-%.%s]") then
 								log('丢弃无效节点: ' .. result.type .. ' 节点, ' .. result.alias)
 							else
-								-- log('成功解析: ' .. result.type ..' 节点, ' .. result.alias)
+								log('成功解析: ' .. result.type ..' 节点, ' .. result.alias)
 								result.grouphashkey = groupHash
 								tinsert(nodeResult[index], result)
 								cache[groupHash][result.hashkey] = nodeResult[index][#nodeResult[index]]
+								if result.type == "ss" then
+									os.execute("dbus set ssconf_basic_type_" .. ssrindex .. "='0'")
+									os.execute("dbus set ssconf_basic_name_" .. ssrindex .. "='".. result.alias .. "'")
+									os.execute("dbus set ssconf_basic_mode_" .. ssrindex .. "='".. ssrmode .. "'")
+									os.execute("dbus set ssconf_basic_server_" .. ssrindex .. "='".. result.server .. "'")
+									os.execute("dbus set ssconf_basic_port_" .. ssrindex .. "='".. result.server_port .. "'")
+									os.execute("dbus set ssconf_basic_method_" .. ssrindex .. "='".. result.encrypt_method_ss .. "'")
+									os.execute("dbus set ssconf_basic_password_" .. ssrindex .. "='".. result.password .. "'")
+									os.execute("dbus set ssconf_basic_ss_obfs_" .. ssrindex .. "='".. result.plugin .. "'")
+									os.execute("dbus set ssconf_basic_ss_obfs_host_" .. ssrindex .. "='".. result.plugin_opts .. "'")
+								elseif result.type == "ssr" then
+									os.execute("dbus set ssconf_basic_type_" .. ssrindex .. "='1'")
+									os.execute("dbus set ssconf_basic_name_" .. ssrindex .. "='".. result.alias .. "'")
+									os.execute("dbus set ssconf_basic_mode_" .. ssrindex .. "='".. ssrmode .. "'")
+									os.execute("dbus set ssconf_basic_server_" .. ssrindex .. "='".. result.server .. "'")
+									os.execute("dbus set ssconf_basic_port_" .. ssrindex .. "='".. result.server_port .. "'")
+									os.execute("dbus set ssconf_basic_method_" .. ssrindex .. "='".. result.encrypt_method .. "'")
+									os.execute("dbus set ssconf_basic_password_" .. ssrindex .. "='".. result.password .. "'")
+									os.execute("dbus set ssconf_basic_ssr_obfs_" .. ssrindex .. "='".. result.obfs .. "'")
+									os.execute("dbus set ssconf_basic_ssr_obfs_param_" .. ssrindex .. "='".. result.obfs_param .. "'")
+									os.execute("dbus set ssconf_basic_ssr_protocol_" .. ssrindex .. "='".. result.protocol .. "'")
+									os.execute("dbus set ssconf_basic_ssr_protocol_param_" .. ssrindex .. "='".. result.protocol_param .. "'")
+								elseif result.type == "v2ray" then
+									os.execute("dbus set ssconf_basic_type_" .. ssrindex .. "='1'")
+									os.execute("dbus set ssconf_basic_name_" .. ssrindex .. "='".. result.alias .. "'")
+									os.execute("dbus set ssconf_basic_mode_" .. ssrindex .. "='".. ssrmode .. "'")
+									os.execute("dbus set ssconf_basic_server_" .. ssrindex .. "='".. result.server .. "'")
+									os.execute("dbus set ssconf_basic_port_" .. ssrindex .. "='".. result.server_port .. "'")
+									os.execute("dbus set ssconf_basic_v2ray_mux_enable_" .. ssrindex .. "='0'")
+									os.execute("dbus set ssconf_basic_v2ray_use_json_" .. ssrindex .. "='0'")
+									os.execute("dbus set ssconf_basic_v2ray_uuid_" .. ssrindex .. "='".. result.vmess_id .. "'")
+									os.execute("dbus set ssconf_basic_v2ray_network_" .. ssrindex .. "='".. result.transport .. "'")
+									if result.v2ray_protocol == "vmess" then
+										os.execute("dbus set ssconf_basic_v2ray_protocol_" .. ssrindex .. "='".. result.v2ray_protocol .. "'")
+										os.execute("dbus set ssconf_basic_v2ray_alterid_" .. ssrindex .. "='".. result.alter_id .. "'")
+										os.execute("dbus set ssconf_basic_v2ray_security_" .. ssrindex .. "='".. result.security .. "'")
+										if result.transport == "ws" then
+											os.execute("dbus set ssconf_basic_v2ray_network_host_" .. ssrindex .. "='".. result.ws_host .. "'")
+											os.execute("dbus set ssconf_basic_v2ray_network_path_" .. ssrindex .. "='".. result.ws_path .. "'")
+										elseif result.transport == "h2" then
+											os.execute("dbus set ssconf_basic_v2ray_network_host_" .. ssrindex .. "='".. result.h2_host .. "'")
+											os.execute("dbus set ssconf_basic_v2ray_network_path_" .. ssrindex .. "='".. result.h2_path .. "'")
+										elseif result.transport == "tcp" then
+											os.execute("dbus set ssconf_basic_v2ray_network_host_" .. ssrindex .. "='".. result.http_host .. "'")
+											os.execute("dbus set ssconf_basic_v2ray_headtype_tcp_" .. ssrindex .. "='".. result.tcp_guise .. "'")
+										elseif result.transport == "kcp" then
+											os.execute("dbus set ssconf_basic_v2ray_headtype_kcp_" .. ssrindex .. "='".. result.kcp_guise .. "'")
+										elseif result.transport == "quic" then
+											os.execute("dbus set ssconf_basic_v2ray_quic_guise_" .. ssrindex .. "='".. result.quic_guise .. "'")
+											os.execute("dbus set ssconf_basic_v2ray_quic_key_" .. ssrindex .. "='".. result.quic_key .. "'")
+											os.execute("dbus set ssconf_basic_v2ray_quic_security_" .. ssrindex .. "='".. result.quic_security .. "'")
+										end
+										if result.tls == "1" then
+											os.execute("dbus set ssconf_basic_v2ray_network_security_" .. ssrindex .. "='tls'")
+											os.execute("dbus set ssconf_basic_v2ray_fingerprint_" .. ssrindex .. "='disable'")
+											os.execute("dbus set ssconf_basic_v2ray_network_tlshost_" .. ssrindex .. "='".. result.tls_host .. "'")
+										else
+											os.execute("dbus set ssconf_basic_v2ray_network_security_" .. ssrindex .. "='none'")
+										end
+									elseif result.v2ray_protocol == "vless" then
+										os.execute("dbus set ssconf_basic_v2ray_protocol_" .. ssrindex .. "='".. result.v2ray_protocol .. "'")
+										--os.execute("dbus set ssconf_basic_v2ray_encryption_" .. ssrindex .. "='".. result.vless_encryption .. "'")
+										if result.transport == "ws" then
+											os.execute("dbus set ssconf_basic_v2ray_network_host_" .. ssrindex .. "='".. result.ws_host .. "'")
+											os.execute("dbus set ssconf_basic_v2ray_network_path_" .. ssrindex .. "='".. result.ws_path .. "'")
+										elseif result.transport == "h2" then
+											os.execute("dbus set ssconf_basic_v2ray_network_host_" .. ssrindex .. "='".. result.h2_host .. "'")
+											os.execute("dbus set ssconf_basic_v2ray_network_path_" .. ssrindex .. "='".. result.h2_path .. "'")
+										elseif result.transport == "tcp" then
+											os.execute("dbus set ssconf_basic_v2ray_network_host_" .. ssrindex .. "='".. result.http_host .. "'")
+											os.execute("dbus set ssconf_basic_v2ray_headtype_tcp_" .. ssrindex .. "='".. result.tcp_guise .. "'")
+										elseif result.transport == "kcp" then
+											os.execute("dbus set ssconf_basic_v2ray_headtype_kcp_" .. ssrindex .. "='".. result.kcp_guise .. "'")
+										elseif result.transport == "quic" then
+											os.execute("dbus set ssconf_basic_v2ray_quic_guise_" .. ssrindex .. "='".. result.quic_guise .. "'")
+											os.execute("dbus set ssconf_basic_v2ray_quic_key_" .. ssrindex .. "='".. result.quic_key .. "'")
+											os.execute("dbus set ssconf_basic_v2ray_quic_security_" .. ssrindex .. "='".. result.quic_security .. "'")
+										elseif result.transport == "grpc" then
+											os.execute("dbus set ssconf_basic_v2ray_grpc_serviceName_" .. ssrindex .. "='".. result.serviceName .. "'")
+										end
+										if result.xtls == "1" then
+											os.execute("dbus set ssconf_basic_v2ray_network_security_" .. ssrindex .. "='xtls'")
+											os.execute("dbus set ssconf_basic_v2ray_network_flow_" .. ssrindex .. "='".. result.vless_flow .. "'")
+											os.execute("dbus set ssconf_basic_v2ray_network_tlshost_" .. ssrindex .. "='".. result.tls_host .. "'")
+										elseif result.tls == "1" then
+											os.execute("dbus set ssconf_basic_v2ray_network_security_" .. ssrindex .. "='tls'")
+											os.execute("dbus set ssconf_basic_v2ray_fingerprint_" .. ssrindex .. "='disable'")
+											os.execute("dbus set ssconf_basic_v2ray_network_tlshost_" .. ssrindex .. "='".. result.tls_host .. "'")
+										else
+											os.execute("dbus set ssconf_basic_v2ray_network_security_" .. ssrindex .. "='none'")
+										end
+									else
+										log('保存节点信息错误: ' .. result.v2ray_protocol)
+									end
+								elseif result.type == "trojan" then
+									os.execute("dbus set ssconf_basic_type_" .. ssrindex .. "='3'")
+									os.execute("dbus set ssconf_basic_name_" .. ssrindex .. "='".. result.alias .. "'")
+									os.execute("dbus set ssconf_basic_mode_" .. ssrindex .. "='".. ssrmode .. "'")
+									os.execute("dbus set ssconf_basic_server_" .. ssrindex .. "='".. result.server .. "'")
+									os.execute("dbus set ssconf_basic_port_" .. ssrindex .. "='".. result.server_port .. "'")
+									os.execute("dbus set ssconf_basic_password_" .. ssrindex .. "='".. result.password .. "'")
+									os.execute("dbus set ssconf_basic_trojan_sni_" .. ssrindex .. "='".. result.tls_host .. "'")
+									os.execute("dbus set ssconf_basic_trojan_mp_enable_" .. ssrindex .. "='0'")
+								end
+								ssrindex = ssrindex + 1
 							end
 						end
 					end
@@ -479,21 +597,15 @@ local execute = function()
 	do
 		if next(nodeResult) == nil then
 			log("更新失败，没有可用的节点信息")
-			if proxy == '0' then
-				luci.sys.init.start(name)
-				log('订阅失败, 恢复服务')
-			end
 			return
 		end
 		local add, del = 0, 0
 		ucic:foreach(name, uciType, function(old)
 			if old.grouphashkey or old.hashkey then -- 没有 hash 的不参与删除
 				if not nodeResult[old.grouphashkey] or not nodeResult[old.grouphashkey][old.hashkey] then
-					ucic:delete(name, old['.name'])
 					del = del + 1
 				else
 					local dat = nodeResult[old.grouphashkey][old.hashkey]
-					ucic:tset(name, old['.name'], dat)
 					-- 标记一下
 					setmetatable(nodeResult[old.grouphashkey][old.hashkey], {__index = {_ignore = true}})
 				end
@@ -502,8 +614,6 @@ local execute = function()
 					if old.server or old.server_port then
 						old.alias = old.server .. ':' .. old.server_port
 						log('忽略手动添加的节点: ' .. old.alias)
-					else
-						ucic:delete(name, old['.name'])
 					end
 				else
 					log('忽略手动添加的节点: ' .. old.alias)
@@ -513,52 +623,12 @@ local execute = function()
 		for k, v in ipairs(nodeResult) do
 			for kk, vv in ipairs(v) do
 				if not vv._ignore then
-					local section = ucic:add(name, uciType)
-					ucic:tset(name, section, vv)
-					ucic:set(name, section, "switch_enable", switch)
 					add = add + 1
 				end
-			end
-		end
-		ucic:commit(name)
-		-- 如果原有服务器节点已经不见了就尝试换为第一个节点
-		local globalServer = ucic:get_first(name, 'global', 'global_server', '')
-		if globalServer ~= "nil" then
-			local firstServer = ucic:get_first(name, uciType)
-			if firstServer then
-				if not ucic:get(name, globalServer) then
-					luci.sys.call("/etc/init.d/" .. name .. " stop > /dev/null 2>&1 &")
-					ucic:commit(name)
-					ucic:set(name, ucic:get_first(name, 'global'), 'global_server', ucic:get_first(name, uciType))
-					ucic:commit(name)
-					log('当前主服务器节点已被删除，正在自动更换为第一个节点。')
-					luci.sys.call("/etc/init.d/" .. name .. " start > /dev/null 2>&1 &")
-				else
-					log('维持当前主服务器节点。')
-					luci.sys.call("/etc/init.d/" .. name .. " restart > /dev/null 2>&1 &")
-				end
-			else
-				log('没有服务器节点了，停止服务')
-				luci.sys.call("/etc/init.d/" .. name .. " stop > /dev/null 2>&1 &")
 			end
 		end
 		log('新增节点数量: ' .. add, '删除节点数量: ' .. del)
 		log('订阅更新成功')
 	end
-end
+--end
 
-if subscribe_url and #subscribe_url > 0 then
-	xpcall(execute, function(e)
-		log(e)
-		log(debug.traceback())
-		log('发生错误, 正在恢复服务')
-		local firstServer = ucic:get_first(name, uciType)
-		if firstServer then
-			luci.sys.call("/etc/init.d/" .. name .. " restart > /dev/null 2>&1 &") -- 不加&的话日志会出现的更早
-			log('重启服务成功')
-		else
-			luci.sys.call("/etc/init.d/" .. name .. " stop > /dev/null 2>&1 &") -- 不加&的话日志会出现的更早
-			log('停止服务成功')
-		end
-	end)
-end
