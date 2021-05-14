@@ -36,7 +36,7 @@ local function base64Decode(text)
 		return raw
 	end
 end
-local ssrindext = io.popen('dbus list ssconf_basic_ | grep ssconf_basic_ | grep _name_ | cut -d "=" -f1 | cut -d "_" -f4 | sort -rn|head -n1')
+local ssrindext = io.popen('dbus list ssconf_basic_ | grep _name_ | cut -d "=" -f1 | cut -d "_" -f4 | sort -rn|head -n1')
 local ssrindex = ssrindext:read("*all")
 if #ssrindex == 0 then
 	ssrindex = 1
@@ -599,27 +599,7 @@ end
 			log("更新失败，没有可用的节点信息")
 			return
 		end
-		local add, del = 0, 0
-		ucic:foreach(name, uciType, function(old)
-			if old.grouphashkey or old.hashkey then -- 没有 hash 的不参与删除
-				if not nodeResult[old.grouphashkey] or not nodeResult[old.grouphashkey][old.hashkey] then
-					del = del + 1
-				else
-					local dat = nodeResult[old.grouphashkey][old.hashkey]
-					-- 标记一下
-					setmetatable(nodeResult[old.grouphashkey][old.hashkey], {__index = {_ignore = true}})
-				end
-			else
-				if not old.alias then
-					if old.server or old.server_port then
-						old.alias = old.server .. ':' .. old.server_port
-						log('忽略手动添加的节点: ' .. old.alias)
-					end
-				else
-					log('忽略手动添加的节点: ' .. old.alias)
-				end
-			end
-		end)
+		local add = 0
 		for k, v in ipairs(nodeResult) do
 			for kk, vv in ipairs(v) do
 				if not vv._ignore then
