@@ -42,6 +42,7 @@ readonly PREFIX="ssconf_basic_name_
 				ssconf_basic_v2ray_network_path_
 				ssconf_basic_v2ray_network_host_
 				ssconf_basic_v2ray_network_security_
+				ssconf_basic_v2ray_network_tlshost
 				ssconf_basic_v2ray_mux_enable_
 				ssconf_basic_v2ray_mux_concurrency_
 				ssconf_basic_v2ray_json_
@@ -679,16 +680,8 @@ start_online_update(){
 	rm -rf /tmp/group_info.txt >/dev/null 2>&1
 	rm -rf /tmp/multi_*.txt >/dev/null 2>&1
 	
-	echo_date "删除所有订阅节点"
-	local local_indexs=$(export -p | grep ssconf_basic_ | grep _group_ | cut -d "_" -f4 |cut -d "=" -f1 | sort -n)
-	if [ -n "$local_indexs" ]; then
-		for local_index in $local_indexs
-		do
-			dbus remove ssconf_basic_server_$local_index
-			dbus remove ssconf_basic_group_$local_index
-			dbus remove ssconf_basic_name_$local_index
-		done
-	fi
+	#删除所有订阅节点
+	remove_sub_node
 	
 	echo_date "==================================================================="
 	echo_date "                服务器订阅程序(Shell by zusterben)"

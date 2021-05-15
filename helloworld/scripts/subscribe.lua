@@ -147,7 +147,7 @@ local function processData(szType, content)
 		result.protocol = hostInfo[3]
 		result.encrypt_method = hostInfo[4]
 		result.obfs = hostInfo[5]
-		result.password = nixio.bin.b64encode(hostInfo[6])
+		result.password = nixio.bin.b64encode(base64Decode(hostInfo[6]))
 		local params = {}
 		for _, v in pairs(split(dat[2], '&')) do
 			local t = split(v, '=')
@@ -249,13 +249,15 @@ local function processData(szType, content)
 				else
 					result.plugin = plugin_info
 				end
+			else
+				result.plugin = "none"
 			end
 		else
 			result.server_port = host[2]
 		end
 		if checkTabValue(encrypt_methods_ss)[method] then
 			result.encrypt_method_ss = method
-			result.password = nixio.bin.b64encode(password)
+			result.password = nixio.bin.b64encode(base64Decode(password))
 		else
 			-- 1202 年了还不支持 SS AEAD 的屑机场
 			result = nil
@@ -264,7 +266,7 @@ local function processData(szType, content)
 		result.type = "ss"
 		result.server = content.server
 		result.server_port = content.port
-		result.password = nixio.bin.b64encode(content.password)
+		result.password = nixio.bin.b64encode(base64Decode(content.password))
 		result.encrypt_method_ss = content.encryption
 		result.plugin = content.plugin
 		result.plugin_opts = content.plugin_options
@@ -303,7 +305,7 @@ local function processData(szType, content)
 		else
 			result.server_port = host[2]
 		end
-		result.password = nixio.bin.b64encode(password)
+		result.password = nixio.bin.b64encode(base64Decode(password))
 	elseif szType == "vless" then
 		local idx_sp = 0
 		local alias = ""

@@ -256,7 +256,7 @@ function refresh_options() {
 	option.val(db_ss["ssconf_basic_node"]||"1");
 	option1.val(db_ss["ss_basic_ping_node"]||"0");
 	option2.val((db_ss["ss_failover_s4_3"])||"1");
-	option3.val(db_ss["ssconf_basic_type_"+db_ss["ssconf_basic_node"]]||"0");
+	option3.val(db_ss["ssconf_basic_type_"+E("ssconf_basic_node").value]||"0");
 }
 function save() {
 	var node_sel = E("ssconf_basic_node").value;

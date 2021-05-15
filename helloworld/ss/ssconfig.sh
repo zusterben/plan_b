@@ -369,14 +369,14 @@ create_ss_json(){
 	if [ "$mangle" == "1" ]; then
 		mode="tcp,udp"
 	fi
-	/jffs/softcenter/bin/gen_conf 0 $CONFIG_FILE_TMP 3333 3333 "$mode"
+	/jffs/softcenter/bin/gen_conf "$ss_basic_type" $CONFIG_FILE_TMP 3333 3333 "$mode"
 	cat "$CONFIG_FILE_TMP" | jq --tab . > $CONFIG_FILE
 	if [ "$ss_basic_netflix_enable" == "1" ]; then
 		rm -rf $CONFIG_FILE_TMP
-		/jffs/softcenter/bin/gen_conf 0 $CONFIG_FILE_TMP 4321 3333 "$mode"
+		/jffs/softcenter/bin/gen_conf "$ss_basic_type" $CONFIG_FILE_TMP 4321 3333 "$mode"
 		cat "$CONFIG_FILE_TMP" | jq --tab . > $CONFIG_NETFLIX_FILE
 		rm -rf $CONFIG_FILE_TMP
-		/jffs/softcenter/bin/gen_conf 0 $CONFIG_FILE_TMP 1088 3333 "$mode"
+		/jffs/softcenter/bin/gen_conf "$ss_basic_type" $CONFIG_FILE_TMP 1088 3333 "$mode"
 		cat "$CONFIG_FILE_TMP" | jq --tab . > $CONFIG_SOCK5_FILE
 	fi
 	rm -rf $CONFIG_FILE_TMP
@@ -808,10 +808,10 @@ creat_trojan_json(){
 		rm -rf "$TROJAN2_CONFIG_FILE"
 		
 		if [ "$ss_basic_type" == "3" ]; then
-			/jffs/softcenter/bin/gen_conf 0 $CONFIG_FILE_TMP 3333 11111 nat
+			/jffs/softcenter/bin/gen_conf 3 $CONFIG_FILE_TMP 3333 11111 nat
 			cat "$CONFIG_FILE_TMP" | jq --tab . > $TROJAN_CONFIG_FILE
 			rm -rf "$CONFIG_FILE_TMP"
-			/jffs/softcenter/bin/gen_conf 0 $CONFIG_FILE_TMP 23456 11111 client
+			/jffs/softcenter/bin/gen_conf 3 $CONFIG_FILE_TMP 23456 11111 client
 			cat "$CONFIG_FILE_TMP" | jq --tab . > $TROJAN2_CONFIG_FILE
 		else
 			echo_date "trojan配置文件生成失败，请检查设置!!!" >> $LOG_FILE
@@ -858,10 +858,10 @@ create_trojan_netflix(){
 		rm -rf "$CONFIG_SOCK5_FILE"
 		
 		if [ "$ss_basic_type" == "3" ]; then
-			/jffs/softcenter/bin/gen_conf 0 $CONFIG_FILE_TMP 4321 11111 nat
+			/jffs/softcenter/bin/gen_conf 3 $CONFIG_FILE_TMP 4321 11111 nat
 			cat "$CONFIG_FILE_TMP" | jq --tab . > $CONFIG_NETFLIX_FILE
 			rm -rf "$CONFIG_FILE_TMP"
-			/jffs/softcenter/bin/gen_conf 0 $CONFIG_FILE_TMP 1088 11111 client
+			/jffs/softcenter/bin/gen_conf 3 $CONFIG_FILE_TMP 1088 11111 client
 			cat "$CONFIG_FILE_TMP" | jq --tab . > $CONFIG_SOCK5_FILE
 		else
 			echo_date "trojan配置文件生成失败，请检查设置!!!" >> $LOG_FILE
@@ -905,7 +905,7 @@ create_v2ray_json(){
 	rm -rf "$V2RAY_CONFIG_FILE"
 	if [ "$ss_basic_v2ray_use_json" == "0" ]; then
 		echo_date 生成V2Ray配置文件...
-		/jffs/softcenter/bin/gen_conf 0 $V2RAY_CONFIG_FILE_TMP 3333 23456 "tcp,udp"
+		/jffs/softcenter/bin/gen_conf 2 $V2RAY_CONFIG_FILE_TMP 3333 23456 "tcp,udp"
 
 		echo_date 解析V2Ray配置文件...
 		cat "$V2RAY_CONFIG_FILE_TMP" | jq --tab . >"$V2RAY_CONFIG_FILE"
@@ -1045,7 +1045,7 @@ create_v2ray_netflix(){
 	rm -rf "$V2RAY_CONFIG_FILE"
 	if [ "$ss_basic_v2ray_use_json" == "0" ]; then
 		echo_date 生成V2Ray配置文件...
-		/jffs/softcenter/bin/gen_conf 0 $V2RAY_CONFIG_FILE_TMP 4321 1088 "tcp,udp"
+		/jffs/softcenter/bin/gen_conf 2 $V2RAY_CONFIG_FILE_TMP 4321 1088 "tcp,udp"
 		echo_date 解析V2Ray配置文件...
 		cat "$V2RAY_CONFIG_FILE_TMP" | jq --tab . >"$V2RAY_CONFIG_FILE"
 		echo_date V2Ray配置文件写入成功到"$V2RAY_CONFIG_FILE"
