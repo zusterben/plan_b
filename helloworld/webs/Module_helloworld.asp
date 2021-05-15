@@ -178,7 +178,7 @@ function conf2obj(obj, action) {
 function ssconf_node2obj(node_sel) {
 	var p = "ssconf_basic";
 	var obj = {};
-	var params2 = ["password", "v2ray_json", "server", "mode", "port", "password", "method", "ss_obfs", "ss_obfs_host", "ssr_protocol", "ssr_protocol_param", "ssr_obfs", "ssr_obfs_param", "use_kcp", "v2ray_uuid", "v2ray_alterid", "v2ray_protocol", "v2ray_security", "v2ray_network", "v2ray_headtype_tcp", "v2ray_headtype_kcp", "v2ray_network_path", "v2ray_network_host", "v2ray_mux_enable", "v2ray_network_security", "v2ray_fingerprint", "v2ray_network_tlshost", "v2ray_network_flow", "v2ray_quic_security", "v2ray_quic_key", "v2ray_ss_method", "v2ray_quic_guise", "v2ray_grpc_serviceName", "v2ray_mux_concurrency", "v2ray_use_json", "trojan_sni", "ssl_verify_enable", "trojan_mp_enable","trojan_mulprocess"];
+	var params2 = ["type", "password", "v2ray_json", "server", "mode", "port", "password", "method", "ss_obfs", "ss_obfs_host", "ssr_protocol", "ssr_protocol_param", "ssr_obfs", "ssr_obfs_param", "use_kcp", "v2ray_uuid", "v2ray_alterid", "v2ray_protocol", "v2ray_security", "v2ray_network", "v2ray_headtype_tcp", "v2ray_headtype_kcp", "v2ray_network_path", "v2ray_network_host", "v2ray_mux_enable", "v2ray_network_security", "v2ray_fingerprint", "v2ray_network_tlshost", "v2ray_network_flow", "v2ray_quic_security", "v2ray_quic_key", "v2ray_ss_method", "v2ray_quic_guise", "v2ray_grpc_serviceName", "v2ray_mux_concurrency", "v2ray_use_json", "trojan_sni", "ssl_verify_enable", "trojan_mp_enable","trojan_mulprocess"];
 	for (var i = 0; i < params2.length; i++) {
 		obj["ss_basic_" + params2[i]] = db_ss[p + "_" + params2[i] + "_" + node_sel] || "";
 	}
@@ -196,7 +196,7 @@ function refresh_options() {
 	var option = $("#ssconf_basic_node");
 	var option1 = $("#ss_basic_ping_node");
 	var option2 = $("#ss_failover_s4_3");
-	var option3 = $("#ssconf_basic_type");
+	var option3 = $("#ss_basic_type");
 	
 	option.find('option').remove().end();
 	option1.find('option').remove().end();
@@ -260,7 +260,7 @@ function refresh_options() {
 }
 function save() {
 	var node_sel = E("ssconf_basic_node").value;
-	var node_type = E("ssconf_basic_type").value;
+	var node_type = E("ss_basic_type").value;
 	dbus["ssconf_basic_node"] = node_sel;
 	dbus["ssconf_basic_type_"+node_sel] = node_type;
 	E("ss_state2").innerHTML = "国外连接 - " + "Waiting...";
@@ -3098,7 +3098,7 @@ function save_failover() {
 												<script type="text/javascript">
 													$('#table_basic').forms([
 														{ title: '节点选择', id:'ssconf_basic_node', type:'select', func:'onchange="ss_node_sel();"', options:[], value: "1"},
-														{ title: '节点类型', id:'ssconf_basic_type', type:'select', func:'v', options:[["0", "SS"], ["1", "SSR"], ["2", "V2RAY"], ["3", "TROJAN"]], hidden:"yes"},
+														{ title: '节点类型', id:'ss_basic_type', type:'select', options:[["0", "SS"], ["1", "SSR"], ["2", "V2RAY"], ["3", "TROJAN"]], value: "0", hidden:"yes"},
 														{ title: '模式', id:'ss_basic_mode', type:'select', func:'v', hint:'1', options:option_modes, value: "1"},
 														{ title: '使用json配置', id:'ss_basic_v2ray_use_json', type:'checkbox', func:'v', hint:'27', hidden:"yes"},
 														{ title: '服务器', id:'ss_basic_server', type:'text', maxlen:'100'},
