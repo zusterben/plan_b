@@ -260,9 +260,9 @@ function refresh_options() {
 }
 function save() {
 	var node_sel = E("ssconf_basic_node").value;
-	var node_type =  E("ssconf_basic_type").value;
+	var node_type = E("ssconf_basic_type").value;
 	dbus["ssconf_basic_node"] = node_sel;
-	dbus["ssconf_basic_type"] = node_type;
+	dbus["ssconf_basic_type_"+node_sel] = node_type;
 	E("ss_state2").innerHTML = "国外连接 - " + "Waiting...";
 	E("ss_state3").innerHTML = "国内连接 - " + "Waiting...";
 	//key define
@@ -427,7 +427,7 @@ function push_data(script, arg, obj, flag){
 }
 function verifyFields(r) {
 	var node_sel = E("ssconf_basic_node").value;
-	var node_type =  E("ssconf_basic_type").value;
+	var node_type = db_ss["ssconf_basic_type_"+node_sel]||"0";
 	var ss_on = false;
 	var ssr_on = false;
 	var trojan_on = false;
@@ -3098,7 +3098,7 @@ function save_failover() {
 												<script type="text/javascript">
 													$('#table_basic').forms([
 														{ title: '节点选择', id:'ssconf_basic_node', type:'select', func:'onchange="ss_node_sel();"', options:[], value: "1"},
-														{ title: '节点类型', id:'ssconf_basic_type', type:'select', options:[["0", "SS"], ["1", "SSR"], ["2", "V2RAY"], ["3", "TROJAN"]], hidden:"yes"},
+														{ title: '节点类型', id:'ssconf_basic_type', type:'select', func:'v', options:[["0", "SS"], ["1", "SSR"], ["2", "V2RAY"], ["3", "TROJAN"]], hidden:"yes"},
 														{ title: '模式', id:'ss_basic_mode', type:'select', func:'v', hint:'1', options:option_modes, value: "1"},
 														{ title: '使用json配置', id:'ss_basic_v2ray_use_json', type:'checkbox', func:'v', hint:'27', hidden:"yes"},
 														{ title: '服务器', id:'ss_basic_server', type:'text', maxlen:'100'},

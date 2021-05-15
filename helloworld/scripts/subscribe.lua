@@ -4,19 +4,13 @@
 -- 2020/03/15 by chongshengB
 -- 2021/05/13 by zusterben
 ------------------------------------------------
-require 'nixio'
-local cjson = require "cjson"
 -- these global functions are accessed all the time by the event handler
 -- so caching them is worth the effort
-local luci = luci
 local tinsert = table.insert
 local ssub, slen, schar, sbyte, sformat, sgsub = string.sub, string.len, string.char, string.byte, string.format, string.gsub
-local jsonParse, jsonStringify = luci.jsonc.parse, luci.jsonc.stringify
 local b64decode = nixio.bin.b64decode
 local cache = {}
 local nodeResult = setmetatable({}, {__index = cache}) -- update result
-local name = 'shadowsocksr'
-local uciType = 'servers'
 local subscribe_url = {}
 local i = 1
 -- base64
@@ -44,20 +38,18 @@ else
 	ssrindex = tonumber(ssrindex) + 1
 end
 local ssrmodet = io.popen('dbus get ssr_subscribe_mode')
-local ssrmode = ssrmodet:read("*all")
-local tfilter_words = io.popen("echo -n `dbus get ss_basic_exclude`")
+local ssrmode = tonumber(ssrmodet:read("*all")) 
+local tfilter_words = io.popen("dbus get ss_basic_exclude")
 local filter_words = tfilter_words:read("*all")
-local tsubscribe_url = io.popen("echo -n `dbus get ss_online_links`")
+local tsubscribe_url = io.popen("dbus get ss_online_links | base64 -d")
 local subscribe_url2 = tsubscribe_url:read("*all")
-local subscribe_url3 = base64Decode(subscribe_url2)
-for line in subscribe_url3 do
-subscribe_url[i] = line
+for w in subscribe_url2:gmatch("%C+") do 
+table.insert(subscribe_url, w) 
 i = i+1
 end
 
 local log = function(...)
 	print(os.date("%Y-%m-%d %H:%M:%S ") .. table.concat({...}, " "))
-	os.execute("echo '" .. table.concat({ ... }, " ") .. "' >> /tmp/upload/ss_log.txt")
 end
 local encrypt_methods_ss = {
 	-- aead
@@ -155,7 +147,7 @@ local function processData(szType, content)
 		result.protocol = hostInfo[3]
 		result.encrypt_method = hostInfo[4]
 		result.obfs = hostInfo[5]
-		result.password = cjson.encode(hostInfo[6])
+		result.password = nixio.bin.b64encode(hostInfo[6])
 		local params = {}
 		for _, v in pairs(split(dat[2], '&')) do
 			local t = split(v, '=')
@@ -212,6 +204,10 @@ local function processData(szType, content)
 		end
 		if info.security then
 			result.security = info.security
+		elseif info.scy then
+			result.security = info.scy
+		else
+			result.security = "auto"
 		end
 		if info.tls == "tls" or info.tls == "1" then
 			result.tls = "1"
@@ -259,7 +255,7 @@ local function processData(szType, content)
 		end
 		if checkTabValue(encrypt_methods_ss)[method] then
 			result.encrypt_method_ss = method
-			result.password = cjson.encode(password)
+			result.password = nixio.bin.b64encode(password)
 		else
 			-- 1202 年了还不支持 SS AEAD 的屑机场
 			result = nil
@@ -268,7 +264,7 @@ local function processData(szType, content)
 		result.type = "ss"
 		result.server = content.server
 		result.server_port = content.port
-		result.password = cjson.encode(content.password)
+		result.password = nixio.bin.b64encode(content.password)
 		result.encrypt_method_ss = content.encryption
 		result.plugin = content.plugin
 		result.plugin_opts = content.plugin_options
@@ -307,7 +303,7 @@ local function processData(szType, content)
 		else
 			result.server_port = host[2]
 		end
-		result.password = cjson.encode(password)
+		result.password = nixio.bin.b64encode(password)
 	elseif szType == "vless" then
 		local idx_sp = 0
 		local alias = ""
@@ -480,6 +476,7 @@ end
 								cache[groupHash][result.hashkey] = nodeResult[index][#nodeResult[index]]
 								if result.type == "ss" then
 									os.execute("dbus set ssconf_basic_type_" .. ssrindex .. "='0'")
+									os.execute("dbus set ssconf_basic_group_" .. ssrindex .. "='subscribe'")
 									os.execute("dbus set ssconf_basic_name_" .. ssrindex .. "='".. result.alias .. "'")
 									os.execute("dbus set ssconf_basic_mode_" .. ssrindex .. "='".. ssrmode .. "'")
 									os.execute("dbus set ssconf_basic_server_" .. ssrindex .. "='".. result.server .. "'")
@@ -490,6 +487,7 @@ end
 									os.execute("dbus set ssconf_basic_ss_obfs_host_" .. ssrindex .. "='".. result.plugin_opts .. "'")
 								elseif result.type == "ssr" then
 									os.execute("dbus set ssconf_basic_type_" .. ssrindex .. "='1'")
+									os.execute("dbus set ssconf_basic_group_" .. ssrindex .. "='subscribe'")
 									os.execute("dbus set ssconf_basic_name_" .. ssrindex .. "='".. result.alias .. "'")
 									os.execute("dbus set ssconf_basic_mode_" .. ssrindex .. "='".. ssrmode .. "'")
 									os.execute("dbus set ssconf_basic_server_" .. ssrindex .. "='".. result.server .. "'")
@@ -501,7 +499,8 @@ end
 									os.execute("dbus set ssconf_basic_ssr_protocol_" .. ssrindex .. "='".. result.protocol .. "'")
 									os.execute("dbus set ssconf_basic_ssr_protocol_param_" .. ssrindex .. "='".. result.protocol_param .. "'")
 								elseif result.type == "v2ray" then
-									os.execute("dbus set ssconf_basic_type_" .. ssrindex .. "='1'")
+									os.execute("dbus set ssconf_basic_type_" .. ssrindex .. "='2'")
+									os.execute("dbus set ssconf_basic_group_" .. ssrindex .. "='subscribe'")
 									os.execute("dbus set ssconf_basic_name_" .. ssrindex .. "='".. result.alias .. "'")
 									os.execute("dbus set ssconf_basic_mode_" .. ssrindex .. "='".. ssrmode .. "'")
 									os.execute("dbus set ssconf_basic_server_" .. ssrindex .. "='".. result.server .. "'")
@@ -574,6 +573,7 @@ end
 									end
 								elseif result.type == "trojan" then
 									os.execute("dbus set ssconf_basic_type_" .. ssrindex .. "='3'")
+									os.execute("dbus set ssconf_basic_group_" .. ssrindex .. "='subscribe'")
 									os.execute("dbus set ssconf_basic_name_" .. ssrindex .. "='".. result.alias .. "'")
 									os.execute("dbus set ssconf_basic_mode_" .. ssrindex .. "='".. ssrmode .. "'")
 									os.execute("dbus set ssconf_basic_server_" .. ssrindex .. "='".. result.server .. "'")

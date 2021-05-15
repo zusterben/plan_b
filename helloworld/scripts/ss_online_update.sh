@@ -679,21 +679,15 @@ start_online_update(){
 	rm -rf /tmp/group_info.txt >/dev/null 2>&1
 	rm -rf /tmp/multi_*.txt >/dev/null 2>&1
 	
-	echo_date "收集本地订阅节点信息到临时文件"
+	echo_date "删除所有订阅节点"
 	local local_indexs=$(export -p | grep ssconf_basic_ | grep _group_ | cut -d "_" -f4 |cut -d "=" -f1 | sort -n)
 	if [ -n "$local_indexs" ]; then
 		for local_index in $local_indexs
 		do
-			# write: server group nu: server_base64 group_base64 remark_base64 node_nu
-			echo \
-			$(eval echo \$ssconf_basic_server_$local_index | base64_encode) \
-			$(eval echo \$ssconf_basic_group_$local_index | base64_encode) \
-			$(eval echo \$ssconf_basic_name_$local_index | base64_encode) \
-			$local_index \
-			>> /tmp/all_localservers.txt
+			dbus remove ssconf_basic_server_$local_index
+			dbus remove ssconf_basic_group_$local_index
+			dbus remove ssconf_basic_name_$local_index
 		done
-	else
-		touch /tmp/all_localservers.txt
 	fi
 	
 	echo_date "==================================================================="
@@ -702,6 +696,10 @@ start_online_update(){
 
 	echo_date "开始更新在线订阅列表..." 
 	/jffs/softcenter/bin/lua /jffs/softcenter/scripts/subscribe.lua
+	#等待订阅完成
+	while [ -n "$(pidof lua)" ]; do
+		sleep 2s
+	done
 
 
 	# 去除订阅服务器上已经删除的节点
