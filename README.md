@@ -1,20 +1,14 @@
 # [helloworld]
 
-> 此项目提供用于paldier带软件中心固件路由器的helloworld科学上网。
+> 此项目提供用于 **SWRT** 固件带软件中心路由器的helloworld科学上网。
 
-> 安装包放在bin目录对应架构下，可以看下面的列表查找对应架构
+> 安装包在bin目录对应架构下载，可以看下面的列表查找对应架构
 
-> history_package目录为备份
-
----
-
-**提示1：** 如果提示检测到离线安装包名有非法关键词，开启路由器的SSH功能，登录并输入以下命令后，再进行离线安装。(需要请将软件中心更新到最新版)
-
-```bash
-sed -i 's/\tdetect_package/\t# detect_package/g' /jffs/softcenter/scripts/ks_tar_install.sh
-```
+> history_package目录为安装包备份
 
 ---
+
+
 
 ## 机型/固件支持
 
@@ -59,7 +53,7 @@ sed -i 's/\tdetect_package/\t# detect_package/g' /jffs/softcenter/scripts/ks_tar
 
 **arm64**支持机型如下：
 
-* 华硕系列：[`RT-AC86U` `GT-AC2900` `GT-AC5300` `RT-AX88U` `RT-AX86U` `RT-AX68U`](https://github.com/zusterben/plan_b/tree/master/bin/arm64)
+* 华硕系列：[`RT-AC86U` `GT-AC2900` `GT-AC5300` `RT-AX88U` `RT-AX86U` `RT-AX68U` `GT-AXE11000`](https://github.com/zusterben/plan_b/tree/master/bin/arm64)
 * 网件系列：[`R7900P` `R7960P` `R8000P` `RAX80` `RAX200`](https://github.com/zusterben/plan_b/tree/master/bin/arm64)
 
 #### 注意：
@@ -75,7 +69,7 @@ sed -i 's/\tdetect_package/\t# detect_package/g' /jffs/softcenter/scripts/ks_tar
 
 **armng**支持机型如下：
 
-* 华硕系列：[`RT-AX55` `RT-AX56U` `RT-AX58U` `TUF-AX3000` `RT-AX82U` `RT-ACRH17` `RT-AC2200` `RT-AX89X` `RT-ACRH18`](https://github.com/zusterben/plan_b/tree/master/bin/armng)
+* 华硕系列：[`RT-AX55` `RT-AX56U` `RT-AX58U` `TUF-AX3000` `RT-AX82U` `RT-ACRH17` `RT-AC2200` `RT-AX89X` `RT-ACRH18` `ZENWIFI-CT8` `ZENWIFI-AC` `ZENWIFI-AX`](https://github.com/zusterben/plan_b/tree/master/bin/armng)
 * 网件系列：[`RAX20` `RAX50` `RAX120`](https://github.com/zusterben/plan_b/tree/master/bin/armng)
 * 天邑系列：[`TY6201`](https://github.com/zusterben/plan_b/tree/master/bin/armng)
 * 小米系列：[`AX3600`](https://github.com/zusterben/plan_b/tree/master/bin/armng)
@@ -100,5 +94,4 @@ sed -i 's/\tdetect_package/\t# detect_package/g' /jffs/softcenter/scripts/ks_tar
 
 * 目前此系列当jffs小于40m时必须挂载U盘才能开启软件中心，同时因为驱动bug的原因无法支持fat格式，优先推荐ext格式，且推荐读写速度高的U盘
 * 强烈建议使用chrome或者chrouium内核的或者firefox浏览器！以保证最佳兼容性！
-  
 
