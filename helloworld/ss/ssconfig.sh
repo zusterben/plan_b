@@ -297,8 +297,13 @@ kill_process() {
 	#fi
 	trojan_process=$(pidof trojan)
 	if [ -n "$trojan_process" ];then 
-		echo_date 关闭trojan进程... >> $LOG_FILE
+		echo_date 关闭trojan进程...
 		killall trojan >/dev/null 2>&1
+	fi
+	redsocks2_process=$(pidof redsocks2)
+	if [ -n "$redsocks2_process" ];then 
+		echo_date 关闭redsocks2进程...
+		killall redsocks2 >/dev/null 2>&1
 	fi
 	client_linux_process=$(pidof client_linux)
 	if [ -n "$client_linux_process" ];then 
@@ -373,10 +378,10 @@ create_ss_json(){
 	cat "$CONFIG_FILE_TMP" | jq --tab . > $CONFIG_FILE
 	if [ "$ss_basic_netflix_enable" == "1" ]; then
 		rm -rf $CONFIG_FILE_TMP
-		/jffs/softcenter/bin/gen_conf "$ss_basic_type" $CONFIG_FILE_TMP 4321 3333 "$mode"
+		/jffs/softcenter/bin/gen_conf "$ss_basic_type" $CONFIG_FILE_TMP 4321 3333 "tcp,udp"
 		cat "$CONFIG_FILE_TMP" | jq --tab . > $CONFIG_NETFLIX_FILE
 		rm -rf $CONFIG_FILE_TMP
-		/jffs/softcenter/bin/gen_conf "$ss_basic_type" $CONFIG_FILE_TMP 1088 3333 "$mode"
+		/jffs/softcenter/bin/gen_conf "$ss_basic_type" $CONFIG_FILE_TMP 1088 3333 "tcp,udp"
 		cat "$CONFIG_FILE_TMP" | jq --tab . > $CONFIG_SOCK5_FILE
 	fi
 	rm -rf $CONFIG_FILE_TMP
@@ -396,6 +401,35 @@ get_dns_name() {
 	esac
 }
 
+start_redsocks() {
+	rm -rf /tmp/red_conf.json
+		cat <<-EOF >>/tmp/red_conf.json
+			base {
+			log_debug = off;
+			log_info = off;
+			log = stderr;
+			daemon = on;
+			redirector = iptables;
+			reuseport = on;
+			}
+			redsocks {
+			bind = "0.0.0.0:$2";
+			relay = "127.0.0.1:$1";
+			type = socks5;
+			autoproxy = 0;
+			timeout = 10;
+			}
+			redudp {
+			bind = "0.0.0.0:$2";
+			relay = "127.0.0.1:$1";
+			type = socks5;
+			udp_timeout = 10;
+			}
+		EOF
+	echo_date "开启redsocks2，提供透明代理"
+	redsocks2 -c /tmp/red_conf.json
+}
+
 start_sslocal() {
 	if [ "$ss_basic_type" == "1" ]; then
 		echo_date 开启ssr-local，提供socks5代理端口：23456
@@ -404,7 +438,7 @@ start_sslocal() {
 		echo_date 开启ss-local，提供socks5代理端口：23456
 		ss-local -l 23456 -c $CONFIG_FILE -f /var/run/sslocal1.pid >/dev/null 2>&1
 	elif [ "$ss_basic_type" == "3" ]; then
-		echo_date "开启trojan，提供socks5代理端口：23456" >> $LOG_FILE
+		echo_date "开启trojan，提供socks5代理端口：23456"
 		trojan -c $TROJAN2_CONFIG_FILE >/dev/null 2>&1 &
 	fi
 }
@@ -805,14 +839,14 @@ creat_trojan_json(){
 		echo_date "创建$(__get_type_abbr_name)配置文件到$TROJAN_CONFIG_FILE" >> $LOG_FILE
 		rm -rf "$CONFIG_FILE_TMP"
 		rm -rf "$TROJAN_CONFIG_FILE"
-		rm -rf "$TROJAN2_CONFIG_FILE"
+		rm -rf "TROJAN2_CONFIG_FILE"
 		
 		if [ "$ss_basic_type" == "3" ]; then
-			/jffs/softcenter/bin/gen_conf 3 $CONFIG_FILE_TMP 3333 11111 nat
-			cat "$CONFIG_FILE_TMP" | jq --tab . > $TROJAN_CONFIG_FILE
-			rm -rf "$CONFIG_FILE_TMP"
 			/jffs/softcenter/bin/gen_conf 3 $CONFIG_FILE_TMP 23456 11111 client
 			cat "$CONFIG_FILE_TMP" | jq --tab . > $TROJAN2_CONFIG_FILE
+			rm -rf "$CONFIG_FILE_TMP"
+			/jffs/softcenter/bin/gen_conf 3 $CONFIG_FILE_TMP 3333 11111 nat
+			cat "$CONFIG_FILE_TMP" | jq --tab . > $TROJAN_CONFIG_FILE
 		else
 			echo_date "trojan配置文件生成失败，请检查设置!!!" >> $LOG_FILE
 		fi
@@ -849,6 +883,7 @@ start_trojan(){
 		fi
 		sleep 1
 	done
+	#start_redsocks 23456 3333
 	echo_date trojan启动成功，pid：$trojanpid >> $LOG_FILE
 }
 
@@ -856,9 +891,9 @@ create_trojan_netflix(){
 		echo_date "创建$(__get_type_abbr_name)配置文件到$CONFIG_NETFLIX_FILE" >> $LOG_FILE
 		rm -rf "$CONFIG_NETFLIX_FILE"
 		rm -rf "$CONFIG_SOCK5_FILE"
-		
+		rm -rf "$CONFIG_FILE_TMP"
 		if [ "$ss_basic_type" == "3" ]; then
-			/jffs/softcenter/bin/gen_conf 3 $CONFIG_FILE_TMP 4321 11111 nat
+			/jffs/softcenter/bin/gen_conf 3 $CONFIG_FILE_TMP 4321 11111 client
 			cat "$CONFIG_FILE_TMP" | jq --tab . > $CONFIG_NETFLIX_FILE
 			rm -rf "$CONFIG_FILE_TMP"
 			/jffs/softcenter/bin/gen_conf 3 $CONFIG_FILE_TMP 1088 11111 client
@@ -1757,9 +1792,8 @@ start_netflix() {
 			;;
 		3)
 			create_trojan_netflix
-			#lua /usr/share/shadowsocksr/gentrojanconfig.lua $NETFLIX_SERVER nat 4321 >/jffs/softcenter/ss/trojan-ssr-netflix.json
+			#start_redsocks 4321 1088
 			$bin --config $CONFIG_NETFLIX_FILE >/dev/null 2>&1 &
-			#lua /usr/share/shadowsocksr/gentrojanconfig.lua $NETFLIX_SERVER client 1088 >/jffs/softcenter/ss/trojan-ssr-socksdns.json
 			$bin --config $CONFIG_SOCK5_FILE >/dev/null 2>&1 &
 			dns2socks 127.0.0.1:1088 8.8.8.8:53 127.0.0.1:5555 -q >/dev/null 2>&1 &
 			;;
