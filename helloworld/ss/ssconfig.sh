@@ -370,18 +370,15 @@ resolv_server_ip() {
 # create shadowsocks config file...
 create_ss_json(){
 	echo_date "创建$(__get_type_abbr_name)配置文件到$CONFIG_FILE"
-	local mode="tcp"
-	if [ "$mangle" == "1" ]; then
-		mode="tcp,udp"
-	fi
-	/jffs/softcenter/bin/gen_conf "$ss_basic_type" $CONFIG_FILE_TMP 3333 3333 "$mode"
+
+	/jffs/softcenter/bin/gen_conf "$ss_basic_type" $CONFIG_FILE_TMP 3333 3333 "tcp,udp"
 	cat "$CONFIG_FILE_TMP" | jq --tab . > $CONFIG_FILE
 	if [ "$ss_basic_netflix_enable" == "1" ]; then
 		rm -rf $CONFIG_FILE_TMP
 		/jffs/softcenter/bin/gen_conf "$ss_basic_type" $CONFIG_FILE_TMP 4321 3333 "tcp,udp"
 		cat "$CONFIG_FILE_TMP" | jq --tab . > $CONFIG_NETFLIX_FILE
 		rm -rf $CONFIG_FILE_TMP
-		/jffs/softcenter/bin/gen_conf "$ss_basic_type" $CONFIG_FILE_TMP 1088 3333 "tcp,udp"
+		/jffs/softcenter/bin/gen_conf "$ss_basic_type" $CONFIG_FILE_TMP 1088 23456 "tcp,udp"
 		cat "$CONFIG_FILE_TMP" | jq --tab . > $CONFIG_SOCK5_FILE
 	fi
 	rm -rf $CONFIG_FILE_TMP
@@ -436,10 +433,13 @@ start_sslocal() {
 		ssr-local -l 23456 -c $CONFIG_FILE -f /var/run/sslocal1.pid >/dev/null 2>&1
 	elif [ "$ss_basic_type" == "0" ]; then
 		echo_date 开启ss-local，提供socks5代理端口：23456
-		ss-local -l 23456 -c $CONFIG_FILE -f /var/run/sslocal1.pid >/dev/null 2>&1
-	elif [ "$ss_basic_type" == "3" ]; then
-		echo_date "开启trojan，提供socks5代理端口：23456"
-		trojan -c $TROJAN2_CONFIG_FILE >/dev/null 2>&1 &
+		/jffs/softcenter/bin/gen_conf 0 $CONFIG_FILE_TMP 23456 23456 "tcp,udp"
+		cat "$CONFIG_FILE_TMP" | jq --tab . > $CONFIG_SOCK5_FILE
+		rm -rf $CONFIG_FILE_TMP
+		ss-local -l 23456 -c $CONFIG_SOCK5_FILE -f /var/run/sslocal1.pid >/dev/null 2>&1
+	#elif [ "$ss_basic_type" == "3" ]; then
+		#echo_date "开启trojan，提供socks5代理端口：23456"
+		#trojan -c $TROJAN2_CONFIG_FILE >/dev/null 2>&1 &
 	fi
 }
 
@@ -836,42 +836,42 @@ start_ss_redir() {
 	echo_date $BIN 启动完毕！.
 }
 creat_trojan_json(){
-		echo_date "创建$(__get_type_abbr_name)配置文件到$TROJAN_CONFIG_FILE" >> $LOG_FILE
+		echo_date "创建$(__get_type_abbr_name)配置文件到$TROJAN_CONFIG_FILE"
 		rm -rf "$CONFIG_FILE_TMP"
 		rm -rf "$TROJAN_CONFIG_FILE"
-		rm -rf "TROJAN2_CONFIG_FILE"
+		rm -rf "$TROJAN2_CONFIG_FILE"
 		
 		if [ "$ss_basic_type" == "3" ]; then
 			/jffs/softcenter/bin/gen_conf 3 $CONFIG_FILE_TMP 23456 11111 client
 			cat "$CONFIG_FILE_TMP" | jq --tab . > $TROJAN2_CONFIG_FILE
-			rm -rf "$CONFIG_FILE_TMP"
-			/jffs/softcenter/bin/gen_conf 3 $CONFIG_FILE_TMP 3333 11111 nat
-			cat "$CONFIG_FILE_TMP" | jq --tab . > $TROJAN_CONFIG_FILE
+			#rm -rf "$CONFIG_FILE_TMP"
+			#/jffs/softcenter/bin/gen_conf 3 $CONFIG_FILE_TMP 3333 11111 nat
+			#cat "$CONFIG_FILE_TMP" | jq --tab . > $TROJAN_CONFIG_FILE
 		else
-			echo_date "trojan配置文件生成失败，请检查设置!!!" >> $LOG_FILE
+			echo_date "trojan配置文件生成失败，请检查设置!!!"
 		fi
-
+	rm -rf "$CONFIG_FILE_TMP"
 }
 
 start_trojan(){
 	if [ "$ss_basic_tfo" == "1" ] && [ "$FASTOPEN" == "1" ]; then
-		echo_date 开启tcp fast open支持. >> $LOG_FILE
+		echo_date 开启tcp fast open支持.
 		echo 3 >/proc/sys/net/ipv4/tcp_fastopen
-		echo_date "开启TROJAN前，开启tcp fast open支持，需服务端开启支持" >> $LOG_FILE
+		echo_date "开启TROJAN前，开启tcp fast open支持，需服务端开启支持"
 
 	fi
 	
 	if [ "$ss_basic_mcore" == "1" ]; then
-		echo_date $BIN开启$THREAD线程支持. >> $LOG_FILE
+		echo_date $BIN开启$THREAD线程支持.
 		local i=1
 		while [ $i -le $THREAD ]; do
-			trojan -c $TROJAN_CONFIG_FILE >/dev/null 2>&1 &
+			trojan -c $TROJAN2_CONFIG_FILE >/dev/null 2>&1 &
 			let i++
 		done
 	else
-		trojan -c $TROJAN_CONFIG_FILE >/dev/null 2>&1 &
+		trojan -c $TROJAN2_CONFIG_FILE >/dev/null 2>&1 &
 	fi
-	echo_date "trojan启用进程!!!"  >> $LOG_FILE
+	echo_date "trojan启用进程!!!"
 	local trojanpid
 	local i=10
 	until [ -n "$trojanpid" ]; do
@@ -883,25 +883,25 @@ start_trojan(){
 		fi
 		sleep 1
 	done
-	#start_redsocks 23456 3333
-	echo_date trojan启动成功，pid：$trojanpid >> $LOG_FILE
+	start_redsocks 23456 3333
+	echo_date "trojan启动成功，pid：$trojanpid"
 }
 
 create_trojan_netflix(){
-		echo_date "创建$(__get_type_abbr_name)配置文件到$CONFIG_NETFLIX_FILE" >> $LOG_FILE
-		rm -rf "$CONFIG_NETFLIX_FILE"
-		rm -rf "$CONFIG_SOCK5_FILE"
-		rm -rf "$CONFIG_FILE_TMP"
-		if [ "$ss_basic_type" == "3" ]; then
-			/jffs/softcenter/bin/gen_conf 3 $CONFIG_FILE_TMP 4321 11111 client
-			cat "$CONFIG_FILE_TMP" | jq --tab . > $CONFIG_NETFLIX_FILE
-			rm -rf "$CONFIG_FILE_TMP"
-			/jffs/softcenter/bin/gen_conf 3 $CONFIG_FILE_TMP 1088 11111 client
-			cat "$CONFIG_FILE_TMP" | jq --tab . > $CONFIG_SOCK5_FILE
-		else
-			echo_date "trojan配置文件生成失败，请检查设置!!!" >> $LOG_FILE
-		fi
-
+	echo_date "创建$(__get_type_abbr_name)配置文件到$CONFIG_NETFLIX_FILE"
+	rm -rf "$CONFIG_NETFLIX_FILE"
+	rm -rf "$CONFIG_SOCK5_FILE"
+	rm -rf "$CONFIG_FILE_TMP"
+	if [ "$ss_basic_type" == "3" ]; then
+		#/jffs/softcenter/bin/gen_conf 3 $CONFIG_FILE_TMP 4321 11111 client
+		#cat "$CONFIG_FILE_TMP" | jq --tab . > $CONFIG_NETFLIX_FILE
+		#rm -rf "$CONFIG_FILE_TMP"
+		/jffs/softcenter/bin/gen_conf 3 $CONFIG_FILE_TMP 1088 11111 client
+		cat "$CONFIG_FILE_TMP" | jq --tab . > $CONFIG_SOCK5_FILE
+	else
+		echo_date "trojan配置文件生成失败，请检查设置!!!"
+	fi
+	rm -rf "$CONFIG_FILE_TMP"
 }
 
 fire_redir() {
@@ -1792,8 +1792,8 @@ start_netflix() {
 			;;
 		3)
 			create_trojan_netflix
-			#start_redsocks 4321 1088
-			$bin --config $CONFIG_NETFLIX_FILE >/dev/null 2>&1 &
+			start_redsocks 4321 1088
+			#$bin --config $CONFIG_NETFLIX_FILE >/dev/null 2>&1 &
 			$bin --config $CONFIG_SOCK5_FILE >/dev/null 2>&1 &
 			dns2socks 127.0.0.1:1088 8.8.8.8:53 127.0.0.1:5555 -q >/dev/null 2>&1 &
 			;;

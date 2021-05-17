@@ -211,7 +211,7 @@ local function processData(szType, content)
 		end
 		if info.tls == "tls" or info.tls == "1" then
 			result.tls = "1"
-			result.tls_host = info.host
+			result.tls_host = info.host and info.host or info.sni
 			result.insecure = 1
 		else
 			result.tls = "0"
@@ -225,8 +225,20 @@ local function processData(szType, content)
 		end
 		local info = content:sub(1, idx_sp - 1)
 		local hostInfo = split(base64Decode(info), "@")
-		local host = split(hostInfo[2], ":")
-		local userinfo = base64Decode(hostInfo[1])
+		local hostInfoLen = #hostInfo
+		local host = nil
+		local userinfo = nil
+		if hostInfoLen > 2 then
+			host = split(hostInfo[hostInfoLen], ":")
+			userinfo = {}
+			for i = 1, hostInfoLen - 1 do
+				tinsert(userinfo, hostInfo[i])
+			end
+			userinfo = table.concat(userinfo, '@')
+		else
+			host = split(hostInfo[2], ":")
+			userinfo = base64Decode(hostInfo[1])
+		end
 		local method = userinfo:sub(1, userinfo:find(":") - 1)
 		local password = userinfo:sub(userinfo:find(":") + 1, #userinfo)
 		result.alias = UrlDecode(alias)
@@ -260,7 +272,9 @@ local function processData(szType, content)
 			result.password = nixio.bin.b64encode(base64Decode(password))
 		else
 			-- 1202 年了还不支持 SS AEAD 的屑机场
-			result = nil
+			--result = nil
+			result.method = method
+			result.password = nixio.bin.b64encode(base64Decode(password))
 		end
 	elseif szType == "ssd" then
 		result.type = "ss"
@@ -282,7 +296,7 @@ local function processData(szType, content)
 		local hostInfo = split(info, "@")
 		local host = split(hostInfo[2], ":")
 		local userinfo = hostInfo[1]
-		local password = userinfo
+		local password = UrlDecode(userinfo)
 		result.alias = UrlDecode(alias)
 		result.type = "trojan"
 		result.v2ray_protocol = "trojan"
@@ -316,7 +330,7 @@ local function processData(szType, content)
 		local info = content:sub(1, idx_sp - 1)
 		local hostInfo = split(info, "@")
 		local host = split(hostInfo[2], ":")
-		local uuid = hostInfo[1]
+		local uuid = UrlDecode(hostInfo[1])
 		if host[2]:find("?") then
 			local query = split(host[2], "?")
 			local params = {}
