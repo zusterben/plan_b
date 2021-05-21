@@ -71,7 +71,7 @@ perpare(){
 	fi
 	sed -i '/google.com.tw/d' /etc/hosts
 	sed -i '/raw.githubusercontent.com/d' /etc/hosts
-	echo "172.217.4.131 www.google.com.tw" >> /etc/hosts
+	echo "172.217.6.35 www.google.com.tw" >> /etc/hosts
 	echo "185.199.108.133 raw.githubusercontent.com" >> /etc/hosts
 }
 	

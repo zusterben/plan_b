@@ -1351,7 +1351,7 @@ create_ipset(){
 		for ip in $(cat /jffs/softcenter/ss/rules/netflixip.list); do ipset -! add netflix $ip; done
 	fi
 	#for router
-	ipset add router 172.217.4.131
+	ipset add router 172.217.6.35
 	ipset add router 185.199.108.133
 	ipset add router 185.199.109.133
 	ipset add router 185.199.110.133
