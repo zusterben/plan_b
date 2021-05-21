@@ -11,7 +11,7 @@ start_update(){
 	# version dectet
 	version_gfwlist1=$(cat /jffs/softcenter/ss/rules/version | sed -n 1p | sed 's/ /\n/g'| sed -n 1p)
 	version_chnroute1=$(cat /jffs/softcenter/ss/rules/version | sed -n 2p | sed 's/ /\n/g'| sed -n 1p)
-	version_cdn1=$(cat /jffs/softcenter/ss/rules/version | sed -n 4p | sed 's/ /\n/g'| sed -n 1p)
+	version_cdn1=$(cat /jffs/softcenter/ss/rules/version | sed -n 3p | sed 's/ /\n/g'| sed -n 1p)
 	
 	echo ==================================================================================================
 	echo_date 开始更新helloworld规则，请等待...
@@ -32,7 +32,7 @@ start_update(){
 	
 	git_line1=$(cat /tmp/ss_version | sed -n 1p)
 	git_line2=$(cat /tmp/ss_version | sed -n 2p)
-	git_line4=$(cat /tmp/ss_version | sed -n 4p)
+	git_line4=$(cat /tmp/ss_version | sed -n 3p)
 	
 	version_gfwlist2=$(echo $git_line1 | sed 's/ /\n/g'| sed -n 1p)
 	version_chnroute2=$(echo $git_line2 | sed 's/ /\n/g'| sed -n 1p)
