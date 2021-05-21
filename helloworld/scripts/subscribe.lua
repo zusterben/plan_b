@@ -173,20 +173,20 @@ local function processData(szType, content)
 		-- result.mux = 1
 		-- result.concurrency = 8
 		if info.net == 'ws' then
-			result.ws_host = info.host
-			result.ws_path = info.path
+			result.ws_host = info.host and info.host or ""
+			result.ws_path = info.path and info.path or ""
 		end
 		if info.net == 'h2' then
-			result.h2_host = info.host
-			result.h2_path = info.path
+			result.h2_host = info.host and info.host or ""
+			result.h2_path = info.path and info.path or ""
 		end
 		if info.net == 'tcp' then
 			if info.type and info.type ~= "http" then
 				info.type = "none"
 			end
 			result.tcp_guise = info.type
-			result.http_host = info.host
-			result.http_path = info.path
+			result.http_host = info.host and info.host or ""
+			result.http_path = info.path and info.path or ""
 		end
 		if info.net == 'kcp' then
 			result.kcp_guise = info.type
@@ -211,7 +211,7 @@ local function processData(szType, content)
 		end
 		if info.tls == "tls" or info.tls == "1" then
 			result.tls = "1"
-			result.tls_host = info.host and info.host or info.sni
+			result.tls_host = info.host and info.host or (info.sni and info.sni or "")
 			result.insecure = 1
 		else
 			result.tls = "0"
@@ -267,6 +267,7 @@ local function processData(szType, content)
 		end
 		if not result.plugin then
 			result.plugin = "none"
+			result.plugin_opts = ""
 		end
 		if checkTabValue(encrypt_methods_ss)[method] then
 			result.encrypt_method_ss = method
@@ -274,7 +275,7 @@ local function processData(szType, content)
 		else
 			-- 1202 年了还不支持 SS AEAD 的屑机场
 			--result = nil
-			result.method = method
+			result.encrypt_method_ss = method
 			result.password = nixio.bin.b64encode(password)
 		end
 	elseif szType == "ssd" then
@@ -319,6 +320,7 @@ local function processData(szType, content)
 			end
 		else
 			result.server_port = host[2]
+			result.tls_host = ""
 		end
 		result.password = nixio.bin.b64encode(password)
 	elseif szType == "vless" then
@@ -602,10 +604,9 @@ end
 								end
 								ssrindex = ssrindex + 1
 							end
-						else
-							log('节点解析失败: 获取内容为空')
 						end
 					end
+
 				end
 				log('成功解析节点数量: ' .. #nodes)
 			else
