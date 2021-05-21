@@ -261,20 +261,21 @@ local function processData(szType, content)
 				else
 					result.plugin = plugin_info
 				end
-			else
-				result.plugin = "none"
 			end
 		else
 			result.server_port = host[2]
 		end
+		if not result.plugin then
+			result.plugin = "none"
+		end
 		if checkTabValue(encrypt_methods_ss)[method] then
 			result.encrypt_method_ss = method
-			result.password = nixio.bin.b64encode(base64Decode(password))
+			result.password = nixio.bin.b64encode(password)
 		else
 			-- 1202 年了还不支持 SS AEAD 的屑机场
 			--result = nil
 			result.method = method
-			result.password = nixio.bin.b64encode(base64Decode(password))
+			result.password = nixio.bin.b64encode(password)
 		end
 	elseif szType == "ssd" then
 		result.type = "ss"
@@ -319,7 +320,7 @@ local function processData(szType, content)
 		else
 			result.server_port = host[2]
 		end
-		result.password = nixio.bin.b64encode(base64Decode(password))
+		result.password = nixio.bin.b64encode(password)
 	elseif szType == "vless" then
 		local idx_sp = 0
 		local alias = ""
@@ -458,6 +459,7 @@ end
 					-- ssd 外的格式
 					nodes = split(base64Decode(raw):gsub(" ", "_"), "\n")
 				end
+
 				for _, v in ipairs(nodes) do
 					if v then
 						local result
@@ -600,6 +602,8 @@ end
 								end
 								ssrindex = ssrindex + 1
 							end
+						else
+							log('节点解析失败: 获取内容为空')
 						end
 					end
 				end
