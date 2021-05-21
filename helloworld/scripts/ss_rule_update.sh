@@ -11,7 +11,7 @@ start_update(){
 	# version dectet
 	version_gfwlist1=$(cat /jffs/softcenter/ss/rules/version | sed -n 1p | sed 's/ /\n/g'| sed -n 1p)
 	version_chnroute1=$(cat /jffs/softcenter/ss/rules/version | sed -n 2p | sed 's/ /\n/g'| sed -n 1p)
-	version_cdn1=$(cat /jffs/softcenter/ss/rules/version | sed -n 4p | sed 's/ /\n/g'| sed -n 1p)
+	version_cdn1=$(cat /jffs/softcenter/ss/rules/version | sed -n 3p | sed 's/ /\n/g'| sed -n 1p)
 	
 	echo ==================================================================================================
 	echo_date 开始更新helloworld规则，请等待...
@@ -32,15 +32,15 @@ start_update(){
 	
 	git_line1=$(cat /tmp/ss_version | sed -n 1p)
 	git_line2=$(cat /tmp/ss_version | sed -n 2p)
-	git_line4=$(cat /tmp/ss_version | sed -n 4p)
+	git_line3=$(cat /tmp/ss_version | sed -n 3p)
 	
 	version_gfwlist2=$(echo $git_line1 | sed 's/ /\n/g'| sed -n 1p)
 	version_chnroute2=$(echo $git_line2 | sed 's/ /\n/g'| sed -n 1p)
-	version_cdn2=$(echo $git_line4 | sed 's/ /\n/g'| sed -n 1p)
+	version_cdn2=$(echo $git_line3 | sed 's/ /\n/g'| sed -n 1p)
 	
 	md5sum_gfwlist2=$(echo $git_line1 | sed 's/ /\n/g'| tail -n 2 | head -n 1)
 	md5sum_chnroute2=$(echo $git_line2 | sed 's/ /\n/g'| tail -n 2 | head -n 1)
-	md5sum_cdn2=$(echo $git_line4 | sed 's/ /\n/g'| tail -n 2 | head -n 1)
+	md5sum_cdn2=$(echo $git_line3 | sed 's/ /\n/g'| tail -n 2 | head -n 1)
 	
 	# update gfwlist
 	if [ "$ss_basic_gfwlist_update" == "1" ];then
@@ -111,7 +111,7 @@ start_update(){
 				if [ "$md5sum_cdn1"x = "$md5sum_cdn2"x ];then
 					echo_date 下载完成，校验通过，将临时文件覆盖到原始cdn名单文件
 					mv /tmp/cdn.txt /jffs/softcenter/ss/rules/cdn.txt
-					sed -i "4s/.*/$git_line4/" /jffs/softcenter/ss/rules/version
+					sed -i "3s/.*/$git_line3/" /jffs/softcenter/ss/rules/version
 					reboot="1"
 					echo_date 【更新成功】你的cdn名单已经更新到最新！
 				else
@@ -136,7 +136,7 @@ start_update(){
 	# write number
 	nvram set update_ipset="$(cat /jffs/softcenter/ss/rules/version | sed -n 1p | sed 's/#/\n/g'| sed -n 1p)"
 	nvram set update_chnroute="$(cat /jffs/softcenter/ss/rules/version | sed -n 2p | sed 's/#/\n/g'| sed -n 1p)"
-	nvram set update_cdn="$(cat /jffs/softcenter/ss/rules/version | sed -n 4p | sed 's/#/\n/g'| sed -n 1p)"
+	nvram set update_cdn="$(cat /jffs/softcenter/ss/rules/version | sed -n 3p | sed 's/#/\n/g'| sed -n 1p)"
 	
 	nvram set ipset_numbers=$(cat /jffs/softcenter/ss/rules/gfwlist.conf | grep -c ipset)
 	nvram set chnroute_numbers=$(cat /jffs/softcenter/ss/rules/chnroute.txt | grep -c .)
