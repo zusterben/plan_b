@@ -36,7 +36,7 @@
 
 * 华硕系列：[`RT-AC68U` `RT-AC66U-B1` `RT-AC1900P` `RT-AC88U` `RT-AC3100` `RT-AC3200` `RT-AC5300`](https://github.com/zusterben/plan_b/tree/master/bin/arm)
 * 斐讯系列：[`K3`](https://github.com/zusterben/plan_b/tree/master/bin/arm)
-* 网件系列：[`R6300v2` `R6900P` `R7000P` `R7000`](https://github.com/zusterben/plan_b/tree/master/bin/arm)
+* 网件系列：[`R6300v2` `R6900P` `R7000P` `R7000` `R8500`](https://github.com/zusterben/plan_b/tree/master/bin/arm)
 * DLINK系列：[`DIR868L`](https://github.com/zusterben/plan_b/tree/master/bin/arm)
 * 领势系列：[`EA6700`](https://github.com/zusterben/plan_b/tree/master/bin/arm)
 * ARRIS系列：[`SBRAC1900P` `SBRAC3200P`](https://github.com/zusterben/plan_b/tree/master/bin/arm)
@@ -71,7 +71,7 @@
 
 **armng**支持机型如下：
 
-* 华硕系列：[`RT-AX55` `RT-AX56U` `RT-AX58U` `TUF-AX3000` `TUF-AX5400` `RT-AX82U` `RT-ACRH17` `RT-AC2200` `RT-AX89X` `RT-ACRH18` `ZENWIFI-CT8` `ZENWIFI-XT8` `ZENWIFI-ET8` `ZENWIFI-ET10` `ZENWIFI-XP4` `GS-AX3000` `GS-AX5400`](https://github.com/zusterben/plan_b/tree/master/bin/armng)
+* 华硕系列：[`RT-AX55` `RT-AX56U` `RT-AX58U` `TUF-AX3000` `TUF-AX5400` `RT-AX82U` `RT-ACRH17` `RT-AC2200` `RT-AX89X` `RT-ACRH18` `ZENWIFI-CT8` `ZENWIFI-XT8` `ZENWIFI-ET8` `ZENWIFI-XT10` `ZENWIFI-ET10` `ZENWIFI-XP4` `GS-AX3000` `GS-AX5400`](https://github.com/zusterben/plan_b/tree/master/bin/armng)
 * 网件系列：[`RAX20` `RAX50` `RAX120`](https://github.com/zusterben/plan_b/tree/master/bin/armng)
 * 天邑系列：[`TY6201`](https://github.com/zusterben/plan_b/tree/master/bin/armng)
 * 小米系列：[`AX3600`](https://github.com/zusterben/plan_b/tree/master/bin/armng)
@@ -91,7 +91,7 @@
 
 * 华硕系列：[`RT-AC85U` `RT-AC85P` `RT-AX53U`](https://github.com/zusterben/plan_b/tree/master/bin/mipsel)
 * 红米系列：[`RM-AC2100`](https://github.com/zusterben/plan_b/tree/master/bin/mipsel)
-* 网件系列：[`R6700V2` `R6800` `R6900V2`](https://github.com/zusterben/plan_b/tree/master/bin/mipsel)
+* 网件系列：[`R6700V2` `R6800` `R6900V2` `AC2400`](https://github.com/zusterben/plan_b/tree/master/bin/mipsel)
 
 #### 注意：
 

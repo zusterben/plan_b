@@ -480,7 +480,7 @@ end
 					nodes = servers
 				-- SS SIP008 直接使用 Json 格式
 				--elseif cjson.decode(raw) then
-				--	nodes = cjson.decode(raw)
+				--	nodes = cjson.decode(raw).servers or cjson.decode(raw)
 				--	if nodes[1].server and nodes[1].method then
 				--		szType = 'sip008'
 				--	end
