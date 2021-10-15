@@ -118,9 +118,6 @@ dbus set softcenter_module_helloworld_version="$CUR_VERSION"
 dbus set softcenter_module_helloworld_title="helloworld"
 dbus set softcenter_module_helloworld_description="helloworld"
 
-# 设置v2ray 版本号
-dbus set ss_basic_v2ray_version="v4.32.1"
-
 echo_date 一点点清理工作...
 rm -rf /tmp/helloworld* >/dev/null 2>&1
 

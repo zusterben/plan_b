@@ -290,8 +290,8 @@ local function processData(szType, content)
 		result.server_port = content.server_port
 		result.password = nixio.bin.b64encode(content.password)
 		result.encrypt_method_ss = content.method
-		result.plugin = content.plugin
-		result.plugin_opts = content.plugin_opts
+		result.plugin = content.plugin or "none"
+		result.plugin_opts = content.plugin_opts or ""
 		result.alias = content.remarks
 	elseif szType == "ssd" then
 		result.type = "ss"
@@ -430,7 +430,8 @@ local function processData(szType, content)
 	result.switch_enable = nil
 	--print(result)
 	result.hashkey = md5(cjson.encode(result))
-	result.alias = alias
+	--哪个智障居然用'"\%$
+	result.alias = alias:gsub("\"", "_"):gsub("'", "_"):gsub("\\", "_"):gsub("%%", "_"):gsub("%$", "_")
 	result.switch_enable = switch_enable
 	return result
 end
@@ -479,11 +480,11 @@ end
 					end
 					nodes = servers
 				-- SS SIP008 直接使用 Json 格式
-				--elseif cjson.decode(raw) then
-				--	nodes = cjson.decode(raw).servers or cjson.decode(raw)
-				--	if nodes[1].server and nodes[1].method then
-				--		szType = 'sip008'
-				--	end
+				elseif raw:find('{"configs"') then
+					nodes = cjson.decode(raw).configs
+					if nodes[1].server and nodes[1].method then
+						szType = 'sip008'
+					end
 				else
 					-- ssd 外的格式
 					nodes = split(base64Decode(raw):gsub(" ", "_"), "\n")
@@ -492,7 +493,7 @@ end
 				for _, v in ipairs(nodes) do
 					if v then
 						local result
-						if szType == 'ssd' then
+						if szType then
 							result = processData(szType, v)
 						elseif not szType then
 							local node = trim(v)

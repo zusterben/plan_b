@@ -37,7 +37,6 @@ PIDF="`ps|grep httping|grep google.com.tw|grep -v grep`"
 [ -n "$PIDC" ] && echo $LOGTIME1 httping China timeout >> $LOGFILE_C && kill -9 $PIDC
 [ -n "$PIDF" ] && echo $LOGTIME1 httping foreign timeout "[`dbus get ssconf_basic_name_$CURRENT`]" >> $LOGFILE_F && kill -9 $PIDF
 [ -n "`ps|grep ssconfig.sh|grep -v grep`" ] && exit
-[ -n "`ps|grep ss_v2ray.sh|grep -v grep`" ] && exit
 [ "`dbus get ss_basic_enable`" != "1" ] && exit
 
 get_china_status $1

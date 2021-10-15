@@ -40,5 +40,4 @@ dbus remove softcenter_module_helloworld_version
 dbus remove ss_basic_enable
 dbus remove ss_basic_version_local
 dbus remove ss_basic_version_web
-dbus remove ss_basic_v2ray_version
 rm -rf /jffs/softcenter/scripts/uninstall_helloworld.sh
