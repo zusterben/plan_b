@@ -148,7 +148,7 @@ function get_dbus_data() {
 		},
 		error: function(XmlHttpRequest, textStatus, errorThrown){
 			console.log(XmlHttpRequest.responseText);
-			alert("skipd数据读取错误，请格式化jffs分区后重新尝试！");
+			alert("skipd数据读取错误，请格式化jffs分区后重新尝试！错误信息：" + XmlHttpRequest.responseText);
 		}
 		,timeout: 0
 	});
