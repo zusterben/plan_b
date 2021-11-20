@@ -83,15 +83,15 @@
 
 ---
 
-### [mipsel](https://github.com/zusterben/plan_b/tree/master/bin/mipsel)
+### [mipsle](https://github.com/zusterben/plan_b/tree/master/bin/mipsle)
 
-> **mipsel**离线安装包仅能在mipsel架构的机器上使用！
+> **mipsle**离线安装包仅能在mipsle架构的机器上使用！
 
-**mipsel**支持机型：
+**mipsle**支持机型：
 
-* 华硕系列：[`RT-AC85U` `RT-AC85P` `RT-AX53U`](https://github.com/zusterben/plan_b/tree/master/bin/mipsel)
-* 红米系列：[`RM-AC2100`](https://github.com/zusterben/plan_b/tree/master/bin/mipsel)
-* 网件系列：[`R6700V2` `R6800` `R6900V2` `AC2400`](https://github.com/zusterben/plan_b/tree/master/bin/mipsel)
+* 华硕系列：[`RT-AC85U` `RT-AC85P` `RT-AX53U`](https://github.com/zusterben/plan_b/tree/master/bin/mipsle)
+* 红米系列：[`RM-AC2100`](https://github.com/zusterben/plan_b/tree/master/bin/mipsle)
+* 网件系列：[`R6700V2` `R6800` `R6900V2` `AC2400`](https://github.com/zusterben/plan_b/tree/master/bin/mipsle)
 
 #### 注意：
 
