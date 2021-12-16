@@ -404,34 +404,6 @@ get_dns_name() {
 	esac
 }
 
-start_redsocks() {
-	rm -rf /tmp/red_conf.json
-		cat <<-EOF >>/tmp/red_conf.json
-			base {
-			log_debug = off;
-			log_info = off;
-			log = stderr;
-			daemon = on;
-			redirector = iptables;
-			reuseport = on;
-			}
-			redsocks {
-			bind = "0.0.0.0:$2";
-			relay = "127.0.0.1:$1";
-			type = socks5;
-			autoproxy = 0;
-			timeout = 10;
-			}
-			redudp {
-			bind = "0.0.0.0:$2";
-			relay = "127.0.0.1:$1";
-			type = socks5;
-			udp_timeout = 10;
-			}
-		EOF
-	echo_date "开启redsocks2，提供透明代理"
-	redsocks2 -c /tmp/red_conf.json
-}
 
 start_sslocal() {
 	if [ "$ss_basic_type" == "1" ]; then
@@ -889,7 +861,6 @@ start_trojan(){
 		fi
 		sleep 1
 	done
-	start_redsocks 23456 3333
 	echo_date "trojan启动成功，pid：$trojanpid"
 }
 

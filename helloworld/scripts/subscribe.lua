@@ -320,7 +320,7 @@ local function processData(szType, content)
 		local userinfo = hostInfo[1]
 		local password = UrlDecode(userinfo)
 		result.alias = UrlDecode(alias)
-		result.type = "trojan"
+		result.type = "v2ray"
 		result.v2ray_protocol = "trojan"
 		result.server = host[1]
 		-- 按照官方的建议 默认验证ssl证书
@@ -343,6 +343,7 @@ local function processData(szType, content)
 			result.tls_host = ""
 		end
 		result.password = nixio.bin.b64encode(password)
+		result.transport = "tcp"
 	elseif szType == "vless" then
 		local idx_sp = 0
 		local alias = ""
@@ -450,7 +451,7 @@ local function check_filer(result)
 		local filter_word = split(filter_words, ",")
 		-- 保留的关键词列表
 		local check_save = false
-		if save_words ~= nil and save_words ~= "" and save_words ~= "NULL" then
+		if save_words ~= nil and save_words ~= "" and save_words ~= "NULL" and save_words ~= "\n" then
 			check_save = true
 		end
 		local save_word = split(save_words, ",")
@@ -584,7 +585,9 @@ end
 									os.execute("dbus set ssconf_basic_port_" .. ssrindex .. "='".. result.server_port .. "'")
 									os.execute("dbus set ssconf_basic_v2ray_mux_enable_" .. ssrindex .. "='0'")
 									os.execute("dbus set ssconf_basic_v2ray_use_json_" .. ssrindex .. "='0'")
-									os.execute("dbus set ssconf_basic_v2ray_uuid_" .. ssrindex .. "='".. result.vmess_id .. "'")
+									if result.v2ray_protocol ~= "trojan" then
+										os.execute("dbus set ssconf_basic_v2ray_uuid_" .. ssrindex .. "='".. result.vmess_id .. "'")
+									end
 									os.execute("dbus set ssconf_basic_v2ray_network_" .. ssrindex .. "='".. result.transport .. "'")
 									if result.v2ray_protocol == "vmess" then
 										os.execute("dbus set ssconf_basic_v2ray_protocol_" .. ssrindex .. "='".. result.v2ray_protocol .. "'")
@@ -645,6 +648,14 @@ end
 										else
 											os.execute("dbus set ssconf_basic_v2ray_network_security_" .. ssrindex .. "='none'")
 										end
+									elseif result.v2ray_protocol == "trojan" then
+										os.execute("dbus set ssconf_basic_v2ray_protocol_" .. ssrindex .. "='".. result.v2ray_protocol .. "'")
+										os.execute("dbus set ssconf_basic_password_" .. ssrindex .. "='".. result.password .. "'")
+										os.execute("dbus set ssconf_basic_v2ray_network_host_" .. ssrindex .. "=''")
+										os.execute("dbus set ssconf_basic_v2ray_headtype_tcp_" .. ssrindex .. "='none'")
+										os.execute("dbus set ssconf_basic_v2ray_network_security_" .. ssrindex .. "='tls'")
+										os.execute("dbus set ssconf_basic_v2ray_fingerprint_" .. ssrindex .. "='disable'")
+										os.execute("dbus set ssconf_basic_v2ray_network_tlshost_" .. ssrindex .. "='".. result.tls_host .. "'")
 									else
 										log('保存节点信息错误: ' .. result.v2ray_protocol)
 									end
