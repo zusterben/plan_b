@@ -58,7 +58,7 @@ var option_method = [ "none",  "rc4",  "rc4-md5",  "rc4-md5-6",  "aes-128-gcm", 
 var option_method_aead = [ "none", "plain", "aes-128-gcm", "aes-256-gcm","chacha20-poly1305", "chacha20-ietf-poly1305", "aead_aes_128_gcm", "aead_aes_256_gcm", "aead_chacha20_poly1305" ];
 var option_protocals = [ "origin", "verify_simple", "verify_sha1", "auth_sha1", "auth_sha1_v2", "auth_sha1_v4", "auth_aes128_md5", "auth_aes128_sha1", "auth_chain_a", "auth_chain_b", "auth_chain_c", "auth_chain_d", "auth_chain_e", "auth_chain_f" ];
 var option_obfs = ["plain", "http_simple", "http_post", "tls1.2_ticket_auth"];
-var option_v2enc = [["none", "不加密"], ["auto", "自动"], ["aes-128-cfb", "aes-128-cfb"], ["aes-128-gcm", "aes-128-gcm"], ["chacha20-poly1305", "chacha20-poly1305"]];
+var option_v2enc = [["none", "不加密"], ["auto", "自动"], ["zero", "zero"], ["aes-128-cfb", "aes-128-cfb"], ["aes-128-gcm", "aes-128-gcm"], ["chacha20-poly1305", "chacha20-poly1305"]];
 var option_headtcp = [["none", "不伪装"], ["http", "伪装http"]];
 var option_headkcp = [["none", "不伪装"], ["srtp", "伪装视频通话(srtp)"], ["utp", "伪装BT下载(uTP)"], ["wechat-video", "伪装微信视频通话"]];
 var heart_count = 1;
@@ -148,7 +148,7 @@ function get_dbus_data() {
 		},
 		error: function(XmlHttpRequest, textStatus, errorThrown){
 			console.log(XmlHttpRequest.responseText);
-			alert("skipd数据读取错误，请格式化jffs分区后重新尝试！错误信息：" + XmlHttpRequest.responseText);
+			alert("skipd数据读取错误！错误信息：" + XmlHttpRequest.responseText);
 		}
 		,timeout: 0
 	});

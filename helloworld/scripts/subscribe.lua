@@ -41,6 +41,8 @@ local ssrmodet = io.popen('dbus get ssr_subscribe_mode')
 local ssrmode = tonumber(ssrmodet:read("*all")) 
 local tfilter_words = io.popen("dbus get ss_basic_exclude")
 local filter_words = tfilter_words:read("*all")
+local tsave_words = io.popen("dbus get ss_basic_include")
+local save_words = tsave_words:read("*all")
 local tsubscribe_url = io.popen("dbus get ss_online_links | base64 -d")
 local subscribe_url2 = tsubscribe_url:read("*all")
 for w in subscribe_url2:gmatch("%C+") do 
@@ -444,12 +446,39 @@ end
 
 local function check_filer(result)
 	do
+		-- 过滤的关键词列表
 		local filter_word = split(filter_words, ",")
+		-- 保留的关键词列表
+		local check_save = false
+		if save_words ~= nil and save_words ~= "" and save_words ~= "NULL" then
+			check_save = true
+		end
+		local save_word = split(save_words, ",")
+		-- 检查结果
+		local filter_result = false
+		local save_result = true
+
+		-- 检查是否存在过滤关键词
 		for i, v in pairs(filter_word) do
-			if result.alias:find(v) then
-				log('订阅节点关键字过滤:“' .. v ..'” ，该节点被丢弃')
-				return true
+			if tostring(result.alias):find(v) then
+				filter_result = true
 			end
+		end
+		-- 检查是否打开了保留关键词检查，并且进行过滤
+		if check_save == true then
+			for i, v in pairs(save_word) do
+				if tostring(result.alias):find(v) then
+					save_result = false
+				end
+			end
+		else
+			save_result = false
+		end
+		-- 不等时返回
+		if filter_result == true or save_result == true then
+			return true
+		else
+			return false
 		end
 	end
 end

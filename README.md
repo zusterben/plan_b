@@ -23,7 +23,7 @@
 
 #### 注意：
 
-* 目前此系列当jffs小于40m时必须挂载U盘才能开启软件中心，同时因为驱动bug的原因无法支持fat格式，优先推荐ext格式，且推荐读写速度高的U盘
+* 目前此系列当jffs小于30m时必须挂载U盘才能开启软件中心，同时因为驱动bug的原因无法支持fat格式，优先推荐ext格式，且推荐读写速度高的U盘
 * 强烈建议使用chrome或者chrouium内核的或者firefox浏览器！以保证最佳兼容性！
 
 ---
@@ -44,7 +44,7 @@
 
 #### 注意：
 
-* 目前此系列当jffs小于40m时必须挂载U盘才能开启软件中心，同时因为驱动bug的原因无法支持fat格式，优先推荐ext格式，且推荐读写速度高的U盘
+* 目前此系列当jffs小于30m时必须挂载U盘才能开启软件中心，同时因为驱动bug的原因无法支持fat格式，优先推荐ext格式，且推荐读写速度高的U盘
 * 强烈建议使用chrome或者chrouium内核的或者firefox浏览器！以保证最佳兼容性！
 
 ---
@@ -55,12 +55,12 @@
 
 **arm64**支持机型如下：
 
-* 华硕系列：[`RT-AC86U` `GT-AC2900` `GT-AC5300` `RT-AX88U` `RT-AX86U` `RT-AX68U` `GT-AXE11000`](https://github.com/zusterben/plan_b/tree/master/bin/arm64)
+* 华硕系列：[`RT-AC86U` `GT-AC2900` `GT-AC5300` `RT-AX88U` `RT-AX86U` `RT-AX68U` `GT-AX11000` `GT-AXE11000`](https://github.com/zusterben/plan_b/tree/master/bin/arm64)
 * 网件系列：[`R7900P` `R7960P` `R8000P` `RAX80` `RAX200`](https://github.com/zusterben/plan_b/tree/master/bin/arm64)
 
 #### 注意：
 
-* 目前此系列当jffs小于40m时必须挂载U盘才能开启软件中心，同时因为驱动bug的原因无法支持fat格式，优先推荐ext格式，且推荐读写速度高的U盘
+* 目前此系列当jffs小于30m时必须挂载U盘才能开启软件中心，同时因为驱动bug的原因无法支持fat格式，优先推荐ext格式，且推荐读写速度高的U盘
 * 强烈建议使用chrome或者chrouium内核的或者firefox浏览器！以保证最佳兼容性！
 
 ---
@@ -72,13 +72,13 @@
 **armng**支持机型如下：
 
 * 华硕系列：[`RT-AX55` `RT-AX56U` `RT-AX58U` `TUF-AX3000` `TUF-AX5400` `RT-AX82U` `RT-ACRH17` `RT-AC2200` `RT-AX89X` `RT-ACRH18` `ZENWIFI-CT8` `ZENWIFI-XT8` `ZENWIFI-ET8` `ZENWIFI-XT10` `ZENWIFI-ET10` `ZENWIFI-XP4` `GS-AX3000` `GS-AX5400`](https://github.com/zusterben/plan_b/tree/master/bin/armng)
-* 网件系列：[`RAX20` `RAX50` `RAX120`](https://github.com/zusterben/plan_b/tree/master/bin/armng)
+* 网件系列：[`RAX20` `RAX50` `RAX70` `RAX120`](https://github.com/zusterben/plan_b/tree/master/bin/armng)
 * 天邑系列：[`TY6201`](https://github.com/zusterben/plan_b/tree/master/bin/armng)
 * 小米系列：[`AX3600`](https://github.com/zusterben/plan_b/tree/master/bin/armng)
 
 #### 注意：
 
-* 目前此系列当jffs小于40m时必须挂载U盘才能开启软件中心，同时因为驱动bug的原因无法支持fat格式，优先推荐ext格式，且推荐读写速度高的U盘
+* 目前此系列当jffs小于30m时必须挂载U盘才能开启软件中心，同时因为驱动bug的原因无法支持fat格式，优先推荐ext格式，且推荐读写速度高的U盘
 * 强烈建议使用chrome或者chrouium内核的或者firefox浏览器！以保证最佳兼容性！
 
 ---
@@ -95,6 +95,6 @@
 
 #### 注意：
 
-* 目前此系列当jffs小于40m时必须挂载U盘才能开启软件中心，同时因为驱动bug的原因无法支持fat格式，优先推荐ext格式，且推荐读写速度高的U盘
+* 目前此系列当jffs小于30m时必须挂载U盘才能开启软件中心，同时因为驱动bug的原因无法支持fat格式，优先推荐ext格式，且推荐读写速度高的U盘
 * 强烈建议使用chrome或者chrouium内核的或者firefox浏览器！以保证最佳兼容性！
 
