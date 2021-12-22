@@ -1903,30 +1903,6 @@ apply_ss() {
 	echo_date ------------------------ 【科学上网】 启动完毕 ------------------------
 }
 
-# for debug
-get_status() {
-	echo_date
-	echo_date =========================================================
-	echo_date "PID of this script: $$"
-	echo_date "PPID of this script: $PPID"
-	echo_date ========== 本脚本的PID ==========
-	ps | grep $$ | grep -v grep
-	echo_date ========== 本脚本的PPID ==========
-	ps | grep $PPID | grep -v grep
-	echo_date ========== 所有运行中的shell ==========
-	ps | grep "\.sh" | grep -v grep
-	echo_date ------------------------------------
-
-	iptables -nvL PREROUTING -t nat
-	iptables -nvL OUTPUT -t nat
-	iptables -nvL SHADOWSOCKS -t nat
-	iptables -nvL SHADOWSOCKS_EXT -t nat
-	iptables -nvL SHADOWSOCKS_GFW -t nat
-	iptables -nvL SHADOWSOCKS_CHN -t nat
-	iptables -nvL SHADOWSOCKS_GAM -t nat
-	iptables -nvL SHADOWSOCKS_GLO -t nat
-}
-
 # =========================================================================
 
 case $ACTION in
@@ -1935,7 +1911,6 @@ start)
 	if [ "$ss_basic_enable" == "1" ]; then
 		logger "[软件中心]: 启动科学上网插件！"
 		apply_ss >>"$LOG_FILE"
-		#get_status >> /tmp/upload/test.txt
 	else
 		logger "[软件中心]: 科学上网插件未开启，不启动！"
 	fi
@@ -1968,7 +1943,6 @@ flush_nat)
 start_nat)
 	set_lock
 	[ "$ss_basic_enable" == "1" ] && apply_ss
-	#get_status >> /tmp/upload/test.txt
 	unset_lock
 	;;
 esac
