@@ -172,7 +172,7 @@ local function processData(szType, content)
 			info.net = 'mkcp'
 		end
 		result.transport = info.net
-		result.alter_id = info.aid
+		result.alter_id = info.aid or "0"
 		result.vmess_id = info.id
 		result.alias = info.ps
 		-- result.mux = 1

@@ -310,7 +310,7 @@ function save() {
 		dbus["ssconf_basic_port_" + node_sel] = vmess_node.port;
 		dbus["ssconf_basic_v2ray_uuid_" + node_sel] = vmess_node.id;
 		dbus["ssconf_basic_v2ray_security_" + node_sel] = vmess_node.scy || "auto";
-		dbus["ssconf_basic_v2ray_alterid_" + node_sel] = vmess_node.aid;
+		dbus["ssconf_basic_v2ray_alterid_" + node_sel] = vmess_node.aid || "0";
 		dbus["ssconf_basic_v2ray_protocol_" + node_sel] = "vmess";
 		dbus["ssconf_basic_v2ray_network_" + node_sel] = vmess_node.net;
 		if(vmess_node.net == "tcp"){
@@ -1009,7 +1009,7 @@ function add_ss_node_conf(flag) {
 				ns[p + "_port_" + node_max] = vmess_node.port;
 				ns[p + "_v2ray_uuid_" + node_max] = vmess_node.id;
 				ns[p + "_v2ray_security_" + node_max] = vmess_node.scy || "auto";
-				ns[p + "_v2ray_alterid_" + node_max] = vmess_node.aid;
+				ns[p + "_v2ray_alterid_" + node_max] = vmess_node.aid || "0";
 				ns[p + "_v2ray_protocol_" + node_max] = "vmess";
 				ns[p + "_v2ray_network_" + node_max] = vmess_node.net;
 				if(vmess_node.net == "tcp"){
@@ -1252,7 +1252,7 @@ function edit_ss_node_conf(flag) {
 				ns["ssconf_basic_port_" + edit_id] = vmess_node.port;
 				ns["ssconf_basic_v2ray_uuid_" + edit_id] = vmess_node.id;
 				ns["ssconf_basic_v2ray_security_" + edit_id] = vmess_node.scy || "auto";
-				ns["ssconf_basic_v2ray_alterid_" + edit_id] = vmess_node.aid;
+				ns["ssconf_basic_v2ray_alterid_" + edit_id] = vmess_node.aid || "0";
 				ns["ssconf_basic_v2ray_protocol_" + edit_id] = "vmess";
 				ns["ssconf_basic_v2ray_network_" + edit_id] = vmess_node.net;
 				if(vmess_node.net == "tcp"){

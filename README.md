@@ -1,6 +1,6 @@
 # [helloworld]
 
-> 此项目提供用于 **SWRT** 固件带软件中心路由器的helloworld科学上网。
+> 此项目提供用于 **[SWRT](https://github.com/SWRT-dev)** 固件带软件中心路由器的helloworld科学上网。
 
 > 本项目为[helloworld](https://github.com/fw876/helloworld)的 **SWRT** 固件实现,部分代码来自[passwall](https://github.com/xiaorouji/openwrt-passwall)
 

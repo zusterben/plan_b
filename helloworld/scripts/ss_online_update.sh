@@ -405,7 +405,7 @@ get_v2ray_remote_config(){
 	v2ray_type=$(echo "$decode_link" | jq -r .type)
 	v2ray_tls_tmp=$(echo "$decode_link" | jq -r .tls)
 	[ "$v2ray_tls_tmp"x == "tls"x ] && v2ray_tls="tls" || v2ray_tls="none"
-	
+	[ ! -n "$v2ray_aid" ] && v2ray_aid="0"
 	if [ "$v2ray_v" == "2" ]; then
 		# "new format"
 		v2ray_path=$(echo "$decode_link" | jq -r .path)
