@@ -13,8 +13,6 @@ V2RAY_CONFIG_FILE_TMP="/tmp/v2ray_tmp.json"
 V2RAY_CONFIG_FILE="/jffs/softcenter/ss/v2ray.json"
 CONFIG_SOCK5_FILE="/jffs/softcenter/ss/ss_s.json"
 CONFIG_NETFLIX_FILE="/jffs/softcenter/ss/ss_n.json"
-TROJAN_CONFIG_FILE="/jffs/softcenter/ss/trojan.json"
-TROJAN2_CONFIG_FILE="/jffs/softcenter/ss/trojan2.json"
 LOCK_FILE=/var/lock/helloworld.lock
 DNSF_PORT=7913
 DNSC_PORT=53
@@ -297,11 +295,6 @@ kill_process() {
 	#	echo_date 关闭smartdns进程...
 	#	killall smartdns >/dev/null 2>&1
 	#fi
-	trojan_process=$(pidof trojan)
-	if [ -n "$trojan_process" ];then 
-		echo_date 关闭trojan进程...
-		killall trojan >/dev/null 2>&1
-	fi
 	obfs-local_process=$(pidof obfs-local)
 	if [ -n "$obfs-local_process" ];then 
 		killall obfs-local >/dev/null 2>&1
@@ -415,9 +408,6 @@ start_sslocal() {
 		cat "$CONFIG_FILE_TMP" | jq --tab . > $CONFIG_SOCK5_FILE
 		rm -rf $CONFIG_FILE_TMP
 		ss-local -l 23456 -c $CONFIG_SOCK5_FILE -f /var/run/sslocal1.pid >/dev/null 2>&1
-	#elif [ "$ss_basic_type" == "3" ]; then
-		#echo_date "开启trojan，提供socks5代理端口：23456"
-		#trojan -c $TROJAN2_CONFIG_FILE >/dev/null 2>&1 &
 	fi
 }
 
@@ -813,73 +803,6 @@ start_ss_redir() {
 	fi
 	echo_date $BIN 启动完毕！.
 }
-creat_trojan_json(){
-		echo_date "创建$(__get_type_abbr_name)配置文件到$TROJAN_CONFIG_FILE"
-		rm -rf "$CONFIG_FILE_TMP"
-		rm -rf "$TROJAN_CONFIG_FILE"
-		rm -rf "$TROJAN2_CONFIG_FILE"
-		
-		if [ "$ss_basic_type" == "3" ]; then
-			/jffs/softcenter/bin/gen_conf 3 $CONFIG_FILE_TMP 23456 11111 client
-			cat "$CONFIG_FILE_TMP" | jq --tab . > $TROJAN2_CONFIG_FILE
-			#rm -rf "$CONFIG_FILE_TMP"
-			#/jffs/softcenter/bin/gen_conf 3 $CONFIG_FILE_TMP 3333 11111 nat
-			#cat "$CONFIG_FILE_TMP" | jq --tab . > $TROJAN_CONFIG_FILE
-		else
-			echo_date "trojan配置文件生成失败，请检查设置!!!"
-		fi
-	rm -rf "$CONFIG_FILE_TMP"
-}
-
-start_trojan(){
-	if [ "$ss_basic_tfo" == "1" ] && [ "$FASTOPEN" == "1" ]; then
-		echo_date 开启tcp fast open支持.
-		echo 3 >/proc/sys/net/ipv4/tcp_fastopen
-		echo_date "开启TROJAN前，开启tcp fast open支持，需服务端开启支持"
-
-	fi
-	
-	if [ "$ss_basic_mcore" == "1" ]; then
-		echo_date $BIN开启$THREAD线程支持.
-		local i=1
-		while [ $i -le $THREAD ]; do
-			trojan -c $TROJAN2_CONFIG_FILE >/dev/null 2>&1 &
-			let i++
-		done
-	else
-		trojan -c $TROJAN2_CONFIG_FILE >/dev/null 2>&1 &
-	fi
-	echo_date "trojan启用进程!!!"
-	local trojanpid
-	local i=10
-	until [ -n "$trojanpid" ]; do
-		i=$(($i - 1))
-		trojanpid=$(pidof trojan)
-		if [ "$i" -lt 1 ];then
-			echo_date "trojan进程启动失败！"
-			close_in_five
-		fi
-		sleep 1
-	done
-	echo_date "trojan启动成功，pid：$trojanpid"
-}
-
-create_trojan_netflix(){
-	echo_date "创建$(__get_type_abbr_name)配置文件到$CONFIG_NETFLIX_FILE"
-	rm -rf "$CONFIG_NETFLIX_FILE"
-	rm -rf "$CONFIG_SOCK5_FILE"
-	rm -rf "$CONFIG_FILE_TMP"
-	if [ "$ss_basic_type" == "3" ]; then
-		#/jffs/softcenter/bin/gen_conf 3 $CONFIG_FILE_TMP 4321 11111 client
-		#cat "$CONFIG_FILE_TMP" | jq --tab . > $CONFIG_NETFLIX_FILE
-		#rm -rf "$CONFIG_FILE_TMP"
-		/jffs/softcenter/bin/gen_conf 3 $CONFIG_FILE_TMP 1088 11111 client
-		cat "$CONFIG_FILE_TMP" | jq --tab . > $CONFIG_SOCK5_FILE
-	else
-		echo_date "trojan配置文件生成失败，请检查设置!!!"
-	fi
-	rm -rf "$CONFIG_FILE_TMP"
-}
 
 fire_redir() {
 	if [ "$ss_basic_type" == "0" ] && [ "$ss_basic_tfo" == "1" ] &&  [ "$FASTOPEN" == "1" ]; then
@@ -915,9 +838,18 @@ create_v2ray_json(){
 	local tmp v2ray_server_ip
 	rm -rf "$V2RAY_CONFIG_FILE_TMP"
 	rm -rf "$V2RAY_CONFIG_FILE"
+	if [ "$ss_basic_type" == 3 -a "$ssconf_basic_v2ray_protocol_${ssconf_basic_node}" == "" ]; then
+		dbus set ssconf_basic_v2ray_protocol_${ssconf_basic_node}="trojan"
+		dbus set ssconf_basic_v2ray_network_${ssconf_basic_node}="tcp"
+		dbus set ssconf_basic_v2ray_network_host_${ssconf_basic_node}=""
+		dbus set ssconf_basic_v2ray_headtype_tcp_${ssconf_basic_node}="none"
+		dbus set ssconf_basic_v2ray_network_security_${ssconf_basic_node}="tls"
+		dbus set ssconf_basic_v2ray_fingerprint_${ssconf_basic_node}="disable"
+		dbus set ssconf_basic_v2ray_network_tlshost_${ssconf_basic_node}=`dbus get ssconf_basic_trojan_sni_${ssconf_basic_node}`
+	fi
 	if [ "$ss_basic_v2ray_use_json" == "0" ]; then
 		echo_date 生成V2Ray配置文件...
-		/jffs/softcenter/bin/gen_conf 2 $V2RAY_CONFIG_FILE_TMP 3333 23456 "tcp,udp"
+		/jffs/softcenter/bin/gen_conf "$ss_basic_type" $V2RAY_CONFIG_FILE_TMP 3333 23456 "tcp,udp"
 
 		echo_date 解析V2Ray配置文件...
 		cat "$V2RAY_CONFIG_FILE_TMP" | jq --tab . >"$V2RAY_CONFIG_FILE"
@@ -1043,6 +975,8 @@ create_v2ray_json(){
 		echo_date V2Ray配置文件通过测试!!!
 	else
 		echo_date V2Ray配置文件没有通过测试，请检查设置!!!
+		result=$(xray -test -config="$V2RAY_CONFIG_FILE")
+		echo_date "$result"
 		rm -rf "$V2RAY_CONFIG_FILE_TMP"
 		rm -rf "$V2RAY_CONFIG_FILE"
 		close_in_five
@@ -1055,9 +989,18 @@ create_v2ray_netflix(){
 	local tmp v2ray_server_ip
 	rm -rf "$V2RAY_CONFIG_FILE_TMP"
 	rm -rf "$V2RAY_CONFIG_FILE"
+	if [ "$ss_basic_type" == 3 -a "$ssconf_basic_v2ray_protocol_${ssconf_basic_node}" == "" ]; then
+		dbus set ssconf_basic_v2ray_protocol_${ssconf_basic_node}="trojan"
+		dbus set ssconf_basic_v2ray_network_${ssconf_basic_node}="tcp"
+		dbus set ssconf_basic_v2ray_network_host_${ssconf_basic_node}=""
+		dbus set ssconf_basic_v2ray_headtype_tcp_${ssconf_basic_node}="none"
+		dbus set ssconf_basic_v2ray_network_security_${ssconf_basic_node}="tls"
+		dbus set ssconf_basic_v2ray_fingerprint_${ssconf_basic_node}="disable"
+		dbus set ssconf_basic_v2ray_network_tlshost_${ssconf_basic_node}=`dbus get ssconf_basic_trojan_sni_${ssconf_basic_node}`
+	fi
 	if [ "$ss_basic_v2ray_use_json" == "0" ]; then
 		echo_date 生成V2Ray配置文件...
-		/jffs/softcenter/bin/gen_conf 2 $V2RAY_CONFIG_FILE_TMP 4321 1088 "tcp,udp"
+		/jffs/softcenter/bin/gen_conf "$ss_basic_type" $V2RAY_CONFIG_FILE_TMP 4321 1088 "tcp,udp"
 		echo_date 解析V2Ray配置文件...
 		cat "$V2RAY_CONFIG_FILE_TMP" | jq --tab . >"$V2RAY_CONFIG_FILE"
 		echo_date V2Ray配置文件写入成功到"$V2RAY_CONFIG_FILE"
@@ -1177,6 +1120,8 @@ create_v2ray_netflix(){
 		echo_date V2Ray配置文件通过测试!!!
 	else
 		echo_date V2Ray配置文件没有通过测试，请检查设置!!!
+		result=$(xray -test -config="$V2RAY_CONFIG_FILE")
+		echo_date "$result"
 		rm -rf "$V2RAY_CONFIG_FILE_TMP"
 		rm -rf "$V2RAY_CONFIG_FILE"
 		close_in_five
@@ -1734,7 +1679,6 @@ find_bin() {
 	0) ret="/jffs/softcenter/bin/ss-redir" ;;
 	1) ret="/jffs/softcenter/bin/ssr-redir" ;;
 	2) ret="/jffs/softcenter/bin/xray" ;;
-	3) ret="/jffs/softcenter/bin/trojan" ;;
 	esac
 	echo $ret
 }
@@ -1756,16 +1700,9 @@ start_netflix() {
 			$bin2 -c $CONFIG_SOCK5_FILE -f /var/run/ssr-socksdns.pid >/dev/null 2>&1
 			dns2socks 127.0.0.1:1088 8.8.8.8:53 127.0.0.1:5555 -q >/dev/null 2>&1 &
 			;;
-		2)
+		2|3)
 			create_v2ray_netflix
 			$bin -config /jffs/softcenter/ss/v2-ssr-netflix.json >/dev/null 2>&1 &
-			dns2socks 127.0.0.1:1088 8.8.8.8:53 127.0.0.1:5555 -q >/dev/null 2>&1 &
-			;;
-		3)
-			create_trojan_netflix
-			start_redsocks 4321 1088
-			#$bin --config $CONFIG_NETFLIX_FILE >/dev/null 2>&1 &
-			$bin --config $CONFIG_SOCK5_FILE >/dev/null 2>&1 &
 			dns2socks 127.0.0.1:1088 8.8.8.8:53 127.0.0.1:5555 -q >/dev/null 2>&1 &
 			;;
 		esac
@@ -1875,13 +1812,9 @@ apply_ss() {
 		start_ss_redir
 		start_kcp
 		;;
-	2)
+	2|3)
 		create_v2ray_json
 		start_v2ray
-		;;
-	3)
-		creat_trojan_json
-		start_trojan
 		;;
 	esac
 	start_netflix

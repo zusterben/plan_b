@@ -47,7 +47,6 @@ check_status() {
 	CHINADNS_NG=$(pidof chinadns-ng)
 	KCPTUN=$(pidof client_linux)
 	XRAY=$(pidof xray)
-	TROJAN=$(pidof trojan)
 	game_on=$(dbus list ss_acl_mode | cut -d "=" -f 2 | grep 3)
 
 	if [ "$ss_basic_type" == "0" ]; then
@@ -76,7 +75,7 @@ check_status() {
 		echo 检测当前相关进程工作状态：（你正在使用trojan,选择的模式是$(get_mode_name $ss_basic_mode),国外DNS解析方案是：$(get_dns_name $ss_foreign_dns)）
 		echo -----------------------------------------------------------
 		echo "程序		状态	PID"
-		[ -n "$TROJAN" ] && echo "trojan	工作中	pid：$TROJAN" || echo "trojan未运行"
+		[ -n "$XRAY" ] && echo "trojan	工作中	pid：$XRAY" || echo "trojan未运行"
 	fi
 
 		if [ "$ss_basic_use_kcp" == "1" ]; then
