@@ -838,7 +838,7 @@ create_v2ray_json(){
 	local tmp v2ray_server_ip
 	rm -rf "$V2RAY_CONFIG_FILE_TMP"
 	rm -rf "$V2RAY_CONFIG_FILE"
-	if [ "$ss_basic_type" == 3 -a "$ssconf_basic_v2ray_protocol_${ssconf_basic_node}" == "" ]; then
+	if [ "$ss_basic_type" == "3" -a "$(dbus get ssconf_basic_v2ray_protocol_$ssconf_basic_node)" == "" ]; then
 		dbus set ssconf_basic_v2ray_protocol_${ssconf_basic_node}="trojan"
 		dbus set ssconf_basic_v2ray_network_${ssconf_basic_node}="tcp"
 		dbus set ssconf_basic_v2ray_network_host_${ssconf_basic_node}=""
@@ -989,7 +989,7 @@ create_v2ray_netflix(){
 	local tmp v2ray_server_ip
 	rm -rf "$V2RAY_CONFIG_FILE_TMP"
 	rm -rf "$V2RAY_CONFIG_FILE"
-	if [ "$ss_basic_type" == 3 -a "$ssconf_basic_v2ray_protocol_${ssconf_basic_node}" == "" ]; then
+	if [ "$ss_basic_type" == "3" -a "$(dbus get ssconf_basic_v2ray_protocol_$ssconf_basic_node)" == "" ]; then
 		dbus set ssconf_basic_v2ray_protocol_${ssconf_basic_node}="trojan"
 		dbus set ssconf_basic_v2ray_network_${ssconf_basic_node}="tcp"
 		dbus set ssconf_basic_v2ray_network_host_${ssconf_basic_node}=""
@@ -1678,7 +1678,7 @@ find_bin() {
 	case "$1" in
 	0) ret="/jffs/softcenter/bin/ss-redir" ;;
 	1) ret="/jffs/softcenter/bin/ssr-redir" ;;
-	2) ret="/jffs/softcenter/bin/xray" ;;
+	2|3) ret="/jffs/softcenter/bin/xray" ;;
 	esac
 	echo $ret
 }
