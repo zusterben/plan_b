@@ -840,6 +840,7 @@ create_v2ray_json(){
 	rm -rf "$V2RAY_CONFIG_FILE"
 	if [ "$ss_basic_type" == "3" -a "$(dbus get ssconf_basic_v2ray_protocol_$ssconf_basic_node)" == "" ]; then
 		dbus set ssconf_basic_v2ray_protocol_${ssconf_basic_node}="trojan"
+		dbus set ssconf_basic_v2ray_use_json_${ssconf_basic_node}="0"
 		dbus set ssconf_basic_v2ray_network_${ssconf_basic_node}="tcp"
 		dbus set ssconf_basic_v2ray_network_host_${ssconf_basic_node}=""
 		dbus set ssconf_basic_v2ray_headtype_tcp_${ssconf_basic_node}="none"
