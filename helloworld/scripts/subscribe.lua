@@ -293,7 +293,7 @@ local function processData(szType, content)
 		result.password = nixio.bin.b64encode(content.password)
 		result.encrypt_method_ss = content.method
 		result.plugin = content.plugin or "none"
-		result.plugin_opts = content.plugin_opts or ""
+		result.plugin_opts = content.plugin_opts and content.plugin_opts or ""
 		result.alias = content.remarks
 	elseif szType == "ssd" then
 		result.type = "ss"
@@ -368,7 +368,7 @@ local function processData(szType, content)
 			result.server = host[1]
 			result.server_port = query[1]
 			result.vmess_id = uuid
-			result.vless_encryption = params.encryption or "none"
+			result.vless_encryption = params.encryption and params.encryption or "none"
 			if params.type == 'kcp' then
 				params.type = 'mkcp'
 			end
@@ -376,7 +376,7 @@ local function processData(szType, content)
 			if not params.type or params.type == "tcp" then
 				if params.security == "xtls" then
 					result.xtls = "1"
-					result.tls_host = params.sni or host[1]
+					result.tls_host = params.sni and params.sni or host[1]
 					result.vless_flow = params.flow
 				else
 					result.xtls = "0"
@@ -384,14 +384,14 @@ local function processData(szType, content)
 			end
 			if params.type == 'ws' then
 				result.ws_host = params.host
-				result.ws_path = params.path or "/"
+				result.ws_path = params.path and params.path or ""
 			end
 			if params.type == 'http' then
-				result.h2_host = params.host or host[1]
-				result.h2_path = params.path or "/"
+				result.h2_host = params.host and params.host or host[1]
+				result.h2_path = params.path and params.path or ""
 			end
 			if params.type == 'mkcp' then
-				result.kcp_guise = params.headerType or "none"
+				result.kcp_guise = params.headerType and params.headerType or "none"
 				result.mtu = 1350
 				result.tti = 50
 				result.uplink_capacity = 5
@@ -401,9 +401,9 @@ local function processData(szType, content)
 				result.seed = params.seed
 			end
 			if params.type == 'quic' then
-				result.quic_guise = params.headerType or "none"
+				result.quic_guise = params.headerType and params.headerType or "none"
 				result.quic_key = params.key
-				result.quic_security = params.quicSecurity or "none"
+				result.quic_security = params.quicSecurity and params.quicSecurity or "none"
 			end
 			if params.type == 'grpc' then
 				result.serviceName = params.serviceName
@@ -411,7 +411,7 @@ local function processData(szType, content)
 			
 			if params.security == "tls" then
 				result.tls = "1"
-				result.tls_host = params.sni or host[1]
+				result.tls_host = params.sni and params.sni or host[1]
 			else
 				result.tls = "0"
 			end
@@ -434,7 +434,7 @@ local function processData(szType, content)
 	--print(result)
 	result.hashkey = md5(cjson.encode(result))
 	--哪个智障居然用'"\%$
-	result.alias = alias:gsub("\"", "_"):gsub("'", "_"):gsub("\\", "_"):gsub("%%", "_"):gsub("%$", "_")
+	result.alias = alias:gsub("\"", "_"):gsub("'", "_"):gsub("\\", "_"):gsub("%%", "_"):gsub("%$", "_"):gsub("	", "_")
 	result.switch_enable = switch_enable
 	return result
 end
