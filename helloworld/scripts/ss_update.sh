@@ -6,31 +6,13 @@ mkdir -p /tmp/upload
 echo "" > /tmp/upload/ss_log.txt
 http_response "$1"
 alias echo_date='echo 【$(TZ=UTC-8 date -R +%Y年%m月%d日\ %X)】:'
-ARCH=`uname -m`
-KVER=`uname -r`
-if [ "$ARCH" == "armv7l" ]; then
-	if [ "$KVER" != "2.6.36.4brcmarm" ];then
-#bcm675x/ipq4/5/6/80xx/mt7622
-		ARCH_SUFFIX="armng"
-	else
-#bcm470x
-		ARCH_SUFFIX="arm"
-	fi
-elif [ "$ARCH" == "aarch64" ]; then
-#bcm490x
-	ARCH_SUFFIX="arm64"
-elif [ "$ARCH" == "mips" ]; then
-	if [ "$KVER" == "3.10.14" ];then
-#mtk6721
-		ARCH_SUFFIX="mipsle"
-	else
-#grx500
-		ARCH_SUFFIX="mips"
-	fi
-elif [ "$ARCH" == "mipsle" ]; then
-	ARCH_SUFFIX="mipsle"
-else
+
+softcenter_arch=`dbus get softcenter_arch`
+ARCH_SUFFIX=$softcenter_arch
+if [ "$ARCH_SUFFIX" == "armv7l" ]; then
 	ARCH_SUFFIX="arm"
+elif [ "$ARCH_SUFFIX" == "aarch64" ]; then
+	ARCH_SUFFIX="arm64"
 fi
 main_url="https://raw.githubusercontent.com/zusterben/plan_b/master/bin/$ARCH_SUFFIX"
 backup_url=""

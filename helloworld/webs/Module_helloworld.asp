@@ -234,10 +234,22 @@ function refresh_options() {
 			}
 		} else {
 			if(c["v2ray_use_json"] == "0" || c["v2ray_use_json"] == "1") {
-				option.append($("<option>", {
-					value: field,
-					text: c.use_kcp == "1" ? "【V2Ray+KCP】" + c.name : "【V2Ray】" + c.name
-				}));
+				if(c.v2ray_protocol == "trojan") {
+					option.append($("<option>", {
+						value: field,
+						text: "【TROJAN】" + c.name
+					}));
+				}else if(c.v2ray_protocol == "shadowsocks") {
+					option.append($("<option>", {
+						value: field,
+						text: c.use_kcp == "1" ? "【SS+KCP】" + c.name : "【SS】" + c.name
+					}));
+				}else{
+					option.append($("<option>", {
+						value: field,
+						text: c.use_kcp == "1" ? "【V2Ray+KCP】" + c.name : "【V2Ray】" + c.name
+					}));
+				}
 			}else{
 				if(c["method"]){
 					option.append($("<option>", {
@@ -1519,9 +1531,14 @@ function refresh_html() {
 				html +='ssr';
 				break;
 			case '2' :
-				html +='v2ray';
+				if(c.v2ray_protocol == "trojan")
+					html +='trojan';
+				else if(c.v2ray_protocol == "shadowsocks")
+					html +='ss';
+				else
+					html +='v2ray';
 				break;
-			case '3' :			
+			case '3' :
 				html +='trojan';
 				break;
 		}
