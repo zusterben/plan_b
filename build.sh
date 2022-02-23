@@ -1,7 +1,7 @@
 #!/bin/sh
 
 MODULE=helloworld
-VERSION=0.7.6
+VERSION=0.7.7
 TITLE="ShadowSocksR Plus"
 DESCRIPTION="ShadowSocksR Plus"
 HOME_URL=Module_helloworld.asp
@@ -36,6 +36,7 @@ do_build() {
 	rm -rf $MODULE/bin/*
 	cp -rf ./bin_arch/$1/* $MODULE/bin/
 	echo $VERSION > helloworld/ss/version
+	echo $1 > helloworld/.arch
 	tar -zcvf ${MODULE}.tar.gz $MODULE
 	cat > $MODULE/version <<-EOF
 	$VERSION
@@ -55,6 +56,7 @@ do_build() {
 	"home_url":"$HOME_URL",
 	"md5":"$md5value",
 	"name":"$MODULE",
+	"arch":"$1",
 	"tar_url": "https://raw.githubusercontent.com/zusterben/plan_b/master/bin/$1/helloworld.tar.gz", 
 	"title":"$TITLE",
 	"version":"$VERSION"
@@ -85,4 +87,5 @@ do_backup $arch
 done
 rm version config.json.js helloworld.tar.gz
 rm -rf $MODULE/bin/*
+rm -rf helloworld/.arch
 

@@ -1,6 +1,6 @@
 # [helloworld]
 
-> 此项目提供用于 **[SWRT](https://github.com/SWRT-dev)** 固件带软件中心路由器的helloworld科学上网。
+> 此项目提供用于 **[SWRT](https://github.com/SWRT-dev)** 固件带软件中心路由器的helloworld ShadowSocksR Plus 科学上网。
 
 > 本项目为[helloworld](https://github.com/fw876/helloworld)的 **SWRT** 固件实现,部分代码来自[passwall](https://github.com/xiaorouji/openwrt-passwall)
 
@@ -73,8 +73,9 @@
 
 * 华硕系列：[`RT-AX55` `RT-AX56U` `RT-AX58U` `TUF-AX3000` `TUF-AX5400` `RT-AX82U` `RT-ACRH17` `RT-AC2200` `RT-AX89X` `RT-ACRH18` `ZENWIFI-CT8` `ZENWIFI-XT8` `ZENWIFI-ET8` `ZENWIFI-XT10` `ZENWIFI-ET10` `ZENWIFI-XP4` `GS-AX3000` `GS-AX5400`](https://github.com/zusterben/plan_b/tree/master/bin/armng)
 * 网件系列：[`RAX20` `RAX50` `RAX70` `RAX120`](https://github.com/zusterben/plan_b/tree/master/bin/armng)
-* 天邑系列：[`TY6201`](https://github.com/zusterben/plan_b/tree/master/bin/armng)
+* 天邑系列：[`TY6201` `TY6202`](https://github.com/zusterben/plan_b/tree/master/bin/armng)
 * 小米系列：[`AX3600`](https://github.com/zusterben/plan_b/tree/master/bin/armng)
+* 其他：[`360V6`](https://github.com/zusterben/plan_b/tree/master/bin/armng)
 
 #### 注意：
 
