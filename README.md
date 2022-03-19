@@ -71,8 +71,8 @@
 
 **armng**支持机型如下：
 
-* 华硕系列：[`RT-AX55` `RT-AX56U` `RT-AX58U` `TUF-AX3000` `TUF-AX5400` `RT-AX82U` `RT-ACRH17` `RT-AC2200` `RT-AX89X` `RT-ACRH18` `ZENWIFI-CT8` `ZENWIFI-XT8` `ZENWIFI-ET8` `ZENWIFI-XT10` `ZENWIFI-ET10` `ZENWIFI-XP4` `GS-AX3000` `GS-AX5400`](https://github.com/zusterben/plan_b/tree/master/bin/armng)
-* 网件系列：[`RAX20` `RAX50` `RAX70` `RAX120`](https://github.com/zusterben/plan_b/tree/master/bin/armng)
+* 华硕系列：[`RT-AX55` `RT-AX56U` `RT-AX58U` `TUF-AX3000` `TUF-AX5400` `RT-AX82U` `RT-ACRH17` `RT-AC2200` `RT-AX89X` `RT-ACRH18` `ZENWIFI-CT8` `ZENWIFI-XT8` `ZENWIFI-ET8` `ZENWIFI-XT12` `ZENWIFI-ETJ` `ZENWIFI-XP4` `GS-AX3000` `GS-AX5400`](https://github.com/zusterben/plan_b/tree/master/bin/armng)
+* 网件系列：[`RAX20` `RAX50` `RAX70` `RAX120` `MR60`](https://github.com/zusterben/plan_b/tree/master/bin/armng)
 * 天邑系列：[`TY6201` `TY6202`](https://github.com/zusterben/plan_b/tree/master/bin/armng)
 * 小米系列：[`AX3600`](https://github.com/zusterben/plan_b/tree/master/bin/armng)
 * 其他：[`360V6`](https://github.com/zusterben/plan_b/tree/master/bin/armng)

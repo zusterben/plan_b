@@ -625,7 +625,7 @@ create_dnsmasq_conf() {
 	# 此地址在非回国模式下用国内DNS解析，以免SS/SSR/V2RAY线路挂掉，导致一些走远端解析的情况下，无法获取到dns.msftncsi.com的解析结果，从而使得【网络地图】中网络显示断开。
 	if [ "$ss_basic_mode" != "6" ]; then
 		echo "#for special site (Mandatory China DNS)" >>/tmp/wblist.conf
-		for wan_white_domain2 in "apple.com" "microsoft.com" "dns.msftncsi.com"; do
+		for wan_white_domain2 in "apple.com" "microsoft.com" "dns.msftncsi.com bilibili.com bilibili.cn bilivideo.com  bilivideo.cn  biliapi.com  biliapi.net"; do
 			echo "$wan_white_domain2" | sed "s/^/server=&\/./g" | sed "s/$/\/$CDN#$DNSC_PORT/g" >>/tmp/wblist.conf
 			echo "$wan_white_domain2" | sed "s/^/ipset=&\/./g" | sed "s/$/\/white_list/g" >>/tmp/wblist.conf
 		done
