@@ -86,6 +86,7 @@ use_chn_plan(){
 
 use_for_plan(){
 	# DNS方案，国外优先，因此dnsmasq的server默认为国外地址，国内的解析由cdn.txt提供，路由的开销比较大，国内cdn较好，但是国外cdn很好
+	[ ! -f "/tmp/resolv.dnsmasq.bak" ] && cp -rf /tmp/resolv.dnsmasq /tmp/resolv.dnsmasq.bak
 	if [ "$ss_basic_mode" == "6" ];then
 		if [ -n "`echo $ss_direct_user|grep :`" ];then
 			echo_date 国外直连dns设定格式错误，将自动更正为8.8.8.8.

@@ -1541,6 +1541,13 @@ chromecast() {
 # -----------------------------------nat part end--------------------------------------------------------
 
 restart_dnsmasq(){
+	if [ -f "/tmp/resolv.dnsmasq.bak" ];then
+		#bug!关闭全局模式后且没有开启smartdns需要恢复
+		if [ "$ss_basic_enable" == "0" ] || [ "$all_on" == "" -a "$ss_basic_mode" != "5" ];then
+			rm -rf /tmp/resolv.dnsmasq
+			mv /tmp/resolv.dnsmasq.bak /tmp/resolv.dnsmasq
+		fi
+	fi
 	if [ "$ss_basic_enable" == "1" ];then
 		echo "nameserver 127.0.0.1" > /etc/resolv.conf
 	fi
