@@ -202,6 +202,13 @@ local function processData(szType, content)
 			result.read_buffer_size = 2
 			result.write_buffer_size = 2
 		end
+		if info.net == 'grpc' then
+			if info.path then
+				result.serviceName = info.path
+			elseif info.serviceName then
+				result.serviceName = info.serviceName
+			end
+		end
 		if info.net == 'quic' then
 			result.quic_guise = info.type
 			result.quic_key = info.key
@@ -216,7 +223,13 @@ local function processData(szType, content)
 		end
 		if info.tls == "tls" or info.tls == "1" then
 			result.tls = "1"
-			result.tls_host = info.host and info.host or (info.sni and info.sni or "")
+			if info.sni then
+				result.tls_host = info.sni
+			elseif info.host then
+				result.tls_host = info.host
+			else
+				result.tls_host = ""
+			end
 			result.insecure = 1
 		else
 			result.tls = "0"
@@ -406,7 +419,13 @@ local function processData(szType, content)
 				result.quic_security = params.quicSecurity and params.quicSecurity or "none"
 			end
 			if params.type == 'grpc' then
-				result.serviceName = params.serviceName
+				if params.serviceName then
+					result.serviceName = params.serviceName
+				elseif params.path then
+					result.serviceName = params.path
+				else
+					result.serviceName = ""
+				end
 			end
 			
 			if params.security == "tls" then
@@ -473,10 +492,10 @@ local function check_filer(result)
 				end
 			end
 		else
-			save_result = false
+			save_result = true
 		end
 		-- 不等时返回
-		if filter_result == true or save_result == true then
+		if filter_result == true or save_result == false then
 			return true
 		else
 			return false
