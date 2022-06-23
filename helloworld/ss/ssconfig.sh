@@ -103,6 +103,9 @@ __get_type_full_name() {
 	3)
 		echo "trojan"
 		;;
+	4)
+		echo "hysteria"
+		;;
 	esac
 }
 
@@ -119,6 +122,9 @@ __get_type_abbr_name() {
 		;;
 	3)
 		echo "trojan"
+		;;
+	4)
+		echo "hysteria"
 		;;
 	esac
 }
@@ -1155,6 +1161,41 @@ start_v2ray() {
 	echo_date v2ray启动成功，pid：$V2PID
 }
 
+create_hysteria_json(){
+	echo_date "创建$(__get_type_abbr_name)配置文件到$CONFIG_FILE"
+	rm -rf "$CONFIG_FILE_TMP"
+	rm -rf "$CONFIG_FILE"
+	echo_date 生成hysteria配置文件...
+	/jffs/softcenter/bin/gen_conf "$ss_basic_type" $CONFIG_FILE_TMP 3333 23456 "tcp,udp"
+	if [ "$(cat $CONFIG_FILE_TMP)" != "" ];then 
+		echo_date 解析hysteria配置文件...
+		cat "$CONFIG_FILE_TMP" | jq --tab . >"$CONFIG_FILE"
+		echo_date hysteria配置文件写入成功到"$CONFIG_FILE"
+	else
+		echo_date hysteria配置文件生成失败，请检查设置!!!
+		rm -rf "$CONFIG_FILE_TMP"
+		rm -rf "$CONFIG_FILE"
+		close_in_five
+	fi
+}
+
+start_hysteria(){
+	cd /jffs/softcenter/bin
+	hysteria -c "$CONFIG_FILE" --no-check client >/dev/null 2>&1 &
+	local pid
+	local i=10
+	until [ -n "$pid" ]; do
+		i=$(($i - 1))
+		pid=$(pidof hysteria)
+		if [ "$i" -lt 1 ]; then
+			echo_date "hysteria进程启动失败！"
+			close_in_five
+		fi
+		usleep 250000
+	done
+	echo_date "hysteria启动成功，pid：$pid"
+}
+
 write_cron_job() {
 	sed -i '/ssupdate/d' /var/spool/cron/crontabs/* >/dev/null 2>&1
 	if [ "1" == "$ss_basic_rule_update" ]; then
@@ -1823,6 +1864,10 @@ apply_ss() {
 	2|3)
 		create_v2ray_json
 		start_v2ray
+		;;
+	4)
+		create_hysteria_json
+		start_hysteria
 		;;
 	esac
 	start_netflix

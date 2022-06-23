@@ -54,12 +54,19 @@ local log = function(...)
 	print(os.date("%Y-%m-%d %H:%M:%S ") .. table.concat({...}, " "))
 end
 local encrypt_methods_ss = {
+	-- plain
+	"none",
+	"plain",
 	-- aead
 	"aes-128-gcm",
 	"aes-192-gcm",
 	"aes-256-gcm",
 	"chacha20-ietf-poly1305",
-	"xchacha20-ietf-poly1305"
+	"xchacha20-ietf-poly1305",
+	-- aead 2022
+	"2022-blake3-aes-128-gcm",
+	"2022-blake3-aes-256-gcm",
+	"2022-blake3-chacha20-poly1305"
 	--[[ stream
 	"table",
 	"rc4",
@@ -223,10 +230,10 @@ local function processData(szType, content)
 		end
 		if info.tls == "tls" or info.tls == "1" then
 			result.tls = "1"
-			if info.sni then
-				result.tls_host = info.sni
-			elseif info.host then
+			if info.host then
 				result.tls_host = info.host
+			elseif info.sni then
+				result.tls_host = info.sni
 			else
 				result.tls_host = ""
 			end

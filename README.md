@@ -8,11 +8,14 @@
 
 > history_package目录为安装包备份
 
+
 ---
 
 
 
 ## 机型/固件支持
+
+> 架构查看方法 [http://router.asus.com/Main_Soft_center.asp](http://router.asus.com/Main_Soft_center.asp)
 
 ### [mips](https://github.com/zusterben/plan_b/tree/master/bin/mips)
 
@@ -73,9 +76,9 @@
 
 * 华硕系列：[`RT-AX55` `RT-AX56U` `RT-AX58U` `TUF-AX3000` `TUF-AX5400` `RT-AX82U` `RT-ACRH17` `RT-AC2200` `RT-AX89X` `RT-ACRH18` `ZENWIFI-CT8` `ZENWIFI-XT8` `ZENWIFI-ET8` `ZENWIFI-XT12` `ZENWIFI-ETJ` `ZENWIFI-XP4` `GS-AX3000` `GS-AX5400`](https://github.com/zusterben/plan_b/tree/master/bin/armng)
 * 网件系列：[`RAX20` `RAX50` `RAX70` `RAX120` `MR60`](https://github.com/zusterben/plan_b/tree/master/bin/armng)
-* 天邑系列：[`TY6201` `TY6202`](https://github.com/zusterben/plan_b/tree/master/bin/armng)
+* 天邑系列：[`TY6201` `TY6202` `TY301` `TYAX5400`](https://github.com/zusterben/plan_b/tree/master/bin/armng)
 * 小米系列：[`AX3600`](https://github.com/zusterben/plan_b/tree/master/bin/armng)
-* 其他：[`360V6`](https://github.com/zusterben/plan_b/tree/master/bin/armng)
+* 其他：[`360V6` `JDCAX1800`](https://github.com/zusterben/plan_b/tree/master/bin/armng)
 
 #### 注意：
 
@@ -93,6 +96,7 @@
 * 华硕系列：[`RT-AC85U` `RT-AC85P` `RT-AX53U`](https://github.com/zusterben/plan_b/tree/master/bin/mipsle)
 * 红米系列：[`RM-AC2100`](https://github.com/zusterben/plan_b/tree/master/bin/mipsle)
 * 网件系列：[`R6700V2` `R6800` `R6900V2` `AC2400`](https://github.com/zusterben/plan_b/tree/master/bin/mipsle)
+* 其他：[`H3C-TX1801` `JCG-Q10PRO`](https://github.com/zusterben/plan_b/tree/master/bin/mipsle)
 
 #### 注意：
 
