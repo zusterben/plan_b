@@ -44,7 +44,11 @@ dbus remove softcenter_module_helloworld_install
 dbus remove softcenter_module_helloworld_md5
 dbus remove softcenter_module_helloworld_version
 
-dbus remove ss_basic_enable
-dbus remove ss_basic_version_local
-dbus remove ss_basic_version_web
+
+cd /tmp 
+dbus list ss_|cut -d "=" -f1|sed 's/^/dbus remove /g' > clean.sh
+dbus list ssconf_|cut -d "=" -f1|sed 's/^/dbus remove /g' > clean.sh
+chmod 777 clean.sh 
+sh ./clean.sh > /dev/null 2>&1 
+rm clean.sh
 rm -rf /jffs/softcenter/scripts/uninstall_helloworld.sh

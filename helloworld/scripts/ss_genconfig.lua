@@ -330,7 +330,7 @@ function config:handleIndex(index)
 				ss.plugin = server.plugin
 				ss.plugin_opts = server.plugin_opts or nil
 			end
-			print(json.stringify(ss, 1))
+			print(cjson.encode(ss))
 		end,
 		ssr = function()
 			ss.protocol = server.protocol
@@ -338,19 +338,19 @@ function config:handleIndex(index)
 			ss.method = server.encrypt_method
 			ss.obfs = server.obfs
 			ss.obfs_param = server.obfs_param
-			print(json.stringify(ss, 1))
+			print(cjson.encode(ss))
 		end,
 		v2ray = function()
-			print(json.stringify(Xray, 1))
+			print(cjson.encode(Xray))
 		end,
 		trojan = function()
-			print(json.stringify(trojan, 1))
+			print(cjson.encode(trojan))
 		end,
 		naiveproxy = function()
-			print(json.stringify(naiveproxy, 1))
+			print(cjson.encode(naiveproxy))
 		end,
 		hysteria = function()
-			print(json.stringify(hysteria, 1))
+			print(cjson.encode(hysteria))
 		end
 	}
 	if switch[index] then
