@@ -9,6 +9,8 @@
 > history_package目录为安装包备份
 
 
+> 优先使用[plan_f](https://github.com/zusterben/plan_f),安装包更小,启动和运行速度更快,兼容绝大部分协议和机场
+
 ---
 
 
